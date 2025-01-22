@@ -28,7 +28,7 @@
             <mat-icon>search</mat-icon>
             <span class="ml1">Detail</span>
           </button>
-          <button data-cy="update-session" *ngIf="user!.admin" mat-raised-button color="primary"
+          <button [attr.data-cy]="'edit-session-'  + session.id" *ngIf="user!.admin" mat-raised-button color="primary"
                   [routerLink]="['update',session.id]">
             <mat-icon>edit</mat-icon>
             <span class="ml1">Edit</span>
