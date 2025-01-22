@@ -1,16 +1,10 @@
 describe('Login spec', () => {
-  it('Login successfull', () => {
+  it('Login admin successfull', () => {
     cy.visit('/login')
 
     cy.get('input[formcontrolname=email]').type(Cypress.env('adminEmail'));
     cy.get('input[formcontrolname=password]').type(`${Cypress.env('adminPassword')}{enter}{enter}`)
 
-    cy.intercept(
-      {
-        method: 'GET',
-        url: '/api/session',
-      },
-      []).as('session')
 
     cy.url().should('include', '/sessions')
     cy.getByDataCy("create-session").should('exist')
@@ -22,13 +16,6 @@ describe('Login spec', () => {
 
     cy.get('input[formcontrolname=email]').type(Cypress.env('userEmail'))
     cy.get('input[formcontrolname=password]').type(`${Cypress.env('userPassword')}{enter}{enter}`)
-
-    cy.intercept(
-      {
-        method: 'GET',
-        url: '/api/session',
-      },
-      []).as('session')
 
     cy.url().should('include', '/sessions')
     cy.getByDataCy("create-session").should('not.exist')
