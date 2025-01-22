@@ -1,4 +1,4 @@
-import { defineConfig } from 'cypress'
+import {defineConfig} from 'cypress'
 
 export default defineConfig({
   videosFolder: 'cypress/videos',
@@ -13,4 +13,10 @@ export default defineConfig({
     },
     baseUrl: 'http://localhost:4200',
   },
+  env: {
+    adminEmail: 'yoga.admin@studio.com',
+    adminPassword: 'test!1234',
+    userEmail: 'yoga@studio.com',
+    userPassword: 'test!1234',
+  }
 })
