@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute, Router } from '@angular/router';
-import { SessionService } from '../../../../services/session.service';
-import { TeacherService } from '../../../../services/teacher.service';
-import { Session } from '../../interfaces/session.interface';
-import { SessionApiService } from '../../services/session-api.service';
+import {Component, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {ActivatedRoute, Router} from '@angular/router';
+import {SessionService} from '../../../../services/session.service';
+import {TeacherService} from '../../../../services/teacher.service';
+import {Session} from '../../interfaces/session.interface';
+import {SessionApiService} from '../../services/session-api.service';
 
 @Component({
   selector: 'app-form',
@@ -31,10 +31,10 @@ export class FormComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    if (!this.sessionService.sessionInformation!.admin) {
+    if (this.sessionService.sessionInformation?.admin === true) {
       this.router.navigate(['/sessions']);
     }
-    const url = this.router.url;
+    let url = this.router.url;
     if (url.includes('update')) {
       this.onUpdate = true;
       this.id = this.route.snapshot.paramMap.get('id')!;
@@ -78,14 +78,14 @@ export class FormComponent implements OnInit {
         session ? session.description : '',
         [
           Validators.required,
-          Validators.max(2000)
+          Validators.maxLength(2000)
         ]
       ],
     });
   }
 
   private exitPage(message: string): void {
-    this.matSnackBar.open(message, 'Close', { duration: 3000 });
+    this.matSnackBar.open(message, 'Close', {duration: 3000});
     this.router.navigate(['sessions']);
   }
 }
