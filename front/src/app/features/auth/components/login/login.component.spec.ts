@@ -72,6 +72,7 @@ describe('LoginComponent', () => {
 
     expect(authServiceMock.login).toHaveBeenCalledWith(formValue);
     expect(routerMock.navigate).toHaveBeenCalledWith(['/sessions']);
+    expect(component.onError).toBe(false);
   });
 
   it('should set onError to true if an error occurs during submit', () => {
@@ -83,7 +84,6 @@ describe('LoginComponent', () => {
     });
 
     component.submit();
-
     expect(component.onError).toBe(true);
   });
 

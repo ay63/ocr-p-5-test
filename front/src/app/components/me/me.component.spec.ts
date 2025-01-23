@@ -7,6 +7,7 @@ import {SessionService} from "../../services/session.service";
 import {UserService} from "../../services/user.service";
 import {User} from "../../interfaces/user.interface";
 import {expect} from "@jest/globals";
+import {DatePipe} from "@angular/common";
 
 describe('MeComponent', () => {
   let component: MeComponent;
@@ -15,14 +16,15 @@ describe('MeComponent', () => {
   let mockSessionService: jest.Mocked<SessionService>;
   let mockMatSnackBar: jest.Mocked<MatSnackBar>;
   let mockUserService: jest.Mocked<UserService>;
+  let compiled: HTMLElement;
 
   const mockUser: User = {
     id: 1,
-    email: "string",
-    lastName: "string",
-    firstName: "string",
+    email: "john.doe@fake.com",
+    lastName: "DOE",
+    firstName: "John",
     admin: false,
-    password: "string",
+    password: "password",
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -58,6 +60,8 @@ describe('MeComponent', () => {
 
     fixture = TestBed.createComponent(MeComponent);
     component = fixture.componentInstance;
+    compiled = fixture.nativeElement;
+    fixture.detectChanges();
   });
 
   it('should create', () => {
@@ -73,6 +77,48 @@ describe('MeComponent', () => {
     });
   });
 
+  describe('data user', () => {
+    it('should display user information correctly', () => {
+      expect(compiled.querySelector('h1')?.textContent).toContain('User information');
+      expect(compiled.querySelector('[data-cy="name"]')?.textContent).toContain('Name: John DOE');
+      expect(compiled.querySelector('[data-cy="email"]')?.textContent).toContain('Email: john.doe@fake.com');
+      expect(compiled.querySelector('[data-cy="deleteBtn"]')).toBeTruthy();
+    });
+
+    it('should format dates correctly', () => {
+      mockUserService.getById.mockReturnValue(of(mockUser));
+      fixture.detectChanges();
+
+      const datePipe = new DatePipe('en-US');
+      const createdAt = datePipe.transform(mockUser.createdAt, 'longDate');
+      const updatedAt = datePipe.transform(mockUser.updatedAt, 'longDate');
+
+      expect(compiled.querySelector('[data-cy="created-at"]')?.textContent).toContain(`Create at: ${createdAt}`);
+      expect(compiled.querySelector('[data-cy="updated-at"]')?.textContent).toContain(`Last update: ${updatedAt}`);
+    });
+  })
+
+  describe('Admin user detail', () => {
+    it('should display admin message if user is admin', () => {
+      mockUser.admin = true;
+      mockUserService.getById.mockReturnValue(of(mockUser));
+      component.ngOnInit();
+      fixture.detectChanges();
+      expect(compiled.querySelector('[data-cy="deleteBtn"]')).toBeFalsy();
+    });
+
+    it('should display admin message if user is admin', () => {
+      mockUser.admin = true;
+      mockUserService.getById.mockReturnValue(of(mockUser));
+
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      expect(compiled.querySelector('[data-cy="admin-message"]')?.textContent).toContain('You are admin');
+    });
+
+  })
+
   describe('back', () => {
     it('should call window.history.back', () => {
       const spyHistoryBack = jest.spyOn(window.history, 'back');
@@ -82,7 +128,7 @@ describe('MeComponent', () => {
   });
 
   describe('delete', () => {
-    it('should delete user account and handle success properly', () => {
+    it('should delete user account', () => {
       component.delete();
 
       expect(mockUserService.delete).toHaveBeenCalledWith('1');

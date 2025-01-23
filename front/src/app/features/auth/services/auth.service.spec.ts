@@ -57,7 +57,6 @@ describe('AuthService', () => {
         error: (e) => error = e
       });
 
-
       const req = httpMock.expectOne(`${API_PATH}/register`);
       req.flush(errorMessage, {status: 400, statusText: 'Bad Request'});
 
