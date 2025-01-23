@@ -4,7 +4,6 @@ beforeEach(() => {
 })
 
 describe('Admin session', () => {
-
   describe('Session create', () => {
     it('Should be able to create a session', () => {
       cy.getByDataCy("create-session").click()

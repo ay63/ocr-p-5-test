@@ -5,7 +5,6 @@ beforeEach(() => {
 
 
 describe('Account user', () => {
-
   it('Should be access to account detail and see data and see delete button', () => {
     cy.url().should('include', '/me')
     cy.getByDataCy("deleteBtn").should('exist')
