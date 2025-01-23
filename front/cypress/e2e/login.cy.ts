@@ -2,6 +2,16 @@ describe('Login spec', () => {
   it('Login admin successfull', () => {
     cy.visit('/login')
 
+    cy.intercept('POST', '/api/auth/login', {
+      body: {
+        id: 1,
+        username: 'userName',
+        firstName: 'firstName',
+        lastName: 'lastName',
+        admin: true
+      },
+    })
+
     cy.get('input[formcontrolname=email]').type(Cypress.env('adminEmail'));
     cy.get('input[formcontrolname=password]').type(`${Cypress.env('adminPassword')}{enter}{enter}`)
 
@@ -13,6 +23,16 @@ describe('Login spec', () => {
 
   it('Login successfull with none admin user', () => {
     cy.visit('/login')
+
+    cy.intercept('POST', '/api/auth/login', {
+      body: {
+        id: 1,
+        username: 'userName',
+        firstName: 'firstName',
+        lastName: 'lastName',
+        admin: false
+      },
+    })
 
     cy.get('input[formcontrolname=email]').type(Cypress.env('userEmail'))
     cy.get('input[formcontrolname=password]').type(`${Cypress.env('userPassword')}{enter}{enter}`)
