@@ -108,14 +108,13 @@ describe('register failed form', () => {
 
     })
 
-    it('should failed password min length 40', () => {
+    it('should failed password max length 40', () => {
         cy.getByDataCy("firstName").type("firstName")
         cy.getByDataCy("lastName").type("lastName")
         cy.getByDataCy("email").type(fakeEmail)
         cy.getByDataCy("password").type('a'.repeat(41))
 
         cy.get('form').submit()
-
         cy.get('.error').should('exist')
     })
 })
