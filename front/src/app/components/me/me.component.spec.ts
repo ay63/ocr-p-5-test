@@ -1,13 +1,19 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {Router} from '@angular/router';
-import {MatSnackBar} from '@angular/material/snack-bar';
-import {of} from 'rxjs';
-import {MeComponent} from './me.component';
-import {SessionService} from "../../services/session.service";
-import {UserService} from "../../services/user.service";
-import {User} from "../../interfaces/user.interface";
-import {expect} from "@jest/globals";
-import {DatePipe} from "@angular/common";
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { of } from 'rxjs';
+import { MeComponent } from './me.component';
+import { SessionService } from "../../services/session.service";
+import { UserService } from "../../services/user.service";
+import { expect } from "@jest/globals";
+import { DatePipe } from "@angular/common";
+import {
+  mockTestMatSnackBar,
+  mockTestRouter,
+  mockTestSessionService,
+  mockTestUserService
+} from "../../../tests/mock";
+import {mockDataTestUserIsAdmin, mockDataTestUserNotAdmin} from "../../../tests/mockData";
 
 describe('MeComponent', () => {
   let component: MeComponent;
@@ -18,45 +24,21 @@ describe('MeComponent', () => {
   let mockUserService: jest.Mocked<UserService>;
   let compiled: HTMLElement;
 
-  const mockUser: User = {
-    id: 1,
-    email: "john.doe@fake.com",
-    lastName: "DOE",
-    firstName: "John",
-    admin: false,
-    password: "password",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
+  beforeEach(async () => {
+    mockRouter = mockTestRouter;
+    mockSessionService = mockTestSessionService;
+    mockMatSnackBar = mockTestMatSnackBar;
+    mockUserService = mockTestUserService;
 
-  beforeEach(() => {
-    mockRouter = {
-      navigate: jest.fn()
-    } as unknown as jest.Mocked<Router>;
-
-    mockSessionService = {
-      sessionInformation: {id: 1},
-      logOut: jest.fn()
-    } as unknown as jest.Mocked<SessionService>;
-
-    mockMatSnackBar = {
-      open: jest.fn()
-    } as unknown as jest.Mocked<MatSnackBar>;
-
-    mockUserService = {
-      getById: jest.fn().mockReturnValue(of(mockUser)),
-      delete: jest.fn().mockReturnValue(of(undefined))
-    } as unknown as jest.Mocked<UserService>;
-
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       declarations: [MeComponent],
       providers: [
-        {provide: Router, useValue: mockRouter},
-        {provide: SessionService, useValue: mockSessionService},
-        {provide: MatSnackBar, useValue: mockMatSnackBar},
-        {provide: UserService, useValue: mockUserService}
+        { provide: Router, useValue: mockRouter },
+        { provide: SessionService, useValue: mockSessionService },
+        { provide: MatSnackBar, useValue: mockMatSnackBar },
+        { provide: UserService, useValue: mockUserService }
       ]
-    });
+    }).compileComponents();  // Compile the components
 
     fixture = TestBed.createComponent(MeComponent);
     component = fixture.componentInstance;
@@ -71,9 +53,8 @@ describe('MeComponent', () => {
   describe('ngOnInit', () => {
     it('should fetch user data on init', () => {
       component.ngOnInit();
-
       expect(mockUserService.getById).toHaveBeenCalledWith('1');
-      expect(component.user).toEqual(mockUser);
+      expect(component.user).toEqual(mockDataTestUserNotAdmin);
     });
   });
 
@@ -86,38 +67,35 @@ describe('MeComponent', () => {
     });
 
     it('should format dates correctly', () => {
-      mockUserService.getById.mockReturnValue(of(mockUser));
+      mockUserService.getById.mockReturnValue(of(mockDataTestUserNotAdmin));
       fixture.detectChanges();
 
       const datePipe = new DatePipe('en-US');
-      const createdAt = datePipe.transform(mockUser.createdAt, 'longDate');
-      const updatedAt = datePipe.transform(mockUser.updatedAt, 'longDate');
+      const createdAt = datePipe.transform(mockDataTestUserNotAdmin.createdAt, 'longDate');
+      const updatedAt = datePipe.transform(mockDataTestUserNotAdmin.updatedAt, 'longDate');
 
       expect(compiled.querySelector('[data-cy="created-at"]')?.textContent).toContain(`Create at: ${createdAt}`);
       expect(compiled.querySelector('[data-cy="updated-at"]')?.textContent).toContain(`Last update: ${updatedAt}`);
     });
-  })
+  });
 
   describe('Admin user detail', () => {
     it('should display admin message if user is admin', () => {
-      mockUser.admin = true;
-      mockUserService.getById.mockReturnValue(of(mockUser));
+      mockUserService.getById.mockReturnValue(of(mockDataTestUserIsAdmin));
       component.ngOnInit();
       fixture.detectChanges();
       expect(compiled.querySelector('[data-cy="deleteBtn"]')).toBeFalsy();
     });
 
     it('should display admin message if user is admin', () => {
-      mockUser.admin = true;
-      mockUserService.getById.mockReturnValue(of(mockUser));
+      mockUserService.getById.mockReturnValue(of(mockDataTestUserIsAdmin));
 
       component.ngOnInit();
       fixture.detectChanges();
 
       expect(compiled.querySelector('[data-cy="admin-message"]')?.textContent).toContain('You are admin');
     });
-
-  })
+  });
 
   describe('back', () => {
     it('should call window.history.back', () => {
@@ -135,10 +113,11 @@ describe('MeComponent', () => {
       expect(mockMatSnackBar.open).toHaveBeenCalledWith(
         'Your account has been deleted !',
         'Close',
-        {duration: 3000}
+        { duration: 3000 }
       );
       expect(mockSessionService.logOut).toHaveBeenCalled();
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/']);
     });
   });
+
 });

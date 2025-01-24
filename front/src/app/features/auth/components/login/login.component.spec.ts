@@ -14,22 +14,22 @@ import {of, throwError} from "rxjs";
 import {LoginRequest} from "../../interfaces/loginRequest.interface";
 import {AuthService} from "../../services/auth.service";
 import {Router} from "@angular/router";
+import {
+  authTestServiceMock,
+  mockTestRouter
+} from "../../../../../tests/mock";
+import {mockDataTestSessionInformation} from "../../../../../tests/mockData";
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
-  let authServiceMock: any;
-  let routerMock: any;
+  let authServiceMock: jest.Mocked<AuthService>;
+  let routerMock: jest.Mocked<Router>;
 
   beforeEach(async () => {
 
-    authServiceMock = {
-      login: jest.fn(),
-    };
-
-    routerMock = {
-      navigate: jest.fn(),
-    };
+    authServiceMock = authTestServiceMock
+    routerMock = mockTestRouter
 
     await TestBed.configureTestingModule({
       declarations: [LoginComponent],
@@ -60,7 +60,7 @@ describe('LoginComponent', () => {
   });
 
   it('should redirect to /sessions after successful submit', () => {
-    authServiceMock.login.mockReturnValue(of(undefined));
+    authServiceMock.login.mockReturnValue(of(mockDataTestSessionInformation));
 
     const formValue: LoginRequest = {
       email: 'test@example.com',

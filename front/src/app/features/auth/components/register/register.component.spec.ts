@@ -6,21 +6,17 @@ import {RegisterComponent} from './register.component';
 import {AuthService} from '../../services/auth.service';
 import {expect} from '@jest/globals';
 import {RegisterRequest} from "../../interfaces/registerRequest.interface";
+import {authTestServiceMock, mockTestRouter} from "../../../../../tests/mock";
 
 describe('RegisterComponent', () => {
   let component: RegisterComponent;
   let fixture: ComponentFixture<RegisterComponent>;
-  let authServiceMock: any;
-  let routerMock: any;
+  let authServiceMock: jest.Mocked<AuthService>;
+  let routerMock: jest.Mocked<Router>;
 
   beforeEach(async () => {
-    authServiceMock = {
-      register: jest.fn(),
-    };
-
-    routerMock = {
-      navigate: jest.fn(),
-    };
+    authServiceMock = authTestServiceMock
+    routerMock = mockTestRouter
 
     await TestBed.configureTestingModule({
       declarations: [RegisterComponent],
