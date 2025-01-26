@@ -97,10 +97,7 @@
         "serve-coverage": {
           "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
-            "browserTarget": "yoga:build:e2e",
-            "customWebpackConfig": {
-              "path": "./cypress/coverage.webpack.ts"
-            }
+            "browserTarget": "yoga:build:e2e"
           }
         },
         "extract-i18n": {
