@@ -15,7 +15,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-
 @ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -85,4 +84,4 @@ class UserControllerTest {
         mockMvc.perform(delete("/api/user/invalid"))
                 .andExpect(status().isBadRequest());
     }
-} 
+}

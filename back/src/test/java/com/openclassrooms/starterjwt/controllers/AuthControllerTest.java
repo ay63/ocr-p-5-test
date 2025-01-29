@@ -1,18 +1,19 @@
 package com.openclassrooms.starterjwt.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.openclassrooms.starterjwt.models.User;
+import com.openclassrooms.starterjwt.factory.EntitiesTestFactory;
 import com.openclassrooms.starterjwt.payload.request.LoginRequest;
 import com.openclassrooms.starterjwt.payload.request.SignupRequest;
 import com.openclassrooms.starterjwt.repository.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -26,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application-test.properties")
+@Import(EntitiesTestFactory.class)
 public class AuthControllerTest {
 
     @Autowired
@@ -35,24 +37,24 @@ public class AuthControllerTest {
     private UserRepository userRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
     private ObjectMapper objectMapper;
 
-    @Value("${app.test.email}") 
-    private String testEmail;   
+    @Value("${app.test.email}")
+    private String testEmail;
 
-    @Value("${app.test.password}") 
-    private String testPassword;   
+    @Value("${app.test.password}")
+    private String testPassword;
 
-    @Value("${app.test.firstname}") 
-    private String testFirstName;   
+    @Value("${app.test.firstname}")
+    private String testFirstName;
 
-    @Value("${app.test.lastname}") 
-    private String testLastName;   
+    @Value("${app.test.lastname}")
+    private String testLastName;
 
-    @BeforeEach
+    @Autowired
+    private EntitiesTestFactory entitiesTestFactory;
+
+    @AfterEach
     void setUp() {
         userRepository.deleteAll();
     }
@@ -74,7 +76,7 @@ public class AuthControllerTest {
 
     @Test
     void registerUser_DuplicateEmail() throws Exception {
-        this.createAndSaveUser(false);
+        entitiesTestFactory.createAndSaveUser(false);
 
         SignupRequest signupRequest = new SignupRequest();
         signupRequest.setEmail(testEmail);
@@ -91,7 +93,7 @@ public class AuthControllerTest {
 
     @Test
     void loginUser_Success() throws Exception {
-        this.createAndSaveUser(false);
+        entitiesTestFactory.createAndSaveUser(false);
 
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setEmail(testEmail);
@@ -111,7 +113,7 @@ public class AuthControllerTest {
 
     @Test
     void loginUser_WrongPassword() throws Exception {
-        this.createAndSaveUser(false);
+        entitiesTestFactory.createAndSaveUser(false);
 
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setEmail(testEmail);
@@ -134,10 +136,4 @@ public class AuthControllerTest {
                 .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isUnauthorized());
     }
-
-
-    private void createAndSaveUser(boolean isAdmin){
-        User user = new User(testEmail, testLastName, testFirstName, passwordEncoder.encode(testPassword), isAdmin);
-        userRepository.save(user);
-    }
-} 
+}
