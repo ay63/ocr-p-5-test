@@ -60,7 +60,6 @@ public class UserRepositoryTest {
 
     @Test
     void existsByEmail_ShouldReturnFalse_WhenUserDoesNotExist() {
-
         assertThat(userRepository.existsByEmail("nonexistent@test.com")).isFalse();
     }
 } 
