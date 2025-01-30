@@ -1,8 +1,11 @@
 package com.openclassrooms.starterjwt.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import org.junit.jupiter.api.BeforeEach;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,6 +36,20 @@ class TeacherMapperTest {
     }
 
     @Test
+    void teacherToDto_WhenDtoIsNull_ShouldReturnNull() {
+        Teacher teacher = null;
+        TeacherDto result = teacherMapper.toDto(teacher);
+        assertNull(result); 
+    }
+
+    @Test
+    void teachersListToDto_WhenDtoIsNull_ShouldReturnNull() {
+        List<Teacher> teachers = null;
+        List<TeacherDto> result = teacherMapper.toDto(teachers);
+        assertNull(result); 
+    }
+
+    @Test
     void teacherToEntity_ShouldMapAllFields() {
 
        TeacherDto teacherDto = new TeacherDto();
@@ -46,6 +63,44 @@ class TeacherMapperTest {
         assertThat(teacher.getLastName()).isEqualTo(teacherDto.getLastName());
         assertThat(teacher.getFirstName()).isEqualTo(teacherDto.getFirstName());
     }
+
+    
+    @Test
+void teacherToEntity_WhenDtoIsNull_ShouldReturnNull() {
+        TeacherDto dto = null;
+        Teacher result = teacherMapper.toEntity(dto);
+        assertNull(result); 
+    }
+
+    @Test
+    void teachersListToEntity_WhenDtoIsNull_ShouldReturnNull() {
+        List<TeacherDto> dtos = null;
+        List<Teacher> result = teacherMapper.toEntity(dtos);
+        assertNull(result); 
+    }
+
+
+    @Test
+    void teachersToEntity_ShouldReturnListOfTeacher() 
+    {
+        TeacherDto teacherDto = new TeacherDto();
+        teacherDto.setId(1L);
+        teacherDto.setLastName("Doe");
+        teacherDto.setFirstName("John");
+
+        TeacherDto teacherDto2 = new TeacherDto();
+        teacherDto.setId(2L);
+        teacherDto.setLastName("Doe 2");
+        teacherDto.setFirstName("John 2 ");
+
+        List<TeacherDto> teachersDto = Arrays.asList(teacherDto, teacherDto2);
+
+        List<Teacher> teachers = teacherMapper.toEntity(teachersDto);
+        
+        assertThat(teachers).isNotNull();
+    }
+
+
 
 
 } 

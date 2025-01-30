@@ -15,6 +15,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -31,6 +33,7 @@ class SessionMapperTest {
     private UserService userService;
 
     private Session session;
+    private Session session2;
     private Teacher teacher;
     private User user1;
     private User user2;
@@ -43,6 +46,14 @@ class SessionMapperTest {
         session.setName("Yoga Session");
         session.setDescription("Beginner friendly yoga");
         session.setDate(new Date());
+
+
+        session2 = new Session();
+        session2.setId(1L);
+        session2.setName("Yoga session2");
+        session2.setDescription("Beginner friendly yoga");
+        session2.setDate(new Date());
+
 
         teacher = new Teacher();
         teacher.setId(1L);
@@ -84,6 +95,24 @@ class SessionMapperTest {
         verify(userService).findById(2L);
     }
 
+
+    
+    @Test
+    void sessionToDto_WhenDtoIsNull_ShouldReturnNull() {
+        Session session  = null;
+        SessionDto result = sessionMapper.toDto(session);
+        assertNull(result); 
+    }
+
+    @Test
+    void sessionsListToDto_WhenDtoIsNull_ShouldReturnNull() {
+        List<Session> sessions = null;
+        List<SessionDto> result = sessionMapper.toDto(sessions);
+        assertNull(result); 
+    }
+
+
+
     @Test
     void sessionToDto_ShouldMapAllFields() {
         assertEquals(session.getId(), sessionDto.getId());
@@ -95,6 +124,21 @@ class SessionMapperTest {
 
         assertTrue(sessionDto.getUsers().contains(1L));
         assertTrue(sessionDto.getUsers().contains(2L));
+    }
+
+
+    @Test
+    void sessionToEntity_WhenDtoIsNull_ShouldReturnNull() {
+        SessionDto dto = null;
+        Session result = sessionMapper.toEntity(dto);
+        assertNull(result); 
+    }
+
+    @Test
+    void sessionsListToEntity_WhenDtoIsNull_ShouldReturnNull() {
+        List<SessionDto> dtos = null;
+        List<Session> result = sessionMapper.toEntity(dtos);
+        assertNull(result); 
     }
 
 }
