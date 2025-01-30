@@ -127,4 +127,26 @@ class UserDetailsServiceImplTest {
         assertFalse(userDetails1.equals(new Object())); 
     }
 
+    @Test
+    public void testBuilderToString() {
+        String builderString = UserDetailsImpl.builder()
+            .id(1L)
+            .username("testUser")
+            .firstName("John")
+            .lastName("Doe")
+            .admin(true)
+            .password("password123")
+            .toString();
+        
+        assertNotNull(builderString);
+        
+        assertTrue(builderString.contains("UserDetailsImpl.UserDetailsImplBuilder"));
+        assertTrue(builderString.contains("id=1"));
+        assertTrue(builderString.contains("username=testUser"));
+        assertTrue(builderString.contains("firstName=John"));
+        assertTrue(builderString.contains("lastName=Doe"));
+        assertTrue(builderString.contains("admin=true"));
+        assertTrue(builderString.contains("password=password123"));
+    }
+
 }

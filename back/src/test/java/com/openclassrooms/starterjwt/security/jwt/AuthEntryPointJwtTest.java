@@ -32,7 +32,6 @@ public class AuthEntryPointJwtTest {
     @Mock
     private AuthenticationException authException;
 
-    
     @BeforeEach
     void setUp() {
         request = new MockHttpServletRequest();

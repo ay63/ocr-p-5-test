@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 class TeacherTest {
 
     @Test
-    void testTeacherBuilder() {
+    void testBuilder() {
         LocalDateTime now = LocalDateTime.now();
         Teacher teacher = Teacher.builder()
                 .id(1L)
@@ -26,7 +26,7 @@ class TeacherTest {
     }
 
     @Test
-    void testTeacherSettersAndGetters() {
+    void testSettersAndGetters() {
         Teacher teacher = new Teacher();
         LocalDateTime now = LocalDateTime.now();
 

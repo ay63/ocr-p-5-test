@@ -1,19 +1,19 @@
 package com.openclassrooms.starterjwt.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.openclassrooms.starterjwt.factory.EntitiesTestFactory;
+import com.openclassrooms.starterjwt.models.User;
 import com.openclassrooms.starterjwt.payload.request.LoginRequest;
 import com.openclassrooms.starterjwt.payload.request.SignupRequest;
 import com.openclassrooms.starterjwt.repository.UserRepository;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -21,13 +21,13 @@ import org.springframework.test.context.TestPropertySource;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application-test.properties")
-@Import(EntitiesTestFactory.class)
 public class AuthControllerTest {
 
     @Autowired
@@ -51,22 +51,36 @@ public class AuthControllerTest {
     @Value("${app.test.lastname}")
     private String testLastName;
 
+    @Value("${app.test.admin.email}")
+    private String testAdminEmail;
+
+    @Value("${app.test.admin.password}")
+    private String testAdminPassword;
+
+    @Value("${app.test.admin.firstname}")
+    private String testAdminFirstName;
+
+    @Value("${app.test.admin.lastname}")
+    private String testAdminLastName;
+
     @Autowired
-    private EntitiesTestFactory entitiesTestFactory;
+    private PasswordEncoder passwordEncoder;
 
-    @AfterEach
-    void setUp() {
-        userRepository.deleteAll();
-    }
+    private SignupRequest signupRequest;
 
-    @Test
-    void registerUser_Success() throws Exception {
-        SignupRequest signupRequest = new SignupRequest();
+    @BeforeEach
+    void init() {
+        signupRequest = new SignupRequest();
         signupRequest.setEmail(testEmail);
         signupRequest.setPassword(testPassword);
         signupRequest.setFirstName(testFirstName);
         signupRequest.setLastName(testLastName);
+    }
 
+
+    
+    @Test
+    void registerUser_WhenSignupRequestIsValid_ShouldSuccessed() throws Exception {
         mockMvc.perform(post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(signupRequest)))
@@ -75,29 +89,21 @@ public class AuthControllerTest {
     }
 
     @Test
-    void registerUser_DuplicateEmail() throws Exception {
-        entitiesTestFactory.createAndSaveUser(false);
-
-        SignupRequest signupRequest = new SignupRequest();
-        signupRequest.setEmail(testEmail);
-        signupRequest.setPassword(testPassword);
-        signupRequest.setFirstName(testFirstName);
-        signupRequest.setLastName(testLastName);
-
+    void registerUser_ShouldFailed_WhenDuplicateEmail() throws Exception {
         mockMvc.perform(post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(signupRequest)))
                 .andExpect(status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.content().string("{\"message\":\"Error: Email is already taken!\"}"));
+
+                userRepository.deleteAll();
     }
 
     @Test
-    void loginUser_Success() throws Exception {
-        entitiesTestFactory.createAndSaveUser(false);
-
+    void loginAdminUser_WhenCredentialsAreValid_ShouldSuccessed() throws Exception {
         LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setEmail(testEmail);
-        loginRequest.setPassword(testPassword);
+        loginRequest.setEmail(testAdminEmail);
+        loginRequest.setPassword(testAdminPassword);
 
         mockMvc.perform(post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -105,15 +111,19 @@ public class AuthControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").exists())
                 .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.firstName").value(testFirstName))
-                .andExpect(jsonPath("$.lastName").value(testLastName))
+                .andExpect(jsonPath("$.firstName").value(testAdminFirstName))
+                .andExpect(jsonPath("$.lastName").value(testAdminLastName))
                 .andExpect(jsonPath("$.username").exists())
-                .andExpect(jsonPath("$.admin").value(false));
+                .andExpect(jsonPath("$.admin").value(true));
     }
 
     @Test
-    void loginUser_WrongPassword() throws Exception {
-        entitiesTestFactory.createAndSaveUser(false);
+    void loginUser_WhenWrongPassword_ShouldReturn401() throws Exception {
+
+        User user = new User(testEmail, testLastName, testFirstName,
+                passwordEncoder.encode(testPassword), false);
+        
+        userRepository.save(user);
 
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setEmail(testEmail);
@@ -126,7 +136,7 @@ public class AuthControllerTest {
     }
 
     @Test
-    void loginUser_NonExistentEmail() throws Exception {
+    void loginUser_WhenEmailDoesntExist_ShouldReturn401() throws Exception {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setEmail("nonexistent@test.com");
         loginRequest.setPassword(testPassword);
@@ -136,4 +146,5 @@ public class AuthControllerTest {
                 .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isUnauthorized());
     }
+
 }

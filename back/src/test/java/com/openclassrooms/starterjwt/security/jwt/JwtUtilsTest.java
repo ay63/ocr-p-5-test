@@ -86,7 +86,6 @@ public class JwtUtilsTest {
     @Test
     void validateJwtToken_ShouldReturnFalse_WhenTokenIsEmpty() {
         boolean isValid = jwtUtils.validateJwtToken("");
-
         assertFalse(isValid);
     }
 

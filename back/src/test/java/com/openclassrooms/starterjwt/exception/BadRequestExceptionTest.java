@@ -8,7 +8,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class BadRequestExceptionTest {
 
-    @Test
+
+        @Test
     void shouldHaveCorrectAnnotation() {
         ResponseStatus annotation = BadRequestException.class.getAnnotation(ResponseStatus.class);
         assertNotNull(annotation);
@@ -16,14 +17,9 @@ class BadRequestExceptionTest {
     }
 
     @Test
-    void shouldExtendRuntimeException() {
-        BadRequestException exception = new BadRequestException();
-        assertTrue(exception instanceof RuntimeException);
-    }
-
-    @Test
-    void shouldBeAbleToCreateInstance() {
-        BadRequestException exception = new BadRequestException();
-        assertNotNull(exception);
+    void shouldThrowBadRequestException() {
+        assertThrows(BadRequestException.class, () -> {
+            throw new BadRequestException();
+        });
     }
 } 

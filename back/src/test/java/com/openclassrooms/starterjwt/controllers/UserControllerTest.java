@@ -1,6 +1,5 @@
 package com.openclassrooms.starterjwt.controllers;
 
-import com.openclassrooms.starterjwt.models.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,59 +26,53 @@ class UserControllerTest {
     private String email;
 
     @Test
-    @WithMockUser(username = "yoga@studio.com")
+    @WithMockUser(username = "john.doe@studio.com")
     void findById_ExistingUser_ShouldReturnUser() throws Exception {
-        User user = new User();
-        user.setId(1L);
-        user.setEmail(email);
-        user.setFirstName("Admin");
-        user.setLastName("Admin");
-        user.setPassword("password");
 
-        mockMvc.perform(get("/api/user/1"))
+        mockMvc.perform(get("/api/user/2"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value(email))
-                .andExpect(jsonPath("$.firstName").value("Admin"))
-                .andExpect(jsonPath("$.lastName").value("Admin"));
+                .andExpect(jsonPath("$.firstName").value("John"))
+                .andExpect(jsonPath("$.lastName").value("Doe"));
     }
 
     @Test
-    @WithMockUser(username = "yoga@studio.com")
+    @WithMockUser(username = "john.doe@studio.com")
     void findById_NonExistingUser_ShouldReturn404() throws Exception {
         mockMvc.perform(get("/api/user/999"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    @WithMockUser(username = "yoga@studio.com")
+    @WithMockUser(username = "john.doe@studio.com")
     void findById_InvalidId_ShouldReturn400() throws Exception {
         mockMvc.perform(get("/api/user/invalid"))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    @WithMockUser(username = "yoga@studio.com")
+    @WithMockUser(username = "john.doe@studio.com")
     void deleteUser_OwnAccount_ShouldSucceed() throws Exception {
-        mockMvc.perform(delete("/api/user/1"))
+        mockMvc.perform(delete("/api/user/2"))
                 .andExpect(status().isOk());
     }
 
     @Test
     @WithMockUser(username = "other@test.com")
     void deleteUser_OtherUserAccount_ShouldReturn401() throws Exception {
-        mockMvc.perform(delete("/api/user/1"))
+        mockMvc.perform(delete("/api/user/2"))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    @WithMockUser(username = "yoga@studio.com")
+    @WithMockUser(username = "john.doe@studio.com")
     void deleteUser_NonExistingUser_ShouldReturn404() throws Exception {
         mockMvc.perform(delete("/api/user/999"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    @WithMockUser(username = "yoga@studio.com")
+    @WithMockUser(username = "john.doe@studio.com")
     void deleteUser_InvalidId_ShouldReturn400() throws Exception {
         mockMvc.perform(delete("/api/user/invalid"))
                 .andExpect(status().isBadRequest());
