@@ -78,4 +78,53 @@ class UserDetailsServiceImplTest {
 
         assertEquals("User Not Found with email: null", exception.getMessage());
     }
+
+    @Test
+    void testEquals_ShouldCompareUsersCorrectly() {
+        User user1 = new User();
+        user1.setId(1L);
+        user1.setEmail("test@test.com");
+        user1.setPassword("password");
+        user1.setAdmin(false);
+        user1.setFirstName("firstName");
+        user1.setLastName("lastName");
+        UserDetailsImpl userDetails1 = UserDetailsImpl.builder()
+                .id(user1.getId())
+                .username(user1.getEmail())
+                .password(user1.getPassword())
+                .admin(user1.isAdmin())
+                .firstName(user1.getFirstName())
+                .lastName(user1.getLastName())
+                .build();
+
+        
+        User user2 = new User();
+        user2.setId(1L);
+        user2.setEmail("different@test.com"); 
+        user2.setPassword("different");
+        UserDetailsImpl userDetails2 = UserDetailsImpl.builder()
+                .id(user2.getId())
+                .username(user2.getEmail())
+                .password(user2.getPassword())
+                .build();
+
+     
+        User user3 = new User();
+        user3.setId(2L);
+        user3.setEmail("test@test.com");
+        user3.setPassword("password");
+        UserDetailsImpl userDetails3 = UserDetailsImpl.builder()
+                .id(user3.getId())
+                .username(user3.getEmail())
+                .password(user3.getPassword())
+                .build();
+
+
+        assertTrue(userDetails1.equals(userDetails1)); 
+        assertTrue(userDetails1.equals(userDetails2));
+        assertFalse(userDetails1.equals(userDetails3)); 
+        assertFalse(userDetails1.equals(null)); 
+        assertFalse(userDetails1.equals(new Object())); 
+    }
+
 }
