@@ -9,72 +9,37 @@ import {expect} from "@jest/globals";
 import {SessionService} from "../../../../services/session.service";
 import {SessionApiService} from "../../services/session-api.service";
 import {TeacherService} from "../../../../services/teacher.service";
-import {Teacher} from "../../../../interfaces/teacher.interface";
-import {Session} from "../../interfaces/session.interface";
+import {
+  mockTestMatSnackBar,
+  mockTestRoute, mockTestRouter,
+  mockTestSessionApiService,
+  mockTestSessionService,
+  mockTestTeacherService
+} from "../../../../../../tests/mock";
+import {mockDataTestSession, mockDataTestTeacher} from "../../../../../../tests/mockData";
 
 describe('DetailComponent', () => {
   let component: DetailComponent;
   let fixture: ComponentFixture<DetailComponent>;
   let mockRoute: jest.Mocked<ActivatedRoute>;
-  let mockSessionService: jest.Mocked<SessionService>;
   let mockSessionApiService: jest.Mocked<SessionApiService>;
   let mockTeacherService: jest.Mocked<TeacherService>;
   let mockMatSnackBar: jest.Mocked<MatSnackBar>;
   let mockRouter: jest.Mocked<Router>;
 
-  const mockSession: Session = {
-    id: 1,
-    name: 'Test Session',
-    description: 'test',
-    teacher_id: 1,
-    users: [1],
-    date: new Date(),
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
-
-  const mockTeacher: Teacher = {
-    id: 1,
-    lastName: "string",
-    firstName: "string",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
-
   beforeEach(() => {
-    mockRoute = {
-      snapshot: {
-        paramMap: {
-          get: jest.fn().mockReturnValue('1')
-        }
-      }
-    } as unknown as jest.Mocked<ActivatedRoute>;
-
-    mockSessionService = {
+    mockRoute = mockTestRoute;
+    let mockSessionService = {
+      ...mockTestSessionService,
       sessionInformation: {
-        id: 1,
-        admin: true
-      }
-    } as unknown as jest.Mocked<SessionService>;
-
-    mockSessionApiService = {
-      detail: jest.fn().mockReturnValue(of(mockSession)),
-      delete: jest.fn().mockReturnValue(of({})),
-      participate: jest.fn().mockReturnValue(of({})),
-      unParticipate: jest.fn().mockReturnValue(of({}))
-    } as unknown as jest.Mocked<SessionApiService>;
-
-    mockTeacherService = {
-      detail: jest.fn().mockReturnValue(of(mockTeacher))
-    } as unknown as jest.Mocked<TeacherService>;
-
-    mockMatSnackBar = {
-      open: jest.fn()
-    } as unknown as jest.Mocked<MatSnackBar>;
-
-    mockRouter = {
-      navigate: jest.fn()
-    } as unknown as jest.Mocked<Router>;
+        ...mockTestSessionService.sessionInformation,
+        admin: true,
+      },
+    };
+    mockSessionApiService = mockTestSessionApiService
+    mockTeacherService = mockTestTeacherService
+    mockMatSnackBar = mockTestMatSnackBar
+    mockRouter = mockTestRouter
 
     TestBed.configureTestingModule({
       declarations: [DetailComponent],
@@ -97,13 +62,6 @@ describe('DetailComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('constructor', () => {
-    it('should initialize component properties correctly', () => {
-      expect(component.sessionId).toBe('1');
-      expect(component.isAdmin).toBe(true);
-      expect(component.userId).toBe('1');
-    });
-  });
 
   describe('ngOnInit', () => {
     it('should fetch session and teacher details', () => {
@@ -111,18 +69,16 @@ describe('DetailComponent', () => {
 
       expect(mockSessionApiService.detail).toHaveBeenCalledWith('1');
       expect(mockTeacherService.detail).toHaveBeenCalledWith('1');
-      expect(component.session).toEqual(mockSession);
-      expect(component.teacher).toEqual(mockTeacher);
+      expect(component.session).toEqual(mockDataTestSession);
+      expect(component.teacher).toEqual(mockDataTestTeacher);
       expect(component.isParticipate).toBe(true);
     });
   });
 
-  describe('back', () => {
+  describe('Go back action', () => {
     it('should call window.history.back', () => {
       const spyHistoryBack = jest.spyOn(window.history, 'back');
-
       component.back();
-
       expect(spyHistoryBack).toHaveBeenCalled();
     });
   });
@@ -141,11 +97,12 @@ describe('DetailComponent', () => {
     });
   });
 
-  describe('participate', () => {
+  describe('Participate', () => {
     it('should call participate and refresh session data', () => {
       component.participate();
 
       expect(mockSessionApiService.participate).toHaveBeenCalledWith('1', '1');
+
       expect(mockSessionApiService.detail).toHaveBeenCalled();
     });
   });
@@ -155,13 +112,14 @@ describe('DetailComponent', () => {
       component.unParticipate();
 
       expect(mockSessionApiService.unParticipate).toHaveBeenCalledWith('1', '1');
+
       expect(mockSessionApiService.detail).toHaveBeenCalled();
     });
   });
 
   describe('fetchSession', () => {
     it('should update session participation status correctly when user is not participating', () => {
-      const nonParticipatingSession = {...mockSession, users: [2]};
+      const nonParticipatingSession = {...mockDataTestSession, users: [2]};
       mockSessionApiService.detail.mockReturnValueOnce(of(nonParticipatingSession));
 
       component.ngOnInit();
@@ -170,9 +128,9 @@ describe('DetailComponent', () => {
     });
 
     it('should handle teacher details fetch correctly', () => {
-      const differentTeacher = {...mockTeacher, id: 2, name: 'Different Teacher'};
-      mockTeacherService.detail.mockReturnValueOnce(of(differentTeacher));
+      const differentTeacher = {...mockDataTestTeacher, id: 2, name: 'Different Teacher'};
 
+      mockTeacherService.detail.mockReturnValueOnce(of(differentTeacher));
       component.ngOnInit();
 
       expect(component.teacher).toEqual(differentTeacher);

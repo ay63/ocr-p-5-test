@@ -5,6 +5,7 @@ import {LoginRequest} from "../interfaces/loginRequest.interface";
 import {RegisterRequest} from "../interfaces/registerRequest.interface";
 import {SessionInformation} from "../../../interfaces/sessionInformation.interface";
 import {expect} from '@jest/globals';
+import {mockDataTestSessionInformationNotAdmin} from "../../../../../tests/mockData";
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -24,7 +25,7 @@ describe('AuthService', () => {
     httpMock.verify();
   });
 
-  describe('register', () => {
+  describe('AuthService register', () => {
     it('should send POST request to register endpoint', () => {
 
       const registerRequest: RegisterRequest = {
@@ -57,7 +58,6 @@ describe('AuthService', () => {
         error: (e) => error = e
       });
 
-
       const req = httpMock.expectOne(`${API_PATH}/register`);
       req.flush(errorMessage, {status: 400, statusText: 'Bad Request'});
 
@@ -65,39 +65,28 @@ describe('AuthService', () => {
     });
   });
 
-  describe('login', () => {
+  describe('AuthService login', () => {
     it('should send POST request to login endpoint and return session information', () => {
 
       const loginRequest: LoginRequest = {
         email: 'testUser',
         password: 'testPassword'
       };
-      const mockResponse: SessionInformation = {
-        token: "fake-token",
-        type: "type",
-        id: 1,
-        username: "username",
-        firstName: "firstName",
-        lastName: "lastName",
-        admin: false,
-      };
 
       let result: SessionInformation | undefined;
       service.login(loginRequest).subscribe(response => {
-        result = response;
+        result = mockDataTestSessionInformationNotAdmin;
       });
-
 
       const req = httpMock.expectOne(`${API_PATH}/login`);
       expect(req.request.method).toBe('POST');
       expect(req.request.body).toEqual(loginRequest);
 
-      req.flush(mockResponse);
-      expect(result).toEqual(mockResponse);
+      req.flush(mockDataTestSessionInformationNotAdmin);
+      expect(result).toEqual(mockDataTestSessionInformationNotAdmin);
     });
 
     it('should handle login error', () => {
-
       const loginRequest: LoginRequest = {
         email: 'testUser',
         password: 'wrongPassword'

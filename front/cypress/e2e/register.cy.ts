@@ -1,3 +1,5 @@
+import * as http from "node:http";
+
 const fakeEmail = `email${Math.random()}@gmail.com`
 const fakePassword = 'test!1234'
 
@@ -5,9 +7,19 @@ beforeEach(() => {
     cy.visit('/register')
 })
 
-describe('register functionality', () => {
+describe('Register functionality', () => {
 
     it('register successful', () => {
+      cy.intercept('POST', '/api/auth/register', {
+        body: {
+          email: fakeEmail,
+          password: fakePassword,
+          firstName: "firstName",
+          lastName: "lastName"
+        },
+        statusCode: 200
+      })
+
         cy.getByDataCy("firstName").type("firstName")
         cy.getByDataCy("lastName").type("lastName")
         cy.getByDataCy("email").type(fakeEmail)
@@ -16,8 +28,16 @@ describe('register functionality', () => {
         cy.url().should('include', '/login')
     })
 
-    it('Should register user login', () => {
+    it('should register user login', () => {
         cy.visit('/login')
+
+        cy.intercept('POST', '/auth/login', {
+           body: {
+            email: fakeEmail,
+            password: fakePassword
+           },
+          statusCode: 200
+        })
 
         cy.get('input[formcontrolname=email]').type(fakeEmail)
         cy.get('input[formcontrolname=password]').type(`${fakePassword}{enter}{enter}`)
@@ -46,10 +66,11 @@ describe('register failed form', () => {
         cy.getByDataCy("firstName").type("firstName")
         cy.getByDataCy("lastName").type("lastName")
         cy.getByDataCy("password").type(`${fakePassword}{enter}{enter}`)
-
         cy.getByDataCy("email").type('invalid-email')
         cy.getByDataCy("email").should('have.class', 'ng-invalid')
+
         cy.get('form').submit()
+
         cy.get('.error').should('exist')
     })
 
@@ -57,9 +78,10 @@ describe('register failed form', () => {
         cy.getByDataCy("lastName").type("lastName")
         cy.getByDataCy("email").type(fakeEmail)
         cy.getByDataCy("password").type(`${fakePassword}{enter}{enter}`)
-
         cy.getByDataCy("firstName").type("er")
+
         cy.get('form').submit()
+
         cy.get('.error').should('exist')
     })
 
@@ -70,6 +92,7 @@ describe('register failed form', () => {
         cy.getByDataCy("firstName").type("a".repeat(21))
 
         cy.get('form').submit()
+
         cy.get('.error').should('exist')
     })
 
@@ -115,6 +138,7 @@ describe('register failed form', () => {
         cy.getByDataCy("password").type('a'.repeat(41))
 
         cy.get('form').submit()
+
         cy.get('.error').should('exist')
     })
 })

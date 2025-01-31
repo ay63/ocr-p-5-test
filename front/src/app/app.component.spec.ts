@@ -58,24 +58,20 @@ describe('AppComponent', () => {
     expect(mockRouter.navigate).toBeCalledWith(['']);
   })
 
-  describe('$isLogged', () => {
-    it('should return the isLogged observable from SessionService', (done) => {
-
+  describe('Test $isLogged observable', () => {
+    it('should return the isLogged observable from SessionService', () => {
       mockSessionService.$isLogged.mockReturnValue(of(true));
-
       app.$isLogged().subscribe(isLogged => {
         expect(isLogged).toBeTruthy();
         expect(mockSessionService.$isLogged).toHaveBeenCalled();
-        done();
       });
     });
 
-    it('should handle false value correctly', (done) => {
+    it('should handle false value correctly', () => {
       mockSessionService.$isLogged.mockReturnValue(of(false));
       app.$isLogged().subscribe(isLogged => {
         expect(isLogged).toBeFalsy();
         expect(mockSessionService.$isLogged).toHaveBeenCalled();
-        done();
       });
     });
   });

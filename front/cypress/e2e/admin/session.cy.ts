@@ -26,35 +26,17 @@ describe('Admin session', () => {
       statusCode: 200
     })
 
-    cy.get('[data-cy^="detail-session-"]').first().then((btn) => {
-      const dataCy = btn.attr('data-cy');
-      const match = dataCy.match(/detail-session-(\d+)/);
-
-      if (match) {
-        const id = match[1];
-        cy.wrap(btn).click();
-        cy.url().should('include', `/detail/${id}`);
-        cy.get(`[data-cy="delete-${id}"]`).click();
-      }
-    });
-
+    cy.getByDataCy("detail-session-1").click()
+    cy.getByDataCy("delete-1").click();
+    cy.url().should('include', '/detail/1');
   })
 
   it('Should be able to update a session', () => {
-    cy.get('[data-cy^="edit-session-"]').first().then((btn) => {
-      const dataCy = btn.attr('data-cy');
-      const match = dataCy.match(/edit-session-(\d+)/);
-
-      if (match) {
-        const id = match[1];
-        cy.wrap(btn).click();
-        cy.url().should('include', `/update/${id}`);
-        cy.getByDataCy("description").clear()
-        cy.getByDataCy("description").type("update description");
-        cy.getByDataCy("saveBtn").click()
-      }
-    });
-
+    cy.getByDataCy("edit-session-1").click();
+    cy.url().should('include', `/update/1`);
+    cy.getByDataCy("description").clear()
+    cy.getByDataCy("description").type("update description");
+    cy.getByDataCy("saveBtn").click()
     cy.url().should('include', '/sessions')
   })
 
