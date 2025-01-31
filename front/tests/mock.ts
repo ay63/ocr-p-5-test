@@ -2,17 +2,12 @@ import {of} from 'rxjs';
 import {jest} from '@jest/globals';
 import {ActivatedRoute, Router} from '@angular/router';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {SessionService} from "../app/services/session.service";
-import {UserService} from "../app/services/user.service";
-import {User} from "../app/interfaces/user.interface";
-import {AuthService} from "../app/features/auth/services/auth.service";
-import {Session} from "../app/features/sessions/interfaces/session.interface";
-import {Teacher} from "../app/interfaces/teacher.interface";
-import {SessionApiService} from "../app/features/sessions/services/session-api.service";
-import {TeacherService} from "../app/services/teacher.service";
-import {SessionInformation} from "../app/interfaces/sessionInformation.interface";
+import {SessionService} from "../src/app/services/session.service";
+import {UserService} from "../src/app/services/user.service";
+import {AuthService} from "../src/app/features/auth/services/auth.service";
+import {SessionApiService} from "../src/app/features/sessions/services/session-api.service";
+import {TeacherService} from "../src/app/services/teacher.service";
 import {mockDataTestSession, mockDataTestTeacher, mockDataTestUserNotAdmin} from "./mockData";
-
 
 export const mockTestRouter: jest.Mocked<Router> = {
     navigate: jest.fn(),

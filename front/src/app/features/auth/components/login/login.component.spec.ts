@@ -17,8 +17,8 @@ import {Router} from "@angular/router";
 import {
   authTestServiceMock,
   mockTestRouter
-} from "../../../../../tests/mock";
-import {mockDataTestSessionInformation} from "../../../../../tests/mockData";
+} from "../../../../../../tests/mock";
+import {mockDataTestSessionInformationNotAdmin} from "../../../../../../tests/mockData";
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
@@ -46,8 +46,8 @@ describe('LoginComponent', () => {
         MatIconModule,
         MatFormFieldModule,
         MatInputModule,
-        ReactiveFormsModule]
-
+        ReactiveFormsModule
+      ]
     })
       .compileComponents();
     fixture = TestBed.createComponent(LoginComponent);
@@ -59,8 +59,8 @@ describe('LoginComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should redirect to /sessions after successful submit', () => {
-    authServiceMock.login.mockReturnValue(of(mockDataTestSessionInformation));
+  it('should redirect to "/sessions" after successful submit', () => {
+    authServiceMock.login.mockReturnValue(of(mockDataTestSessionInformationNotAdmin));
 
     const formValue: LoginRequest = {
       email: 'test@example.com',

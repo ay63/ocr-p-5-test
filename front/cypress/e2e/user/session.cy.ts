@@ -17,7 +17,7 @@ describe('User', () => {
         users: [1],
       },
       statusCode: 200,
-    }).as('addParcipate');
+    }).as('addParticipate');
 
     cy.getByDataCy('detail-session-1').click();
     cy.getByDataCy('unparticipate-1').should('be.visible');

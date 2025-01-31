@@ -125,7 +125,7 @@ describe('FormComponent', () => {
 
   });
 
-  describe('submit', () => {
+  describe('Submit action', () => {
     beforeEach(() => {
       component.ngOnInit();
       fixture.detectChanges();

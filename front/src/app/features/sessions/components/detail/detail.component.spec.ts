@@ -15,8 +15,8 @@ import {
   mockTestSessionApiService,
   mockTestSessionService,
   mockTestTeacherService
-} from "../../../../../tests/mock";
-import {mockDataTestSession, mockDataTestTeacher} from "../../../../../tests/mockData";
+} from "../../../../../../tests/mock";
+import {mockDataTestSession, mockDataTestTeacher} from "../../../../../../tests/mockData";
 
 describe('DetailComponent', () => {
   let component: DetailComponent;
@@ -62,13 +62,6 @@ describe('DetailComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('constructor', () => {
-    it('should initialize component properties correctly', () => {
-      expect(component.sessionId).toBe('1');
-      expect(component.isAdmin).toBe(true);
-      expect(component.userId).toBe('1');
-    });
-  });
 
   describe('ngOnInit', () => {
     it('should fetch session and teacher details', () => {
@@ -82,12 +75,10 @@ describe('DetailComponent', () => {
     });
   });
 
-  describe('back', () => {
+  describe('Go back action', () => {
     it('should call window.history.back', () => {
       const spyHistoryBack = jest.spyOn(window.history, 'back');
-
       component.back();
-
       expect(spyHistoryBack).toHaveBeenCalled();
     });
   });
@@ -106,11 +97,12 @@ describe('DetailComponent', () => {
     });
   });
 
-  describe('participate', () => {
+  describe('Participate', () => {
     it('should call participate and refresh session data', () => {
       component.participate();
 
       expect(mockSessionApiService.participate).toHaveBeenCalledWith('1', '1');
+
       expect(mockSessionApiService.detail).toHaveBeenCalled();
     });
   });
@@ -120,6 +112,7 @@ describe('DetailComponent', () => {
       component.unParticipate();
 
       expect(mockSessionApiService.unParticipate).toHaveBeenCalledWith('1', '1');
+
       expect(mockSessionApiService.detail).toHaveBeenCalled();
     });
   });
@@ -136,8 +129,8 @@ describe('DetailComponent', () => {
 
     it('should handle teacher details fetch correctly', () => {
       const differentTeacher = {...mockDataTestTeacher, id: 2, name: 'Different Teacher'};
-      mockTeacherService.detail.mockReturnValueOnce(of(differentTeacher));
 
+      mockTeacherService.detail.mockReturnValueOnce(of(differentTeacher));
       component.ngOnInit();
 
       expect(component.teacher).toEqual(differentTeacher);

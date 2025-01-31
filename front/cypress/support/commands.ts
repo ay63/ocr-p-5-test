@@ -107,7 +107,7 @@ Cypress.Commands.add("initUserDataAndLoginIn", (admin: boolean = false) => {
   }).as('getSession')
 
 
-  cy.get('input[formcontrolname=email]').type(Cypress.env('adminEmail'));
-  cy.get('input[formcontrolname=password]').type(`${Cypress.env('adminPassword')}{enter}{enter}`)
+  cy.get('input[formcontrolname=email]').type('user@email.com');
+  cy.get('input[formcontrolname=password]').type('password{enter}{enter}')
   cy.url().should('include', '/sessions')
 })

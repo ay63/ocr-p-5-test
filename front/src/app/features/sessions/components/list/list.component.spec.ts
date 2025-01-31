@@ -12,12 +12,13 @@ import {By} from '@angular/platform-browser';
 import {expect} from "@jest/globals";
 import {
   mockTestSessionService,
-} from "../../../../../tests/mock";
+} from "../../../../../../tests/mock";
 import {
   mockDataTestSessionInformationIsAdmin,
   mockDataTestSessionInformationNotAdmin,
   mockDataTestSessions
-} from "../../../../../tests/mockData";
+} from "../../../../../../tests/mockData";
+import {fakeSessionDescription} from "../../../../../../tests/fakerData";
 
 describe('ListComponent', () => {
   let component: ListComponent;
@@ -76,7 +77,7 @@ describe('ListComponent', () => {
       const sessionDescriptions = fixture.debugElement.queryAll(By.css('mat-card-content p'));
 
       expect(sessionTitles[0].nativeElement.textContent).toContain('Session available');
-      expect(sessionDescriptions[0].nativeElement.textContent).toContain('Morning yoga session');
+      expect(sessionDescriptions[0].nativeElement.textContent).toContain(fakeSessionDescription);
     });
   });
 

@@ -4,23 +4,13 @@ import {expect} from '@jest/globals';
 
 import {UserService} from './user.service';
 import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
-import {Teacher} from "../interfaces/teacher.interface";
 import {User} from "../interfaces/user.interface";
+import {mockDataTestUserNotAdmin} from "../../../tests/mockData";
 
 describe('UserService', () => {
   let service: UserService;
   let httpMock: HttpTestingController;
   let id: string = "1";
-  let user: User = {
-    id: 1,
-    email: "string",
-    lastName: "string",
-    firstName: "string",
-    admin: false,
-    password: "string",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  }
   const API_PATH = 'api/user'
 
   beforeEach(() => {
@@ -42,16 +32,16 @@ describe('UserService', () => {
   });
 
   it('should get user by id', () => {
-    let result: User = user
+    let result: User = mockDataTestUserNotAdmin
     service.getById(id).subscribe(response => {
       result = response;
     });
     const req = httpMock.expectOne(`${API_PATH}/${id}`)
     expect(req.request.method).toBe('GET');
-    expect(result).toEqual(user)
+    expect(result).toEqual(mockDataTestUserNotAdmin)
   })
 
-  it('should handle error on  get user by id', () => {
+  it('should handle error on get user by id', () => {
     let error: any;
     service.getById(id).subscribe({
       error: (e) => error = e
@@ -63,13 +53,13 @@ describe('UserService', () => {
   })
 
   it('should delete user by id', () => {
-    let result: User = user
+    let result: User = mockDataTestUserNotAdmin
     service.delete(id).subscribe(response => {
       result = response;
     });
     const req = httpMock.expectOne(`${API_PATH}/${id}`)
     expect(req.request.method).toBe('DELETE');
-    expect(result).toEqual(user)
+    expect(result).toEqual(mockDataTestUserNotAdmin)
   })
 
   it('should handle error on delete user by id', () => {

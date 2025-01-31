@@ -12,11 +12,5 @@ export default defineConfig({
       return require('./cypress/plugins/index.ts').default(on, config)
     },
     baseUrl: 'http://localhost:4200',
-  },
-  env: {
-    adminEmail: 'yoga.admin@studio.com',
-    adminPassword: 'test!1234',
-    userEmail: 'yoga@studio.com',
-    userPassword: 'test!1234',
   }
 })

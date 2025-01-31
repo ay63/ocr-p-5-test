@@ -2,22 +2,10 @@ import {TestBed} from '@angular/core/testing';
 import {expect} from '@jest/globals';
 
 import {SessionService} from './session.service';
-import {SessionInformation} from "../interfaces/sessionInformation.interface";
+import {mockDataTestSessionInformationNotAdmin} from "../../../tests/mockData";
 
 describe('SessionService', () => {
   let service: SessionService;
-
-  const sessionInformation: SessionInformation = {
-    token: "token",
-    type: "Bearer",
-    id: 1,
-    username: "username",
-    firstName: "firstName",
-    lastName: "lastName",
-    admin: false,
-  }
-
-
   beforeEach(() => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(SessionService);
@@ -28,18 +16,18 @@ describe('SessionService', () => {
   });
 
 
-  it('should log in user', () => {
+  it('should sessionInformation must be defined and user login', () => {
+    service.logIn(mockDataTestSessionInformationNotAdmin)
 
-    service.logIn(sessionInformation)
     service.$isLogged().subscribe((isLogged) => {
       expect(isLogged).toBeTruthy();
     });
 
-    expect(sessionInformation).toEqual(sessionInformation);
+    expect(service.sessionInformation).toBeDefined();
   })
 
 
-  it('should log out user', () => {
+  it('should sessionInformation must be undefined and user logout', () => {
     service.logOut()
 
     service.$isLogged().subscribe((isLogged) => {
@@ -48,6 +36,4 @@ describe('SessionService', () => {
 
     expect(service.sessionInformation).toBeUndefined();
   })
-
-
 });

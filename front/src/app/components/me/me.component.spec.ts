@@ -12,8 +12,8 @@ import {
   mockTestRouter,
   mockTestSessionService,
   mockTestUserService
-} from "../../../tests/mock";
-import {mockDataTestUserIsAdmin, mockDataTestUserNotAdmin} from "../../../tests/mockData";
+} from "../../../../tests/mock";
+import {mockDataTestUserIsAdmin, mockDataTestUserNotAdmin} from "../../../../tests/mockData";
 
 describe('MeComponent', () => {
   let component: MeComponent;
@@ -38,15 +38,14 @@ describe('MeComponent', () => {
         { provide: MatSnackBar, useValue: mockMatSnackBar },
         { provide: UserService, useValue: mockUserService }
       ]
-    }).compileComponents();  // Compile the components
-
+    }).compileComponents();
     fixture = TestBed.createComponent(MeComponent);
     component = fixture.componentInstance;
     compiled = fixture.nativeElement;
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create component', () => {
     expect(component).toBeTruthy();
   });
 
@@ -58,15 +57,15 @@ describe('MeComponent', () => {
     });
   });
 
-  describe('data user', () => {
+  describe('Data user', () => {
     it('should display user information correctly', () => {
       expect(compiled.querySelector('h1')?.textContent).toContain('User information');
-      expect(compiled.querySelector('[data-cy="name"]')?.textContent).toContain('Name: John DOE');
-      expect(compiled.querySelector('[data-cy="email"]')?.textContent).toContain('Email: john.doe@fake.com');
+      expect(compiled.querySelector('[data-cy="name"]')?.textContent).toContain(`Name: ${mockDataTestUserNotAdmin.firstName} ${mockDataTestUserNotAdmin.lastName}`);
+      expect(compiled.querySelector('[data-cy="email"]')?.textContent).toContain(`Email: ${mockDataTestUserNotAdmin.email}`);
       expect(compiled.querySelector('[data-cy="deleteBtn"]')).toBeTruthy();
     });
 
-    it('should format dates correctly', () => {
+    it('should display dates correctly', () => {
       mockUserService.getById.mockReturnValue(of(mockDataTestUserNotAdmin));
       fixture.detectChanges();
 
@@ -80,14 +79,14 @@ describe('MeComponent', () => {
   });
 
   describe('Admin user detail', () => {
-    it('should display admin message if user is admin', () => {
+    it('should not display delete button for admin user', () => {
       mockUserService.getById.mockReturnValue(of(mockDataTestUserIsAdmin));
       component.ngOnInit();
       fixture.detectChanges();
       expect(compiled.querySelector('[data-cy="deleteBtn"]')).toBeFalsy();
     });
 
-    it('should display admin message if user is admin', () => {
+    it('should display admin message for admin user', () => {
       mockUserService.getById.mockReturnValue(of(mockDataTestUserIsAdmin));
 
       component.ngOnInit();
@@ -97,7 +96,7 @@ describe('MeComponent', () => {
     });
   });
 
-  describe('back', () => {
+  describe('Go back action', () => {
     it('should call window.history.back', () => {
       const spyHistoryBack = jest.spyOn(window.history, 'back');
       component.back();
@@ -105,7 +104,7 @@ describe('MeComponent', () => {
     });
   });
 
-  describe('delete', () => {
+  describe('Delete action', () => {
     it('should delete user account', () => {
       component.delete();
 

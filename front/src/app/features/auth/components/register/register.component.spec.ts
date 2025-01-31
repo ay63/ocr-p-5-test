@@ -6,7 +6,7 @@ import {RegisterComponent} from './register.component';
 import {AuthService} from '../../services/auth.service';
 import {expect} from '@jest/globals';
 import {RegisterRequest} from "../../interfaces/registerRequest.interface";
-import {authTestServiceMock, mockTestRouter} from "../../../../../tests/mock";
+import {authTestServiceMock, mockTestRouter} from "../../../../../../tests/mock";
 
 describe('RegisterComponent', () => {
   let component: RegisterComponent;
@@ -37,8 +37,8 @@ describe('RegisterComponent', () => {
   });
 
 
-  describe('register', () => {
-    it('should redirect to /login after successful submit', () => {
+  describe('Register action', () => {
+    it('should redirect to "/login" after successful submit', () => {
       authServiceMock.register.mockReturnValue(of(undefined));
       const formValue: RegisterRequest = {
         email: 'test@example.com',
@@ -64,11 +64,12 @@ describe('RegisterComponent', () => {
       });
 
       component.submit();
+
       expect(component.onError).toBe(true);
     });
   })
 
-  describe('form validation', () => {
+  describe('Form validation', () => {
     it('should require all fields', () => {
       expect(component.form.get('email')?.hasError('required')).toBeTruthy();
       expect(component.form.get('firstName')?.hasError('required')).toBeTruthy();
