@@ -31,7 +31,7 @@ class SessionMapperTest {
 
     @Mock
     private UserService userService;
-
+    
     private Session session;
     private Session session2;
     private Teacher teacher;
@@ -47,13 +47,11 @@ class SessionMapperTest {
         session.setDescription("Beginner friendly yoga");
         session.setDate(new Date());
 
-
         session2 = new Session();
         session2.setId(1L);
         session2.setName("Yoga session2");
         session2.setDescription("Beginner friendly yoga");
         session2.setDate(new Date());
-
 
         teacher = new Teacher();
         teacher.setId(1L);
@@ -66,9 +64,7 @@ class SessionMapperTest {
         user2.setId(2L);
 
         session.setUsers(Arrays.asList(user1, user2));
-
         sessionDto = sessionMapper.toDto(session);
-
     }
 
     @Test
@@ -81,21 +77,22 @@ class SessionMapperTest {
         Session result = sessionMapper.toEntity(sessionDto);
 
         assertNotNull(result);
-        assertEquals(sessionDto.getId(), result.getId());
-        assertEquals(sessionDto.getName(), result.getName());
-        assertEquals(sessionDto.getDescription(), result.getDescription());
-        assertEquals(sessionDto.getDate(), result.getDate());
-        assertEquals(teacher, result.getTeacher());
-        assertEquals(2, result.getUsers().size());
-        assertTrue(result.getUsers().contains(user1));
-        assertTrue(result.getUsers().contains(user2));
+
+        assertAll(() -> {
+            assertEquals(sessionDto.getId(), result.getId());
+            assertEquals(sessionDto.getName(), result.getName());
+            assertEquals(sessionDto.getDescription(), result.getDescription());
+            assertEquals(sessionDto.getDate(), result.getDate());
+            assertEquals(teacher, result.getTeacher());
+            assertEquals(2, result.getUsers().size());
+            assertTrue(result.getUsers().contains(user1));
+            assertTrue(result.getUsers().contains(user2));
+        });
 
         verify(teacherService).findById(1L);
         verify(userService).findById(1L);
         verify(userService).findById(2L);
     }
-
-
     
     @Test
     void sessionToDto_WhenDtoIsNull_ShouldReturnNull() {
@@ -111,21 +108,19 @@ class SessionMapperTest {
         assertNull(result); 
     }
 
-
-
     @Test
     void sessionToDto_ShouldMapAllFields() {
-        assertEquals(session.getId(), sessionDto.getId());
-        assertEquals(session.getName(), sessionDto.getName());
-        assertEquals(session.getDescription(), sessionDto.getDescription());
-        assertEquals(session.getDate(), sessionDto.getDate());
-        assertEquals(teacher.getId(), sessionDto.getTeacher_id());
-        assertEquals(2, sessionDto.getUsers().size());
-
-        assertTrue(sessionDto.getUsers().contains(1L));
-        assertTrue(sessionDto.getUsers().contains(2L));
+        assertAll(() -> {
+            assertEquals(session.getId(), sessionDto.getId());
+            assertEquals(session.getName(), sessionDto.getName());
+            assertEquals(session.getDescription(), sessionDto.getDescription());
+            assertEquals(session.getDate(), sessionDto.getDate());
+            assertEquals(teacher.getId(), sessionDto.getTeacher_id());
+            assertEquals(2, sessionDto.getUsers().size());
+            assertTrue(sessionDto.getUsers().contains(1L));
+            assertTrue(sessionDto.getUsers().contains(2L));
+        });
     }
-
 
     @Test
     void sessionToEntity_WhenDtoIsNull_ShouldReturnNull() {
@@ -133,12 +128,19 @@ class SessionMapperTest {
         Session result = sessionMapper.toEntity(dto);
         assertNull(result); 
     }
-
+    
     @Test
     void sessionsListToEntity_WhenDtoIsNull_ShouldReturnNull() {
         List<SessionDto> dtos = null;
         List<Session> result = sessionMapper.toEntity(dtos);
         assertNull(result); 
+    }
+
+    @Test
+    void sessionsListToEntity_ShouldReturnListOfSESSION() {
+        List<SessionDto> dtos = Arrays.asList(sessionDto, sessionMapper.toDto(session2));
+        List<Session> result = sessionMapper.toEntity(dtos);
+        assertNotNull(result); 
     }
 
 }

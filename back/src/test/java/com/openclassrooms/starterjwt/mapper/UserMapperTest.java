@@ -2,6 +2,9 @@ package com.openclassrooms.starterjwt.mapper;
 
 import com.openclassrooms.starterjwt.dto.UserDto;
 import com.openclassrooms.starterjwt.models.User;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,12 +30,14 @@ public class UserMapperTest {
 
         UserDto userDto = userMapper.toDto(user);
 
-        assertThat(userDto).isNotNull();
-        assertThat(userDto.getId()).isEqualTo(user.getId());
-        assertThat(userDto.getEmail()).isEqualTo(user.getEmail());
-        assertThat(userDto.getFirstName()).isEqualTo(user.getFirstName());
-        assertThat(userDto.getLastName()).isEqualTo(user.getLastName());
-        assertThat(userDto.getPassword()).isEqualTo(user.getPassword());
+        assertAll(() -> {
+            assertThat(userDto).isNotNull();
+            assertThat(userDto.getId()).isEqualTo(user.getId());
+            assertThat(userDto.getEmail()).isEqualTo(user.getEmail());
+            assertThat(userDto.getFirstName()).isEqualTo(user.getFirstName());
+            assertThat(userDto.getLastName()).isEqualTo(user.getLastName());
+            assertThat(userDto.getPassword()).isEqualTo(user.getPassword());
+        });
     }
 
     @Test
@@ -47,11 +52,13 @@ public class UserMapperTest {
 
         User user = userMapper.toEntity(userDto);
 
-        assertThat(user).isNotNull();
-        assertThat(user.getId()).isEqualTo(userDto.getId());
-        assertThat(user.getEmail()).isEqualTo(userDto.getEmail());
-        assertThat(user.getFirstName()).isEqualTo(userDto.getFirstName());
-        assertThat(user.getLastName()).isEqualTo(userDto.getLastName());
-        assertThat(user.getPassword()).isEqualTo(userDto.getPassword());
+        assertAll(() -> {
+            assertThat(user).isNotNull();
+            assertThat(user.getId()).isEqualTo(userDto.getId());
+            assertThat(user.getEmail()).isEqualTo(userDto.getEmail());
+            assertThat(user.getFirstName()).isEqualTo(userDto.getFirstName());
+            assertThat(user.getLastName()).isEqualTo(userDto.getLastName());
+            assertThat(user.getPassword()).isEqualTo(userDto.getPassword());
+        });
     }
 } 

@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class BadRequestExceptionTest {
 
 
-        @Test
+    @Test
     void shouldHaveCorrectAnnotation() {
         ResponseStatus annotation = BadRequestException.class.getAnnotation(ResponseStatus.class);
         assertNotNull(annotation);

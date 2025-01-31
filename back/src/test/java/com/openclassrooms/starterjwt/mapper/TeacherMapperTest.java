@@ -91,7 +91,7 @@ void teacherToEntity_WhenDtoIsNull_ShouldReturnNull() {
         TeacherDto teacherDto2 = new TeacherDto();
         teacherDto.setId(2L);
         teacherDto.setLastName("Doe 2");
-        teacherDto.setFirstName("John 2 ");
+        teacherDto.setFirstName("John 2");
 
         List<TeacherDto> teachersDto = Arrays.asList(teacherDto, teacherDto2);
 
