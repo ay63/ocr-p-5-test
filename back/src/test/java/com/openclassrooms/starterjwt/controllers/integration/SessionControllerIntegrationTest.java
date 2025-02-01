@@ -1,12 +1,12 @@
 package com.openclassrooms.starterjwt.controllers.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.openclassrooms.starterjwt.MockFactory;
 import com.openclassrooms.starterjwt.dto.SessionDto;
 import com.openclassrooms.starterjwt.exception.BadRequestException;
 import com.openclassrooms.starterjwt.exception.NotFoundException;
 import com.openclassrooms.starterjwt.mapper.SessionMapper;
 import com.openclassrooms.starterjwt.models.Session;
-import com.openclassrooms.starterjwt.models.Teacher;
 import com.openclassrooms.starterjwt.services.SessionService;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -21,10 +21,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
-import java.util.Date;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -46,30 +44,16 @@ public class SessionControllerIntegrationTest {
         @Autowired
         private ObjectMapper objectMapper;
 
+        @Autowired
+        private MockFactory mockFactory;
 
         private Session session;
         private SessionDto sessionDto;
-        private Teacher teacher;
-        private String nameSession = "session name";
-        private String description = "session decription";
 
         @BeforeEach
         void setUp() {
-
-                teacher = new Teacher();
-                teacher.setId(1L);
-                teacher.setFirstName("John");
-                teacher.setLastName("Doe");
-
-                session = new Session();
-                session.setId(1L);
-                session.setName(nameSession);
-                session.setDate(new Date());
-                session.setDescription(description);
-                session.setTeacher(teacher);
-
-                ;
-                sessionDto = sessionMapper.toDto(session);
+                session = mockFactory.createSession();
+                sessionDto = mockFactory.createSessionDto();
         }
 
         @Test
@@ -80,8 +64,8 @@ public class SessionControllerIntegrationTest {
                 mockMvc.perform(get("/api/session/1")
                                 .contentType(MediaType.APPLICATION_JSON))
                                 .andExpect(status().isOk())
-                                .andExpect(jsonPath("$.id").value(1))
-                                .andExpect(jsonPath("$.name").value(nameSession));
+                                .andExpect(jsonPath("$.id").value(session.getId()))
+                                .andExpect(jsonPath("$.name").value(session.getName()));
         }
 
         @Test
@@ -107,32 +91,30 @@ public class SessionControllerIntegrationTest {
         @Test
         @WithMockUser
         void findAll_WhenSessionExist_ShouldReturnAllSessions() throws Exception {
-                Session session2 = new Session();
-                        session2.setId(2L);
-                        session.setName(nameSession);
-                        session.setDate(new Date());
-                        session.setDescription(description);
-                        session.setTeacher(teacher);
-                        
+                Session session2 = this.mockFactory.createSession();
+                session2.setId(2L);
+
                 when(sessionService.findAll()).thenReturn(Arrays.asList(session, session2));
 
                 mockMvc.perform(get("/api/session")
                                 .contentType(MediaType.APPLICATION_JSON))
                                 .andExpect(status().isOk())
-                                .andExpect(jsonPath("$[0].id").value(1))
-                                .andExpect(jsonPath("$[1].id").value(2));
+                                .andExpect(jsonPath("$[0].id").value(session.getId()))
+                                .andExpect(jsonPath("$[1].id").value(session2.getId()));
         }
 
         @Test
         @WithMockUser
         void create_WhenCreateSession_ShouldReturnCreatedSession() throws Exception {
+                when(sessionService.getById(session.getId())).thenReturn(session);
+
                 when(sessionService.create(any(Session.class))).thenReturn(session);
 
                 mockMvc.perform(post("/api/session")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(sessionDto)))
                                 .andExpect(status().isOk())
-                                .andExpect(jsonPath("$.name").value(nameSession));
+                                .andExpect(jsonPath("$.name").value(session.getName()));
         }
 
         @Test
@@ -158,13 +140,18 @@ public class SessionControllerIntegrationTest {
         @Test
         @WithMockUser
         void update_WhenSessionUpdated_ShouldReturnUpdatedSession() throws Exception {
-                when(sessionService.update(eq(1L), any(Session.class))).thenReturn(session);
+
+                String update = "updated";
+                session.setDescription(update);
+                session.setName(update);
+                when(sessionService.update(1L,session)).thenReturn(session);
 
                 mockMvc.perform(put("/api/session/1")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(sessionDto)))
                                 .andExpect(status().isOk())
-                                .andExpect(jsonPath("$.name").value(nameSession));
+                                .andExpect(jsonPath("$.name").value(update))
+                                .andExpect(jsonPath("$.description").value(update));
         }
 
         @Test

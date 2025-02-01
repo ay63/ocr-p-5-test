@@ -1,5 +1,6 @@
 package com.openclassrooms.starterjwt.controllers.unit;
 
+import com.openclassrooms.starterjwt.MockFactory;
 import com.openclassrooms.starterjwt.controllers.TeacherController;
 import com.openclassrooms.starterjwt.dto.TeacherDto;
 import com.openclassrooms.starterjwt.mapper.TeacherMapper;
@@ -7,10 +8,10 @@ import com.openclassrooms.starterjwt.models.Teacher;
 import com.openclassrooms.starterjwt.services.TeacherService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -20,7 +21,7 @@ import java.util.List;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 public class TeacherControllerTest {
 
     @Mock
@@ -32,20 +33,16 @@ public class TeacherControllerTest {
     @InjectMocks
     private TeacherController teacherController;
 
+    @Autowired
+    private MockFactory mockFactory;
+
     private Teacher teacher;
     private TeacherDto teacherDto;
 
     @BeforeEach
     void setUp() {
-        teacher = new Teacher();
-        teacher.setId(1L);
-        teacher.setFirstName("John");
-        teacher.setLastName("Doe");
-
-        teacherDto = new TeacherDto();
-        teacherDto.setId(1L);
-        teacherDto.setFirstName("John");
-        teacherDto.setLastName("Doe");
+        teacher = mockFactory.createTeacher();
+        teacherDto = mockFactory.createTeacherDto();
     }
 
     @Test
@@ -53,7 +50,7 @@ public class TeacherControllerTest {
         when(teacherService.findById(1L)).thenReturn(teacher);
         when(teacherMapper.toDto(teacher)).thenReturn(teacherDto);
 
-        ResponseEntity<?> response = teacherController.findById("1");
+        ResponseEntity<?> response = teacherController.findById(teacher.getId().toString());
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(teacherDto, response.getBody());

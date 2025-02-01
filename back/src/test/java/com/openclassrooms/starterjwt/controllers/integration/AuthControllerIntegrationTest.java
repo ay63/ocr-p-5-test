@@ -17,7 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.context.TestPropertySource;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -27,7 +26,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestPropertySource(locations = "classpath:application-test.properties")
 public class AuthControllerIntegrationTest {
 
     @Autowired
@@ -44,11 +42,11 @@ public class AuthControllerIntegrationTest {
 
     private SignupRequest signupRequest;
 
+    @Autowired
     private MockFactory mockFactory;
 
     @BeforeEach
     void setUp() {
-        mockFactory = new MockFactory();
         signupRequest = mockFactory.createSignupRequest();
     }
 

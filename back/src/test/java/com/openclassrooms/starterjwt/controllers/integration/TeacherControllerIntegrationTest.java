@@ -1,5 +1,6 @@
 package com.openclassrooms.starterjwt.controllers.integration;
 
+import com.openclassrooms.starterjwt.MockFactory;
 import com.openclassrooms.starterjwt.models.Teacher;
 import com.openclassrooms.starterjwt.services.TeacherService;
 
@@ -33,14 +34,14 @@ public class TeacherControllerIntegrationTest {
     @MockBean
     private TeacherService teacherService;
 
+    @Autowired
+    private MockFactory mockFactory;
+
     private Teacher teacher1;
 
     @BeforeEach
     void setUp(){
-        teacher1 = new Teacher();
-        teacher1.setId(1L);
-        teacher1.setFirstName("John");
-        teacher1.setLastName("Doe");
+        teacher1 = mockFactory.createTeacher();
     }
 
     @Test
@@ -52,8 +53,8 @@ public class TeacherControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.firstName").value("John"))
-                .andExpect(jsonPath("$.lastName").value("Doe"));
+                .andExpect(jsonPath("$.firstName").value(teacher1.getFirstName()))
+                .andExpect(jsonPath("$.lastName").value(teacher1.getLastName()));
     }
 
     @Test
@@ -78,11 +79,10 @@ public class TeacherControllerIntegrationTest {
     @WithMockUser
     public void findAll_WhenTearchersExist_ShouldSuccess() throws Exception {
     
-        Teacher teacher2 = new Teacher();
+        Teacher teacher2 = mockFactory.createTeacher();
         teacher2.setId(2L);
         teacher2.setFirstName("Jane");
         teacher2.setLastName("Smith");
-        
         List<Teacher> teachers = Arrays.asList(teacher1, teacher2);
         
         when(teacherService.findAll()).thenReturn(teachers);
@@ -90,11 +90,11 @@ public class TeacherControllerIntegrationTest {
         mockMvc.perform(get("/api/teacher")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].firstName").value("John"))
-                .andExpect(jsonPath("$[0].lastName").value("Doe"))
-                .andExpect(jsonPath("$[1].id").value(2))
-                .andExpect(jsonPath("$[1].firstName").value("Jane"))
-                .andExpect(jsonPath("$[1].lastName").value("Smith"));
+                .andExpect(jsonPath("$[0].id").value(teacher1.getId()))
+                .andExpect(jsonPath("$[0].firstName").value(teacher1.getFirstName()))
+                .andExpect(jsonPath("$[0].lastName").value(teacher1.getLastName()))
+                .andExpect(jsonPath("$[1].id").value(teacher2.getId()))
+                .andExpect(jsonPath("$[1].firstName").value(teacher2.getFirstName()))
+                .andExpect(jsonPath("$[1].lastName").value(teacher2.getLastName()));
     }
 } 

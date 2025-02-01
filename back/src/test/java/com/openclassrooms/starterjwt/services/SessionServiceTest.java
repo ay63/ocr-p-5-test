@@ -1,5 +1,6 @@
 package com.openclassrooms.starterjwt.services;
 
+import com.openclassrooms.starterjwt.MockFactory;
 import com.openclassrooms.starterjwt.exception.BadRequestException;
 import com.openclassrooms.starterjwt.exception.NotFoundException;
 import com.openclassrooms.starterjwt.models.Session;
@@ -8,12 +9,12 @@ import com.openclassrooms.starterjwt.repository.SessionRepository;
 import com.openclassrooms.starterjwt.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 public class SessionServiceTest {
 
     @Mock
@@ -34,17 +35,16 @@ public class SessionServiceTest {
     @InjectMocks
     private SessionService sessionService;
 
+    @Autowired
+    private MockFactory mockFactory;
+
     private Session session;
     private User user;
 
     @BeforeEach
     void setUp() {
-        user = new User();
-        user.setId(1L);
-
-        session = new Session();
-        session.setId(1L);
-        session.setUsers(new ArrayList<>());
+        user = mockFactory.createUser(false);
+        session = mockFactory.createSession();
     }
 
     @Test
@@ -109,11 +109,14 @@ public class SessionServiceTest {
 
     @Test
     void participate_WhenSessionAndUserExist_ShouldAddUserToSession() {
+        User user2 = mockFactory.createUser(false);
+        user2.setId(3L);
+
         when(sessionRepository.findById(1L)).thenReturn(Optional.of(session));
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.findById(3L)).thenReturn(Optional.of(user));
         when(sessionRepository.save(any(Session.class))).thenReturn(session);
 
-        assertDoesNotThrow(() -> sessionService.participate(1L, 1L));
+        assertDoesNotThrow(() -> sessionService.participate(1L, 3L));
 
         verify(sessionRepository).save(session);
         assertTrue(session.getUsers().contains(user));
@@ -134,7 +137,6 @@ public class SessionServiceTest {
 
         assertThrows(BadRequestException.class, () -> sessionService.participate(1L, 1L));
     }
-
 
     @Test
     void noLongerParticipate_WhenUserParticipating_ShouldRemoveUser() {
@@ -159,6 +161,6 @@ public class SessionServiceTest {
     void noLongerParticipate_WhenUserNotParticipating_ShouldThrowBadRequestException() {
         when(sessionRepository.findById(1L)).thenReturn(Optional.of(session));
 
-        assertThrows(BadRequestException.class, () -> sessionService.noLongerParticipate(1L, 1L));
+        assertThrows(BadRequestException.class, () -> sessionService.noLongerParticipate(1L, 3L));
     }
 }

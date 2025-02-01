@@ -5,20 +5,17 @@ import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.Authentication;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.openclassrooms.starterjwt.MockFactory;
 import com.openclassrooms.starterjwt.security.services.UserDetailsImpl;
 
 @ActiveProfiles("test")
-@ExtendWith(MockitoExtension.class)
 @SpringBootTest
 public class JwtUtilsTest {
 
@@ -31,19 +28,13 @@ public class JwtUtilsTest {
     @Mock
     private UserDetailsImpl userDetails;
 
-    @Value("${app.test.email}")
-    private String testEmail;
-
-    @Value("${app.test.password}")
-    private String testPassword;
-
     @BeforeEach
     void setUp() {
         ReflectionTestUtils.setField(jwtUtils, "jwtSecret", "openclassrooms-secret-key");
         ReflectionTestUtils.setField(jwtUtils, "jwtExpirationMs", 86400000);
 
         lenient().when(authentication.getPrincipal()).thenReturn(userDetails);
-        lenient().when(userDetails.getUsername()).thenReturn(testEmail);
+        lenient().when(userDetails.getUsername()).thenReturn(MockFactory.EMAIL);    
     }
 
     @Test
@@ -59,7 +50,7 @@ public class JwtUtilsTest {
     @Test
     void getUserNameFromJwtToken_ShouldReturnCorrectUsername() {
         String username = jwtUtils.getUserNameFromJwtToken(jwtUtils.generateJwtToken(authentication));
-        assertEquals(testEmail, username);
+        assertEquals(MockFactory.EMAIL, username);
     }
 
     @Test
@@ -88,7 +79,6 @@ public class JwtUtilsTest {
         boolean isValid = jwtUtils.validateJwtToken("");
         assertFalse(isValid);
     }
-
 
     @Test
     void validateJwtToken_ShouldReturnFalse_WhenInvalidSignatureJwt() {

@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -43,6 +44,9 @@ class AuthControllerTest {
 
     @InjectMocks
     private AuthController authController;
+
+    @Autowired
+    private MockFactory mockFactory;
     
     private LoginRequest loginRequest;
     private SignupRequest signupRequest;
@@ -51,30 +55,10 @@ class AuthControllerTest {
 
     @BeforeEach
     void setUp() {
-        loginRequest = new LoginRequest();
-        loginRequest.setEmail("test@test.com");
-        loginRequest.setPassword("password123");
-
-        signupRequest = new SignupRequest();
-        signupRequest.setEmail("test@test.com");
-        signupRequest.setFirstName("John");
-        signupRequest.setLastName("Doe");
-        signupRequest.setPassword("password123");
-
-        user = new User();
-        user.setEmail("test@test.com");
-        user.setFirstName("John");
-        user.setLastName("Doe");
-        user.setPassword("encodedPassword");
-        user.setAdmin(false);
-
-        userDetails = UserDetailsImpl.builder().id(1L)
-                .username("test@test.com")
-                .firstName("John")
-                .lastName("Doe")
-                .password("encodedPassword")
-                .admin(false).build();
-
+        loginRequest = mockFactory.createLoginRequest();
+        signupRequest = mockFactory.createSignupRequest();
+        user = mockFactory.createUser(false);
+        userDetails = mockFactory.createUserDetails();
     }
 
     @Test

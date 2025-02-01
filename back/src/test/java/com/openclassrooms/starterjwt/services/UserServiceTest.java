@@ -1,19 +1,22 @@
 package com.openclassrooms.starterjwt.services;
 
+import com.openclassrooms.starterjwt.MockFactory;
 import com.openclassrooms.starterjwt.models.User;
 import com.openclassrooms.starterjwt.repository.UserRepository;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 public class UserServiceTest {
 
     @Mock
@@ -22,33 +25,40 @@ public class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
-    private static final Long USER_ID = 1L;
+    @Autowired
+    private MockFactory mockFactory;
+
+    private User user;
+
+    @BeforeEach
+    void setUp() {
+        user = mockFactory.createUser(false);
+    }
 
     @Test
     void deleteUser_ShouldCallRepository() {
-        userService.delete(USER_ID);
-        verify(userRepository, times(1)).deleteById(USER_ID);
+        userService.delete(user.getId());
+        verify(userRepository, times(1)).deleteById(user.getId());
     }
 
     @Test
     void findById_WhenUserExists_ShouldReturnUser() {
-        User expectedUser = new User();
-        expectedUser.setId(USER_ID);
-        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(expectedUser));
+     
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 
-        User result = userService.findById(USER_ID);
+        User result = userService.findById(user.getId());
         assertNotNull(result);
-        assertEquals(USER_ID, result.getId());
-        verify(userRepository, times(1)).findById(USER_ID);
+        assertEquals(user.getId(), result.getId());
+        verify(userRepository, times(1)).findById(user.getId());
     }
 
     @Test
     void findById_WhenUserDoesNotExist_ShouldReturnNull() {
-        when(userRepository.findById(USER_ID)).thenReturn(Optional.empty());
+        when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
 
-        User result = userService.findById(USER_ID);
+        User result = userService.findById(user.getId());
 
         assertNull(result);
-        verify(userRepository, times(1)).findById(USER_ID);
+        verify(userRepository, times(1)).findById(user.getId());
     }
 }

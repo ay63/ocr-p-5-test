@@ -7,37 +7,39 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
+import com.openclassrooms.starterjwt.MockFactory;
+
+@SpringBootTest
 class SignupRequestTest {
-    private static Validator validator;
+    private Validator validator;
 
-    @BeforeAll
-    static void setUp() {
+    @Autowired
+    private MockFactory mockFactory;
+
+    private SignupRequest request;
+
+    @BeforeEach
+    void setUp() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
+        request = mockFactory.createSignupRequest();
     }
 
     @Test
     void shouldReturnEmpty_WhenSignupRequestIsValid() {
-        SignupRequest request = new SignupRequest();
-        request.setEmail("test@example.com");
-        request.setFirstName("John");
-        request.setLastName("Doe");
-        request.setPassword("password123");
-
         Set<ConstraintViolation<SignupRequest>> violations = validator.validate(request);
         assertTrue(violations.isEmpty());
     }
 
     @Test
     void shouldReturnViolation_WhenSignupRequestEmailIsInvalid() {
-        SignupRequest request = new SignupRequest();
+        SignupRequest request = this.mockFactory.createSignupRequest();
         request.setEmail("invalid-email");
-        request.setFirstName("John");
-        request.setLastName("Doe");
-        request.setPassword("password123");
 
         Set<ConstraintViolation<SignupRequest>> violations = validator.validate(request);
         assertFalse(violations.isEmpty());
@@ -46,11 +48,9 @@ class SignupRequestTest {
 
     @Test
     void shouldReturnViolation_WhenSignupRequestFirstNameIsTooShort() {
-        SignupRequest request = new SignupRequest();
-        request.setEmail("test@example.com");
-        request.setFirstName("Jo"); 
-        request.setLastName("Doe");
-        request.setPassword("password123");
+        SignupRequest request = this.mockFactory.createSignupRequest();
+        request.setFirstName("Jo");
+
 
         Set<ConstraintViolation<SignupRequest>> violations = validator.validate(request);
         assertFalse(violations.isEmpty());
@@ -59,11 +59,9 @@ class SignupRequestTest {
 
     @Test
     void shouldReturnViolation_WhenSignupRequestLastNameIsTooShort() {
-        SignupRequest request = new SignupRequest();
-        request.setEmail("test@example.com");
-        request.setFirstName("John");
-        request.setLastName("Do"); 
-        request.setPassword("password123");
+        SignupRequest request = this.mockFactory.createSignupRequest();
+        request.setLastName("Do");
+
 
         Set<ConstraintViolation<SignupRequest>> violations = validator.validate(request);
         assertFalse(violations.isEmpty());
@@ -72,10 +70,7 @@ class SignupRequestTest {
 
     @Test
     void shouldReturnViolation_WhenSignupRequestPasswordIsTooShort() {
-        SignupRequest request = new SignupRequest();
-        request.setEmail("test@example.com");
-        request.setFirstName("John");
-        request.setLastName("Doe");
+        SignupRequest request = this.mockFactory.createSignupRequest();
         request.setPassword("1234");
 
         Set<ConstraintViolation<SignupRequest>> violations = validator.validate(request);
@@ -83,5 +78,4 @@ class SignupRequestTest {
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("password")));
     }
 
-
-} 
+}

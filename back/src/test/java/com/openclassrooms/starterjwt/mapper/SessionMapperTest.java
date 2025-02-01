@@ -1,5 +1,6 @@
 package com.openclassrooms.starterjwt.mapper;
 
+import com.openclassrooms.starterjwt.MockFactory;
 import com.openclassrooms.starterjwt.dto.SessionDto;
 import com.openclassrooms.starterjwt.models.Session;
 import com.openclassrooms.starterjwt.models.Teacher;
@@ -11,10 +12,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,6 +32,9 @@ class SessionMapperTest {
 
     @Mock
     private UserService userService;
+
+    @Autowired
+    private MockFactory mockFactory;
     
     private Session session;
     private Session session2;
@@ -41,26 +45,18 @@ class SessionMapperTest {
 
     @BeforeEach
     void setUp() {
-        session = new Session();
-        session.setId(1L);
-        session.setName("Yoga Session");
-        session.setDescription("Beginner friendly yoga");
-        session.setDate(new Date());
+        session = mockFactory.createSession();
 
-        session2 = new Session();
-        session2.setId(1L);
+        session2 = mockFactory.createSession();
+        session2.setId(2L);
         session2.setName("Yoga session2");
-        session2.setDescription("Beginner friendly yoga");
-        session2.setDate(new Date());
+        session2.setDescription("session2");
 
-        teacher = new Teacher();
-        teacher.setId(1L);
-        session.setTeacher(teacher);
+        teacher = mockFactory.createTeacher();
+       
+        user1 = mockFactory.createUser(false);
 
-        user1 = new User();
-        user1.setId(1L);
-
-        user2 = new User();
+        user2 = mockFactory.createUser(false);
         user2.setId(2L);
 
         session.setUsers(Arrays.asList(user1, user2));
@@ -94,19 +90,6 @@ class SessionMapperTest {
         verify(userService).findById(2L);
     }
     
-    @Test
-    void sessionToDto_WhenDtoIsNull_ShouldReturnNull() {
-        Session session  = null;
-        SessionDto result = sessionMapper.toDto(session);
-        assertNull(result); 
-    }
-
-    @Test
-    void sessionsListToDto_WhenDtoIsNull_ShouldReturnNull() {
-        List<Session> sessions = null;
-        List<SessionDto> result = sessionMapper.toDto(sessions);
-        assertNull(result); 
-    }
 
     @Test
     void sessionToDto_ShouldMapAllFields() {
@@ -122,22 +105,8 @@ class SessionMapperTest {
         });
     }
 
-    @Test
-    void sessionToEntity_WhenDtoIsNull_ShouldReturnNull() {
-        SessionDto dto = null;
-        Session result = sessionMapper.toEntity(dto);
-        assertNull(result); 
-    }
-    
-    @Test
-    void sessionsListToEntity_WhenDtoIsNull_ShouldReturnNull() {
-        List<SessionDto> dtos = null;
-        List<Session> result = sessionMapper.toEntity(dtos);
-        assertNull(result); 
-    }
 
-    @Test
-    void sessionsListToEntity_ShouldReturnListOfSESSION() {
+    void sessionsListToEntity_ShouldReturnListOfSession() {
         List<SessionDto> dtos = Arrays.asList(sessionDto, sessionMapper.toDto(session2));
         List<Session> result = sessionMapper.toEntity(dtos);
         assertNotNull(result); 

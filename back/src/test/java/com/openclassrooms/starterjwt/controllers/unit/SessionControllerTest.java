@@ -1,5 +1,6 @@
 package com.openclassrooms.starterjwt.controllers.unit;
 
+import com.openclassrooms.starterjwt.MockFactory;
 import com.openclassrooms.starterjwt.controllers.SessionController;
 import com.openclassrooms.starterjwt.dto.SessionDto;
 import com.openclassrooms.starterjwt.mapper.SessionMapper;
@@ -9,7 +10,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -21,6 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
+@SpringBootTest
 class SessionControllerTest {
 
     @InjectMocks
@@ -32,18 +35,16 @@ class SessionControllerTest {
     @Mock
     private SessionMapper sessionMapper;
 
+    @Autowired
+    private MockFactory mockFactory;
+
     private Session session;
     private SessionDto sessionDto;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        
-        session = new Session();
-        session.setId(1L);
-        
-        sessionDto = new SessionDto();
-        sessionDto.setId(1L);
+        session = mockFactory.createSession();
+        sessionDto = mockFactory.createSessionDto();
     }
 
     @Test

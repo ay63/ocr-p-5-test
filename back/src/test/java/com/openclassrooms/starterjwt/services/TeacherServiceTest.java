@@ -1,12 +1,13 @@
 package com.openclassrooms.starterjwt.services;
 
+import com.openclassrooms.starterjwt.MockFactory;
 import com.openclassrooms.starterjwt.models.Teacher;
 import com.openclassrooms.starterjwt.repository.TeacherRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,27 +16,22 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 public class TeacherServiceTest {
 
     @Mock
     private TeacherRepository teacherRepository;
 
+    @InjectMocks
     private TeacherService teacherService;
 
-    @BeforeEach
-    void setUp() {
-        teacherService = new TeacherService(teacherRepository);
-    }
+    @Autowired
+    private MockFactory mockFactory;
 
     @Test
     void findAll_ShouldReturnListOfTeachers() {
-        Teacher teacher1 = new Teacher();
-        teacher1.setId(1L);
-        teacher1.setFirstName("John");
-        teacher1.setLastName("Doe");
-
-        Teacher teacher2 = new Teacher();
+        Teacher teacher1 = mockFactory.createTeacher();
+        Teacher teacher2 = mockFactory.createTeacher();
         teacher2.setId(2L);
         teacher2.setFirstName("Jane");
         teacher2.setLastName("Smith");
@@ -52,10 +48,7 @@ public class TeacherServiceTest {
 
     @Test
     void findById_ShouldReturnTeacher_WhenTeacherExists() {
-        Teacher expectedTeacher = new Teacher();
-        expectedTeacher.setId(1L);
-        expectedTeacher.setFirstName("John");
-        expectedTeacher.setLastName("Doe");
+        Teacher expectedTeacher = mockFactory.createTeacher();
 
         when(teacherRepository.findById(1L)).thenReturn(Optional.of(expectedTeacher));
 
@@ -63,8 +56,8 @@ public class TeacherServiceTest {
 
         assertThat(actualTeacher).isNotNull();
         assertThat(actualTeacher.getId()).isEqualTo(1L);
-        assertThat(actualTeacher.getFirstName()).isEqualTo("John");
-        assertThat(actualTeacher.getLastName()).isEqualTo("Doe");
+        assertThat(actualTeacher.getFirstName()).isEqualTo(expectedTeacher.getFirstName());
+        assertThat(actualTeacher.getLastName()).isEqualTo(expectedTeacher.getLastName());
     }
 
     @Test

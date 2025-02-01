@@ -1,15 +1,16 @@
 package com.openclassrooms.starterjwt.controllers.unit;
 
+import com.openclassrooms.starterjwt.MockFactory;
 import com.openclassrooms.starterjwt.controllers.UserController;
 import com.openclassrooms.starterjwt.mapper.UserMapper;
 import com.openclassrooms.starterjwt.models.User;
 import com.openclassrooms.starterjwt.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -20,7 +21,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 public class UserControllerTest {
 
     @Mock
@@ -41,15 +42,21 @@ public class UserControllerTest {
     @InjectMocks
     private UserController userController;
 
+    @Autowired
+    private MockFactory mockFactory;
+
+    User user;
+
     @BeforeEach
     void setUp() {
         SecurityContextHolder.setContext(securityContext);
+        user = mockFactory.createUser(false);
+       
     }
 
     @Test
     void findById_ShouldReturnUser_WhenUserExists() {
-        User user = new User();
-        user.setId(1L);
+
         when(userService.findById(1L)).thenReturn(user);
         when(userMapper.toDto(user)).thenReturn(new com.openclassrooms.starterjwt.dto.UserDto());
 
@@ -78,14 +85,11 @@ public class UserControllerTest {
 
     @Test
     void delete_ShouldReturnOk_WhenUserExistsAndIsAuthorized() {
-        User user = new User();
-        user.setId(1L);
-        user.setEmail("test@test.com");
         
         when(userService.findById(1L)).thenReturn(user);
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(userDetails);
-        when(userDetails.getUsername()).thenReturn("test@test.com");
+        when(userDetails.getUsername()).thenReturn(user.getEmail());
 
         ResponseEntity<?> response = userController.save("1");
         
@@ -95,10 +99,7 @@ public class UserControllerTest {
 
     @Test
     void delete_ShouldReturnUnauthorized_WhenUserIsNotAuthorized() {
-        User user = new User();
-        user.setId(1L);
-        user.setEmail("test@test.com");
-        
+    
         when(userService.findById(1L)).thenReturn(user);
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(userDetails);

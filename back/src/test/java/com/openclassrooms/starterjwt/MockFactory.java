@@ -1,7 +1,13 @@
 package com.openclassrooms.starterjwt;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
+import com.openclassrooms.starterjwt.dto.SessionDto;
+import com.openclassrooms.starterjwt.dto.TeacherDto;
 import com.openclassrooms.starterjwt.dto.UserDto;
 import com.openclassrooms.starterjwt.models.Session;
 import com.openclassrooms.starterjwt.models.Teacher;
@@ -10,9 +16,12 @@ import com.openclassrooms.starterjwt.payload.request.LoginRequest;
 import com.openclassrooms.starterjwt.payload.request.SignupRequest;
 import com.openclassrooms.starterjwt.security.services.UserDetailsImpl;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class MockFactory {
 
-    //Session
+    // Session
     public static final String NAME_SESSION = "Yoga Session";
     public static final String DESCIP_SESSION = "Yoga Session description";
 
@@ -32,14 +41,30 @@ public class MockFactory {
     public static final String ADMIN_FIRST_NAME = "Admin";
     public static final String ADMIN_LAST_NAME = "Admin";
 
+    public static final String TEST_TOKEN = "Bearer validToken";
 
-    public Session createSession(String name, String description) {
+    public Session createSession() {
         Session session = new Session();
         session.setId(1L);
-        session.setName(name != null ? name : NAME_SESSION);
-        session.setDescription(description != null ? description : DESCIP_SESSION);
+        session.setName(NAME_SESSION);
+        session.setDescription(DESCIP_SESSION);
         session.setDate(new Date());
+        session.setTeacher(createTeacher());
+        session.setUsers(this.createUserList());
+        session.setCreatedAt(LocalDateTime.now());
+        session.setUpdatedAt(LocalDateTime.now());
         return session;
+    }
+
+    public SessionDto createSessionDto() {
+        SessionDto sessionDto = new SessionDto();
+        sessionDto.setId(1L);
+        sessionDto.setName(NAME_SESSION);
+        sessionDto.setDescription(DESCIP_SESSION);
+        sessionDto.setDate(new Date());
+        sessionDto.setTeacher_id(1L);
+        sessionDto.setUsers(Arrays.asList(1L, 2L));
+        return sessionDto;
     }
 
     public User createUser(Boolean admin) {
@@ -55,6 +80,26 @@ public class MockFactory {
         user.setPassword(PASSWORD);
         user.setAdmin(admin);
         return user;
+    }
+
+    public UserDetailsImpl createUserDetails() {
+        User user = createUser(false);
+        return UserDetailsImpl.builder().id(user.getId())
+                .username(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .password(user.getPassword())
+                .admin(user.isAdmin()).build();
+    }
+
+    public List<User> createUserList() {
+        User user = this.createUser(false);
+        User user2 = this.createUser(false).setId(2L);
+
+        List<User> users = new ArrayList<>();
+        users.add(user);
+        users.add(user2);
+        return users;
     }
 
     public UserDetailsImpl createUserDetails(User user) {
@@ -87,12 +132,24 @@ public class MockFactory {
         return signupRequest;
     }
 
-    public Teacher createTeacher(String firstName, String lastName) {
+    public Teacher createTeacher() {
         Teacher teacher = new Teacher();
         teacher.setId(1L);
-        teacher.setFirstName(firstName != null ? firstName : TEACHER_FIRST_NAME);
-        teacher.setLastName(lastName != null ? lastName : TEACHER_LAST_NAME);
+        teacher.setFirstName(TEACHER_FIRST_NAME);
+        teacher.setLastName(TEACHER_LAST_NAME);
+        teacher.setCreatedAt(LocalDateTime.now());
+        teacher.setUpdatedAt(LocalDateTime.now());
         return teacher;
+    }
+
+    public TeacherDto createTeacherDto() {
+        TeacherDto teacherDto = new TeacherDto();
+        teacherDto.setId(1L);
+        teacherDto.setFirstName(TEACHER_FIRST_NAME);
+        teacherDto.setLastName(TEACHER_LAST_NAME);
+        teacherDto.setCreatedAt(LocalDateTime.now());
+        teacherDto.setUpdatedAt(LocalDateTime.now());
+        return teacherDto;
     }
 
     public UserDto createUserDto(Boolean admin) {

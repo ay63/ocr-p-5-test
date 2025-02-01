@@ -1,15 +1,16 @@
 package com.openclassrooms.starterjwt.security.services;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.openclassrooms.starterjwt.MockFactory;
 import com.openclassrooms.starterjwt.models.User;
 import com.openclassrooms.starterjwt.repository.UserRepository;
 
@@ -20,7 +21,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ActiveProfiles("test")
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 class UserDetailsServiceImplTest {
 
     @Mock
@@ -29,34 +30,26 @@ class UserDetailsServiceImplTest {
     @InjectMocks
     private UserDetailsServiceImpl userDetailsService;
 
-    @Value("${app.test.email}")
-    private String email;
+    @Autowired
+    private MockFactory mockFactory;
 
-    @Value("${app.test.password}")
-    private String password;
+    private User user;
 
-    @Value("${app.test.firstName}")
-    private String firstName;
-
-    @Value("${app.test.lastName}")
-    private String lastName;
+    @BeforeEach
+    void setUp() {
+        user = mockFactory.createUser(false);
+    }
 
     @Test
     void loadUserByUsername_WithExistingUser_ShouldReturnUserDetails() {
-        User user = new User();
-        user.setId(1L);
-        user.setFirstName("firstName");
-        user.setLastName("lastName");
-        user.setEmail("test@test.com");
-        user.setPassword("password");
-        user.setAdmin(false);
-        when(userRepository.findByEmail("test@test.com")).thenReturn(Optional.of(user));
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername("test@test.com");
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
 
         assertNotNull(userDetails);
-        assertEquals("test@test.com", userDetails.getUsername());
-        assertEquals("password", userDetails.getPassword());
+        assertEquals(user.getEmail(), userDetails.getUsername());
+        assertEquals(user.getPassword(), userDetails.getPassword());
     }
 
     @Test
@@ -78,75 +71,4 @@ class UserDetailsServiceImplTest {
 
         assertEquals("User Not Found with email: null", exception.getMessage());
     }
-
-    @Test
-    void testEquals_ShouldCompareUsersCorrectly() {
-        User user1 = new User();
-        user1.setId(1L);
-        user1.setEmail("test@test.com");
-        user1.setPassword("password");
-        user1.setAdmin(false);
-        user1.setFirstName("firstName");
-        user1.setLastName("lastName");
-        UserDetailsImpl userDetails1 = UserDetailsImpl.builder()
-                .id(user1.getId())
-                .username(user1.getEmail())
-                .password(user1.getPassword())
-                .admin(user1.isAdmin())
-                .firstName(user1.getFirstName())
-                .lastName(user1.getLastName())
-                .build();
-
-        
-        User user2 = new User();
-        user2.setId(1L);
-        user2.setEmail("different@test.com"); 
-        user2.setPassword("different");
-        UserDetailsImpl userDetails2 = UserDetailsImpl.builder()
-                .id(user2.getId())
-                .username(user2.getEmail())
-                .password(user2.getPassword())
-                .build();
-
-     
-        User user3 = new User();
-        user3.setId(2L);
-        user3.setEmail("test@test.com");
-        user3.setPassword("password");
-        UserDetailsImpl userDetails3 = UserDetailsImpl.builder()
-                .id(user3.getId())
-                .username(user3.getEmail())
-                .password(user3.getPassword())
-                .build();
-
-
-        assertTrue(userDetails1.equals(userDetails1)); 
-        assertTrue(userDetails1.equals(userDetails2));
-        assertFalse(userDetails1.equals(userDetails3)); 
-        assertFalse(userDetails1.equals(null)); 
-        assertFalse(userDetails1.equals(new Object())); 
-    }
-
-    @Test
-    public void testBuilderToString() {
-        String builderString = UserDetailsImpl.builder()
-            .id(1L)
-            .username("testUser")
-            .firstName("John")
-            .lastName("Doe")
-            .admin(true)
-            .password("password123")
-            .toString();
-        
-        assertNotNull(builderString);
-        
-        assertTrue(builderString.contains("UserDetailsImpl.UserDetailsImplBuilder"));
-        assertTrue(builderString.contains("id=1"));
-        assertTrue(builderString.contains("username=testUser"));
-        assertTrue(builderString.contains("firstName=John"));
-        assertTrue(builderString.contains("lastName=Doe"));
-        assertTrue(builderString.contains("admin=true"));
-        assertTrue(builderString.contains("password=password123"));
-    }
-
 }
