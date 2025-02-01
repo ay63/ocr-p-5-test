@@ -1,14 +1,13 @@
 package com.openclassrooms.starterjwt.security.jwt;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -17,12 +16,11 @@ import javax.servlet.http.HttpServletResponse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import com.openclassrooms.starterjwt.security.services.UserDetailsImpl;
+import com.openclassrooms.starterjwt.MockFactory;
 import com.openclassrooms.starterjwt.security.services.UserDetailsServiceImpl;
 
 @ActiveProfiles("test")
-@ExtendWith(MockitoExtension.class)
-@TestPropertySource(locations = "classpath:application-test.properties")
+@SpringBootTest
 public class AuthTokenFilterTest {
 
     @Mock
@@ -42,37 +40,28 @@ public class AuthTokenFilterTest {
 
     @InjectMocks
     private AuthTokenFilter authTokenFilter;
+    
+    @Autowired
+    private MockFactory mockFactory;
 
-    private static final String TEST_TOKEN = "Bearer validToken";
 
-    @Value("${app.test.email}")
-    private String email;
+    private UserDetails userDetails;
 
-    @Value("${app.test.password}")
-    private String password;
-
-    @Value("${app.test.firstName}")
-    private String firstName;
-
-    @Value("${app.test.lastName}")
-    private String lastName;
+    @BeforeEach
+    void setUp() {
+        userDetails = mockFactory.createUserDetails();
+    }
 
     @Test
     void doFilterInternal_WithValidToken_ShouldAuthenticate() throws ServletException, IOException {
 
-        when(request.getHeader("Authorization")).thenReturn(TEST_TOKEN);
+        when(request.getHeader("Authorization")).thenReturn(MockFactory.TEST_TOKEN);
         when(jwtUtils.validateJwtToken("validToken")).thenReturn(true);
-        when(jwtUtils.getUserNameFromJwtToken("validToken")).thenReturn(email);
+        when(jwtUtils.getUserNameFromJwtToken("validToken")).thenReturn(userDetails.getUsername());
         
-        UserDetails userDetails = UserDetailsImpl.builder()
-                .username(email)
-                .password(password)
-                .firstName(firstName)
-                .lastName(lastName)
-                .admin(false)
-                .build();
+     
 
-        when(userDetailsService.loadUserByUsername(email))
+        when(userDetailsService.loadUserByUsername(userDetails.getUsername()))
                 .thenReturn(userDetails);
 
         authTokenFilter.doFilterInternal(request, response, filterChain);
@@ -80,12 +69,12 @@ public class AuthTokenFilterTest {
 
         verify(filterChain).doFilter(request, response);
         verify(jwtUtils).validateJwtToken("validToken");
-        verify(userDetailsService).loadUserByUsername(email);
+        verify(userDetailsService).loadUserByUsername(userDetails.getUsername());
     }
 
     @Test
     void doFilterInternal_WithInvalidToken_ShouldContinueChain() throws ServletException, IOException {
-        when(request.getHeader("Authorization")).thenReturn(TEST_TOKEN);
+        when(request.getHeader("Authorization")).thenReturn(MockFactory.TEST_TOKEN);
         when(jwtUtils.validateJwtToken("validToken")).thenReturn(false);
 
         authTokenFilter.doFilterInternal(request, response, filterChain);
@@ -118,7 +107,7 @@ public class AuthTokenFilterTest {
 
     @Test
     void doFilterInternal_WithException_ShouldContinueChain() throws ServletException, IOException {
-        when(request.getHeader("Authorization")).thenReturn(TEST_TOKEN);
+        when(request.getHeader("Authorization")).thenReturn(MockFactory.TEST_TOKEN);
         when(jwtUtils.validateJwtToken("validToken")).thenThrow(new RuntimeException("Test exception"));
 
         authTokenFilter.doFilterInternal(request, response, filterChain);

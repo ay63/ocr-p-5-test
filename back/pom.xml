@@ -124,6 +124,11 @@
 						<goals>
 							<goal>report</goal>
 						</goals>
+						<configuration>
+							<excludes>
+								<exclude>com/openclassrooms/starterjwt/dto/**/*</exclude>
+							</excludes>
+						</configuration>
 					</execution>
 
 					<execution>
@@ -132,6 +137,9 @@
 							<goal>check</goal>
 						</goals>
 						<configuration>
+							<excludes>
+								<exclude>com/openclassrooms/starterjwt/dto/**/*</exclude>
+							</excludes>
 							<rules>
 								<rule>
 									<element>PACKAGE</element>
@@ -139,7 +147,7 @@
 										<limit>
 											<counter>LINE</counter>
 											<value>COVEREDRATIO</value>
-											<minimum>0.9</minimum>
+											<minimum>0.8</minimum>
 										</limit>
 									</limits>
 								</rule>

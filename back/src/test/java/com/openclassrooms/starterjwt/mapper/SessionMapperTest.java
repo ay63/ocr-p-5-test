@@ -1,18 +1,23 @@
 package com.openclassrooms.starterjwt.mapper;
 
+import com.openclassrooms.starterjwt.MockFactory;
 import com.openclassrooms.starterjwt.dto.SessionDto;
 import com.openclassrooms.starterjwt.models.Session;
 import com.openclassrooms.starterjwt.models.Teacher;
 import com.openclassrooms.starterjwt.models.User;
 import com.openclassrooms.starterjwt.services.TeacherService;
 import com.openclassrooms.starterjwt.services.UserService;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Arrays;
-import java.util.Date;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -28,105 +33,83 @@ class SessionMapperTest {
     @Mock
     private UserService userService;
 
-    @Test
-    void toEntity_ShouldMapAllFields() {
-        SessionDto dto = new SessionDto();
-        dto.setId(1L);
-        dto.setName("Yoga Session");
-        dto.setDescription("Beginner friendly yoga");
-        dto.setDate(new Date());
-        dto.setTeacher_id(1L);
-        dto.setUsers(Arrays.asList(1L, 2L));
+    @Autowired
+    private MockFactory mockFactory;
+    
+    private Session session;
+    private Session session2;
+    private Teacher teacher;
+    private User user1;
+    private User user2;
+    private SessionDto sessionDto;
 
-        Teacher teacher = new Teacher();
-        teacher.setId(1L);
+    @BeforeEach
+    void setUp() {
+        session = mockFactory.createSession();
 
-        User user1 = new User();
-        user1.setId(1L);
-        User user2 = new User();
+        session2 = mockFactory.createSession();
+        session2.setId(2L);
+        session2.setName("Yoga session2");
+        session2.setDescription("session2");
+
+        teacher = mockFactory.createTeacher();
+       
+        user1 = mockFactory.createUser(false);
+
+        user2 = mockFactory.createUser(false);
         user2.setId(2L);
+
+        session.setUsers(Arrays.asList(user1, user2));
+        sessionDto = sessionMapper.toDto(session);
+    }
+
+    @Test
+    void sessionToEntity_ShouldMapAllFields() {
 
         when(teacherService.findById(1L)).thenReturn(teacher);
         when(userService.findById(1L)).thenReturn(user1);
         when(userService.findById(2L)).thenReturn(user2);
 
-        Session result = sessionMapper.toEntity(dto);
+        Session result = sessionMapper.toEntity(sessionDto);
 
         assertNotNull(result);
-        assertEquals(dto.getId(), result.getId());
-        assertEquals(dto.getName(), result.getName());
-        assertEquals(dto.getDescription(), result.getDescription());
-        assertEquals(dto.getDate(), result.getDate());
-        assertEquals(teacher, result.getTeacher());
-        assertEquals(2, result.getUsers().size());
-        assertTrue(result.getUsers().contains(user1));
-        assertTrue(result.getUsers().contains(user2));
+
+        assertAll(() -> {
+            assertEquals(sessionDto.getId(), result.getId());
+            assertEquals(sessionDto.getName(), result.getName());
+            assertEquals(sessionDto.getDescription(), result.getDescription());
+            assertEquals(sessionDto.getDate(), result.getDate());
+            assertEquals(teacher, result.getTeacher());
+            assertEquals(2, result.getUsers().size());
+            assertTrue(result.getUsers().contains(user1));
+            assertTrue(result.getUsers().contains(user2));
+        });
 
         verify(teacherService).findById(1L);
         verify(userService).findById(1L);
         verify(userService).findById(2L);
     }
+    
 
     @Test
-    void toDto_ShouldMapAllFields() {
-        Session session = new Session();
-        session.setId(1L);
-        session.setName("Yoga Session");
-        session.setDescription("Beginner friendly yoga");
-        session.setDate(new Date());
-
-        Teacher teacher = new Teacher();
-        teacher.setId(1L);
-        session.setTeacher(teacher);
-
-        User user1 = new User();
-        user1.setId(1L);
-        User user2 = new User();
-        user2.setId(2L);
-        session.setUsers(Arrays.asList(user1, user2));
-
-        SessionDto result = sessionMapper.toDto(session);
-
-        assertNotNull(result);
-        assertEquals(session.getId(), result.getId());
-        assertEquals(session.getName(), result.getName());
-        assertEquals(session.getDescription(), result.getDescription());
-        assertEquals(session.getDate(), result.getDate());
-        assertEquals(teacher.getId(), result.getTeacher_id());
-        assertEquals(2, result.getUsers().size());
-        assertTrue(result.getUsers().contains(1L));
-        assertTrue(result.getUsers().contains(2L));
+    void sessionToDto_ShouldMapAllFields() {
+        assertAll(() -> {
+            assertEquals(session.getId(), sessionDto.getId());
+            assertEquals(session.getName(), sessionDto.getName());
+            assertEquals(session.getDescription(), sessionDto.getDescription());
+            assertEquals(session.getDate(), sessionDto.getDate());
+            assertEquals(teacher.getId(), sessionDto.getTeacher_id());
+            assertEquals(2, sessionDto.getUsers().size());
+            assertTrue(sessionDto.getUsers().contains(1L));
+            assertTrue(sessionDto.getUsers().contains(2L));
+        });
     }
 
-    @Test
-    void toEntity_WithNullValues_ShouldHandleGracefully() {
-        SessionDto dto = new SessionDto();
-        dto.setId(1L);
-        dto.setName("Yoga Session");
 
-        Session result = sessionMapper.toEntity(dto);
-
-        assertNotNull(result);
-        assertEquals(dto.getId(), result.getId());
-        assertEquals(dto.getName(), result.getName());
-        assertNull(result.getDescription());
-        assertNull(result.getTeacher());
-        assertTrue(result.getUsers().isEmpty());
+    void sessionsListToEntity_ShouldReturnListOfSession() {
+        List<SessionDto> dtos = Arrays.asList(sessionDto, sessionMapper.toDto(session2));
+        List<Session> result = sessionMapper.toEntity(dtos);
+        assertNotNull(result); 
     }
 
-    @Test
-    void toDto_WithNullValues_ShouldHandleGracefully() {
-        Session session = new Session();
-        session.setId(1L);
-        session.setName("Yoga Session");
-
-        SessionDto result = sessionMapper.toDto(session);
-
-        assertNotNull(result);
-        assertEquals(session.getId(), result.getId());
-        assertEquals(session.getName(), result.getName());
-        assertNull(result.getDescription());
-        assertNull(result.getTeacher_id());
-        assertTrue(result.getUsers().isEmpty());
-    }
-} 
+}

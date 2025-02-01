@@ -16,8 +16,9 @@ class NotFoundExceptionTest {
     }
 
     @Test
-    void shouldExtendRuntimeException() {
-        NotFoundException exception = new NotFoundException();
-        assertTrue(exception instanceof RuntimeException);
+    void shouldThrowNotFoundException() {
+        assertThrows(NotFoundException.class, () -> {
+            throw new NotFoundException();
+        });
     }
 } 

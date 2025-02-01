@@ -1,10 +1,10 @@
-package com.openclassrooms.starterjwt.controllers;
+package com.openclassrooms.starterjwt.controllers.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.openclassrooms.starterjwt.MockFactory;
 import com.openclassrooms.starterjwt.dto.SessionDto;
 import com.openclassrooms.starterjwt.exception.BadRequestException;
 import com.openclassrooms.starterjwt.exception.NotFoundException;
-import com.openclassrooms.starterjwt.factory.EntitiesTestFactory;
 import com.openclassrooms.starterjwt.mapper.SessionMapper;
 import com.openclassrooms.starterjwt.models.Session;
 import com.openclassrooms.starterjwt.services.SessionService;
@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
@@ -24,7 +23,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Arrays;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -32,8 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@Import(EntitiesTestFactory.class)
-public class SessionControllerTest {
+public class SessionControllerIntegrationTest {
 
         @Autowired
         private MockMvc mockMvc;
@@ -48,34 +45,32 @@ public class SessionControllerTest {
         private ObjectMapper objectMapper;
 
         @Autowired
-        private EntitiesTestFactory entitiesTestFactory;
+        private MockFactory mockFactory;
 
         private Session session;
-
         private SessionDto sessionDto;
 
         @BeforeEach
         void setUp() {
-                session = entitiesTestFactory.createSession();
-                sessionDto = sessionMapper.toDto(session);
+                session = mockFactory.createSession();
+                sessionDto = mockFactory.createSessionDto();
         }
 
         @Test
         @WithMockUser
-        void findById_ShouldReturnSession_WhenSessionExists() throws Exception {
-                Session session = entitiesTestFactory.createSession();
+        void findById_WhenSessionExists_ShouldReturnSession() throws Exception {
                 when(sessionService.getById(1L)).thenReturn(session);
 
                 mockMvc.perform(get("/api/session/1")
                                 .contentType(MediaType.APPLICATION_JSON))
                                 .andExpect(status().isOk())
-                                .andExpect(jsonPath("$.id").value(1))
-                                .andExpect(jsonPath("$.name").value("Yoga Session"));
+                                .andExpect(jsonPath("$.id").value(session.getId()))
+                                .andExpect(jsonPath("$.name").value(session.getName()));
         }
 
         @Test
         @WithMockUser
-        void findById_ShouldReturn404_WhenSessionDoesNotExist() throws Exception {
+        void findById_WhenSessionDoesNotExist_ShouldReturn401() throws Exception {
                 when(sessionService.getById(1L)).thenReturn(null);
 
                 mockMvc.perform(get("/api/session/1")
@@ -85,7 +80,7 @@ public class SessionControllerTest {
 
         @Test
         @WithMockUser
-        void findById_ShouldThrowNumberFormatException_WhenIdIsNotANumber() throws Exception {
+        void findById_WhenIdIsNotANumber_ShouldThrowNumberFormatException() throws Exception {
                 when(sessionService.getById(1L)).thenThrow(new NumberFormatException());
 
                 mockMvc.perform(get("/api/session/abc")
@@ -95,21 +90,23 @@ public class SessionControllerTest {
 
         @Test
         @WithMockUser
-        void findAll_ShouldReturnAllSessions() throws Exception {
-                Session session2 = entitiesTestFactory.createSession();
+        void findAll_WhenSessionExist_ShouldReturnAllSessions() throws Exception {
+                Session session2 = this.mockFactory.createSession();
                 session2.setId(2L);
+
                 when(sessionService.findAll()).thenReturn(Arrays.asList(session, session2));
 
                 mockMvc.perform(get("/api/session")
                                 .contentType(MediaType.APPLICATION_JSON))
                                 .andExpect(status().isOk())
-                                .andExpect(jsonPath("$[0].id").value(1))
-                                .andExpect(jsonPath("$[1].id").value(2));
+                                .andExpect(jsonPath("$[0].id").value(session.getId()))
+                                .andExpect(jsonPath("$[1].id").value(session2.getId()));
         }
 
         @Test
         @WithMockUser
-        void create_ShouldReturnCreatedSession() throws Exception {
+        void create_WhenCreateSession_ShouldReturnCreatedSession() throws Exception {
+                when(sessionService.getById(session.getId())).thenReturn(session);
 
                 when(sessionService.create(any(Session.class))).thenReturn(session);
 
@@ -117,7 +114,7 @@ public class SessionControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(sessionDto)))
                                 .andExpect(status().isOk())
-                                .andExpect(jsonPath("$.name").value("Yoga Session"));
+                                .andExpect(jsonPath("$.name").value(session.getName()));
         }
 
         @Test
@@ -134,8 +131,6 @@ public class SessionControllerTest {
 
         @Test
         void create_ShouldReturn401_WhenUseIsNotLogin() throws Exception {
-
-
                 mockMvc.perform(put("/api/session/1")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(sessionDto)))
@@ -144,21 +139,24 @@ public class SessionControllerTest {
 
         @Test
         @WithMockUser
-        void update_ShouldReturnUpdatedSession() throws Exception {
-                Session session = entitiesTestFactory.createSession();
-                SessionDto sessionDto = sessionMapper.toDto(session);
-                when(sessionService.update(eq(1L), any(Session.class))).thenReturn(session);
+        void update_WhenSessionUpdated_ShouldReturnUpdatedSession() throws Exception {
+
+                String update = "updated";
+                session.setDescription(update);
+                session.setName(update);
+                when(sessionService.update(1L,session)).thenReturn(session);
 
                 mockMvc.perform(put("/api/session/1")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(sessionDto)))
                                 .andExpect(status().isOk())
-                                .andExpect(jsonPath("$.name").value("Yoga Session"));
+                                .andExpect(jsonPath("$.name").value(update))
+                                .andExpect(jsonPath("$.description").value(update));
         }
 
         @Test
         @WithMockUser
-        void update_ShouldReturn400_WhenSessionHaveMissingAttrbiute() throws Exception {
+        void update_WhenSessionHaveMissingAttrbiute_ShouldReturn400() throws Exception {
                 Session sessionEmpty = new Session();
                 SessionDto sessionDto = sessionMapper.toDto(sessionEmpty);
 
@@ -169,8 +167,7 @@ public class SessionControllerTest {
         }
 
         @Test
-        void update_ShouldReturn401_WhenUseIsNotLogin() throws Exception {
-
+        void update_WhenUseIsNotLogin_ShouldReturn401() throws Exception {
                 mockMvc.perform(put("/api/session/1")
                                 .contentType(MediaType.APPLICATION_JSON))
                                 .andExpect(status().isUnauthorized());
@@ -178,7 +175,7 @@ public class SessionControllerTest {
 
         @Test
         @WithMockUser
-        void update_ShouldThrowNumberFormatException_WhenIdIsNotANumber() throws Exception {
+        void update_WhenIdIsNotANumber_ShouldThrowNumberFormatException() throws Exception {
                 doThrow(NumberFormatException.class)
                                 .when(sessionService)
                                 .update(any(Long.class), any(Session.class));
@@ -191,7 +188,7 @@ public class SessionControllerTest {
 
         @Test
         @WithMockUser
-        void delete_ShouldReturn200_WhenSessionExists() throws Exception {
+        void delete_WhenSessionExists_ShouldReturn200() throws Exception {
                 when(sessionService.getById(1L)).thenReturn(session);
                 doNothing().when(sessionService).delete(1L);
 
@@ -201,7 +198,7 @@ public class SessionControllerTest {
         }
 
         @Test
-        void delete_ShouldReturn401_WhenUseIsNotLogin() throws Exception {
+        void delete_WhenUseIsNotLogin_ShouldReturn401() throws Exception {
                 mockMvc.perform(put("/api/session/1")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(sessionDto)))
@@ -210,7 +207,7 @@ public class SessionControllerTest {
 
         @Test
         @WithMockUser
-        void delete_ShouldReturn404_WhenSessionDoesNotExist() throws Exception {
+        void delete_WhenSessionDoesNotExist_ShouldReturn404() throws Exception {
                 when(sessionService.getById(1L)).thenReturn(null);
                 mockMvc.perform(delete("/api/session/1")
                                 .contentType(MediaType.APPLICATION_JSON))
@@ -219,7 +216,7 @@ public class SessionControllerTest {
 
         @Test
         @WithMockUser
-        void delete_ShouldThrowNumberFormatException_WhenIdIsNotANumber() throws Exception {
+        void delete_WhenIdIsNotAnNumber_ShouldThrowNumberFormatException() throws Exception {
                 doThrow(new NumberFormatException())
                                 .when(sessionService).delete(1L);
 
@@ -230,7 +227,7 @@ public class SessionControllerTest {
 
         @Test
         @WithMockUser
-        void participate_ShouldReturn200_WhenSuccessful() throws Exception {
+        void participate_WhenSuccessfull_ShouldReturn200() throws Exception {
                 doNothing().when(sessionService).participate(1L, 1L);
                 mockMvc.perform(post("/api/session/1/participate/1")
                                 .contentType(MediaType.APPLICATION_JSON))
@@ -239,7 +236,7 @@ public class SessionControllerTest {
 
         @Test
         @WithMockUser
-        void participate_ShouldReturn404_WhenSessionNotFound() throws Exception {
+        void participate_WhenSessionNotFound_ShouldReturn404() throws Exception {
                 doThrow(new NotFoundException())
                                 .when(sessionService).participate(999L, 1L);
 
@@ -250,7 +247,7 @@ public class SessionControllerTest {
 
         @Test
         @WithMockUser
-        void participate_ShouldReturn404_WhenParticipantNotFound() throws Exception {
+        void participate_WhenParticipantNotFound_ShouldReturn404() throws Exception {
                 doThrow(new NotFoundException())
                                 .when(sessionService).participate(1L, 999L);
 
@@ -261,7 +258,7 @@ public class SessionControllerTest {
 
         @Test
         @WithMockUser
-        void participate_ShouldThrowNumberFormatException_WhenIdIsNotANumber() throws Exception {
+        void participate_WhenIdIsNotANumber_ShouldThrowNumberFormatException() throws Exception {
                 doThrow(new NumberFormatException())
                                 .when(sessionService).participate(1L, 1L);
 
@@ -272,7 +269,7 @@ public class SessionControllerTest {
 
         @Test
         @WithMockUser
-        void participate_ShouldReturn400_WhenNotFound() throws Exception {
+        void participate_WhenNotFound_ShouldReturn400() throws Exception {
                 doThrow(new BadRequestException())
                                 .when(sessionService).participate(999L, 999L);
 
