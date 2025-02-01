@@ -1,5 +1,5 @@
 beforeEach(() => {
-  cy.initUserDataAndLoginIn()
+  cy.loginUser()
 })
 describe('Logout page', () => {
 

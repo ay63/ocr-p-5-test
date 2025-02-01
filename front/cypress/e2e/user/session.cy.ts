@@ -1,5 +1,6 @@
 beforeEach(() => {
-  cy.initUserDataAndLoginIn()
+  cy.loginUser()
+  cy.interceptSession()
   cy.getByDataCy("create-session").should('not.exist')
 })
 
@@ -18,7 +19,8 @@ describe('User', () => {
       },
       statusCode: 200,
     }).as('addParticipate');
-
+    
+    cy.getByDataCy("create-session").should('not.exist')
     cy.getByDataCy('detail-session-1').click();
     cy.getByDataCy('unparticipate-1').should('be.visible');
     cy.getByDataCy('participate-1').should('not.exist');
@@ -39,9 +41,15 @@ describe('User', () => {
       statusCode: 200,
     }).as('removeParticiapte');
 
+    cy.getByDataCy("create-session").should('not.exist')
     cy.getByDataCy('detail-session-1').click();
     cy.getByDataCy('participate-1').should('be.visible');
     cy.getByDataCy('unparticipate-1').should('not.exist');
   });
+
+  it('Should not be able to delete a session', () => {
+    cy.getByDataCy("detail-session-1").click();
+    cy.getByDataCy("delete-1").should('not.exist');
+  })
 
 })

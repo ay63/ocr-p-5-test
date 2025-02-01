@@ -1,5 +1,7 @@
 beforeEach(() => {
-  cy.initUserDataAndLoginIn(true)
+  cy.loginUser(true)
+  cy.interceptSession()
+  cy.interceptTeacher()
   cy.getByDataCy("create-session").should('exist')
 })
 
@@ -17,27 +19,41 @@ describe('Admin session', () => {
       cy.getByDataCy("description").type('a'.repeat(20))
 
       cy.getByDataCy("saveBtn").click()
-      cy.url().should('include', '/sessions')
+      cy.wait('@postSession')
+      cy.url().should('eq', Cypress.config('baseUrl') + '/sessions')
+
+
+      // @todo: fix this test
+      // cy.getByDataCy("detail-session-1").click();
+      // cy.getByDataCy("name").should('have.value', 'test');
     })
   })
 
-  it('Should be able to delete a session', () => {
-    cy.intercept('DELETE', '/api/session', {
-      statusCode: 200
-    })
+  describe('Session delete', () => {
+    it('Should be able to delete a session', () => {
+      cy.intercept('DELETE', '/api/session/1', {
+        statusCode: 200
+      })
+      cy.getByDataCy("detail-session-1").click()
+      cy.getByDataCy("delete-1").click();
+      cy.url().should('eq', Cypress.config('baseUrl') + '/sessions')
 
-    cy.getByDataCy("detail-session-1").click()
-    cy.getByDataCy("delete-1").click();
-    cy.url().should('include', '/detail/1');
+      // cy.getByDataCy("detail-session-1").should('not.exist');
+    })
   })
 
-  it('Should be able to update a session', () => {
-    cy.getByDataCy("edit-session-1").click();
-    cy.url().should('include', `/update/1`);
-    cy.getByDataCy("description").clear()
-    cy.getByDataCy("description").type("update description");
-    cy.getByDataCy("saveBtn").click()
-    cy.url().should('include', '/sessions')
+  describe('Session update', () => {
+    it('Should be able to update a session', () => {
+      cy.getByDataCy("edit-session-1").click();
+      cy.url().should('include', `/update/1`);
+      cy.getByDataCy("description").clear()
+      cy.getByDataCy("description").type("update description");
+      cy.getByDataCy("saveBtn").click()
+      cy.url().should('eq', Cypress.config('baseUrl') + '/sessions')
+
+      // cy.getByDataCy("detail-session-1").click();
+      // cy.getByDataCy("description").should('have.value', 'update description');
+    })
   })
 
   describe('Session create errors form on create and update ', () => {

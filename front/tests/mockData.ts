@@ -3,7 +3,6 @@ import {SessionInformation} from "../src/app/interfaces/sessionInformation.inter
 import {Session} from "../src/app/features/sessions/interfaces/session.interface";
 import {Teacher} from "../src/app/interfaces/teacher.interface";
 import * as fakeData from "./fakerData";
-import {fakeSecondSessionDescription, fakeSecondSessionName, fakeTeacherFirstName, fakeToken} from "./fakerData";
 
 export const mockDataTestUserNotAdmin: User = {
   id: 1,

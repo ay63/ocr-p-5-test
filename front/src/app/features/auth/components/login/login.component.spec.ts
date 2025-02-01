@@ -19,6 +19,7 @@ import {
   mockTestRouter
 } from "../../../../../../tests/mock";
 import {mockDataTestSessionInformationNotAdmin} from "../../../../../../tests/mockData";
+import {By} from "@angular/platform-browser";
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
@@ -62,28 +63,36 @@ describe('LoginComponent', () => {
   it('should redirect to "/sessions" after successful submit', () => {
     authServiceMock.login.mockReturnValue(of(mockDataTestSessionInformationNotAdmin));
 
-    const formValue: LoginRequest = {
+    const loginReq: LoginRequest = {
       email: 'test@example.com',
       password: 'password123',
     }
 
-    component.form.setValue(formValue);
+    component.form.setValue(loginReq);
     component.submit();
 
-    expect(authServiceMock.login).toHaveBeenCalledWith(formValue);
+    expect(authServiceMock.login).toHaveBeenCalledWith(loginReq);
     expect(routerMock.navigate).toHaveBeenCalledWith(['/sessions']);
     expect(component.onError).toBe(false);
   });
 
-  it('should set onError to true if an error occurs during submit', () => {
-    authServiceMock.login.mockReturnValue(throwError(() => new Error()));
+  it('should set onError to true when credential are invalid and display error message', () => {
+    authServiceMock.login.mockReturnValue(throwError(() => new Error('Invalid credentials')));
 
-    component.form.setValue({
+    const loginReq: LoginRequest = {
       email: 'test@example.com',
-      password: 'password123',
-    });
+      password: 'invalid',
+    }
 
+    component.form.setValue(loginReq);
     component.submit();
+
+    fixture.detectChanges();
+    
+    const errorMessage = fixture.debugElement.query(By.css('.error'));
+
+    expect(errorMessage).toBeTruthy();
+    expect(errorMessage.nativeElement.textContent).toContain('An error occurred');
     expect(component.onError).toBe(true);
   });
 

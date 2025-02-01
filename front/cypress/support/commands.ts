@@ -1,51 +1,10 @@
 /// <reference types="cypress" />
 
-
 Cypress.Commands.add("getByDataCy", (selector, ...args) => {
   return cy.get(`[data-cy=${selector}]`, ...args)
 })
 
-Cypress.Commands.add("initUserDataAndLoginIn", (admin: boolean = false) => {
-  cy.visit('/login')
-
-  cy.intercept('POST', '/api/auth/login', {
-    body: {
-      id: 1,
-      username: 'userName',
-      firstName: 'firstName',
-      lastName: 'lastName',
-      admin: admin
-    },
-  }).as('postLogin')
-
-  cy.intercept('GET', '/api/session', {
-    body: [
-      {
-        "id": 1,
-        "name": "test",
-        "date": "2025-01-22T00:00:00.000+00:00",
-        "teacher_id": 1,
-        "description": "test",
-        "users": [],
-        "createdAt": "2025-01-23T09:12:33",
-        "updatedAt": "2025-01-23T09:12:33"
-      },
-    ],
-    statusCode: 200
-  }).as('getSession')
-
-  cy.intercept('GET', '/api/user/1', {
-    body: {
-      "id": 1,
-      "email": "email0.6009744576622176@gmail.com",
-      "lastName": "lastName",
-      "firstName": "firstName",
-      "admin": admin,
-      "createdAt": "2025-01-22T14:31:48",
-      "updatedAt": "2025-01-22T14:31:48"
-    }
-  }).as('getUser')
-
+Cypress.Commands.add("interceptTeacher", () => {
   cy.intercept('GET', '/api/teacher', {
     body: [
       {
@@ -71,6 +30,9 @@ Cypress.Commands.add("initUserDataAndLoginIn", (admin: boolean = false) => {
     statusCode: 200
   }).as('getTeacher')
 
+});
+
+Cypress.Commands.add("interceptSession", () => {
   cy.intercept('POST', '/api/session/1/participate/1', {
     body: {},
     statusCode: 200
@@ -104,10 +66,53 @@ Cypress.Commands.add("initUserDataAndLoginIn", (admin: boolean = false) => {
       "createdAt": "2025-01-23T09:12:33",
       "updatedAt": "2025-01-23T09:12:33"
     },
-  }).as('getSession')
+  }).as('getSessionById')
 
+});
+
+Cypress.Commands.add("loginUser", (admin: boolean = false) => {
+  cy.visit('/login')
+
+  cy.intercept('POST', '/api/auth/login', {
+    body: {
+      id: 1,
+      username: 'userName',
+      firstName: 'firstName',
+      lastName: 'lastName',
+      admin: admin
+    },
+  }).as('postLogin')
+
+  cy.intercept('GET', '/api/user/1', {
+    body: {
+      "id": 1,
+      "email": "email@test.com",
+      "lastName": "lastName",
+      "firstName": "firstName",
+      "admin": admin,
+      "createdAt": "2025-01-22T14:31:48",
+      "updatedAt": "2025-01-22T14:31:48"
+    }
+  }).as('getUser')
+
+  cy.intercept('GET', '/api/session', {
+    body: [
+      {
+        "id": 1,
+        "name": "test",
+        "date": "2025-01-22T00:00:00.000+00:00",
+        "teacher_id": 1,
+        "description": "test",
+        "users": [],
+        "createdAt": "2025-01-23T09:12:33",
+        "updatedAt": "2025-01-23T09:12:33"
+      },
+    ],
+    statusCode: 200
+  }).as('getSession')
 
   cy.get('input[formcontrolname=email]').type('user@email.com');
   cy.get('input[formcontrolname=password]').type('password{enter}{enter}')
   cy.url().should('include', '/sessions')
-})
+});
+

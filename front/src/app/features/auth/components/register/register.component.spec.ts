@@ -1,12 +1,13 @@
-import {TestBed, ComponentFixture} from '@angular/core/testing';
-import {ReactiveFormsModule} from '@angular/forms';
-import {Router} from '@angular/router';
-import {of, throwError} from 'rxjs';
-import {RegisterComponent} from './register.component';
-import {AuthService} from '../../services/auth.service';
-import {expect} from '@jest/globals';
-import {RegisterRequest} from "../../interfaces/registerRequest.interface";
-import {authTestServiceMock, mockTestRouter} from "../../../../../../tests/mock";
+import { TestBed, ComponentFixture } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { of, throwError } from 'rxjs';
+import { RegisterComponent } from './register.component';
+import { AuthService } from '../../services/auth.service';
+import { expect } from '@jest/globals';
+import { RegisterRequest } from "../../interfaces/registerRequest.interface";
+import { authTestServiceMock, mockTestRouter } from "../../../../../../tests/mock";
+import { By } from '@angular/platform-browser';
 
 describe('RegisterComponent', () => {
   let component: RegisterComponent;
@@ -22,8 +23,8 @@ describe('RegisterComponent', () => {
       declarations: [RegisterComponent],
       imports: [ReactiveFormsModule],
       providers: [
-        {provide: AuthService, useValue: authServiceMock},
-        {provide: Router, useValue: routerMock},
+        { provide: AuthService, useValue: authServiceMock },
+        { provide: Router, useValue: routerMock },
       ],
     }).compileComponents();
 
@@ -54,7 +55,7 @@ describe('RegisterComponent', () => {
       expect(routerMock.navigate).toHaveBeenCalledWith(['/login']);
     });
 
-    it('should set onError to true if an error occurs during submit', () => {
+    it('should set onError to true and display error message when registration fails', () => {
       authServiceMock.register.mockReturnValue(throwError(() => new Error()));
       component.form.setValue({
         email: 'test@example.com',
@@ -65,6 +66,11 @@ describe('RegisterComponent', () => {
 
       component.submit();
 
+      fixture.detectChanges();
+
+      const errorMessage = fixture.debugElement.query(By.css('.error'));
+      expect(errorMessage).toBeTruthy();
+      expect(errorMessage.nativeElement.textContent).toContain('An error occurred');
       expect(component.onError).toBe(true);
     });
   })

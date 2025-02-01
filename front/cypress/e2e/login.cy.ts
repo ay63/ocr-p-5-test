@@ -3,7 +3,7 @@ beforeEach(() => {
 })
 
 describe('Login spec', () => {
-  it('Login admin successfull', () => {
+  it('Should login successfull with admin user', () => {
     cy.intercept('POST', '/api/auth/login', {
       body: {
         id: 1,
@@ -21,7 +21,7 @@ describe('Login spec', () => {
   })
 
 
-  it('Login successfull with none admin user', () => {
+  it('Should login successfull with standard user', () => {
     cy.intercept('POST', '/api/auth/login', {
       body: {
         id: 1,
@@ -39,7 +39,7 @@ describe('Login spec', () => {
     cy.getByDataCy("create-session").should('not.exist')
   })
 
-  it('Login failed missing form info', () => {
+  it('Should display error when login failed with missing form info', () => {
     cy.get('form').submit()
     cy.get('.error').should('exist')
     cy.get('input[formcontrolname=email]').should('have.class', 'ng-invalid')
@@ -48,7 +48,7 @@ describe('Login spec', () => {
     cy.url().should('include', '/login')
   })
 
-  it('Login failed wrong credentials', () => {
+  it('Should display error when login failed with wrong credentials', () => {
     cy.get('form').submit()
     cy.intercept('POST', '/api/auth/login', {
       body: {},
