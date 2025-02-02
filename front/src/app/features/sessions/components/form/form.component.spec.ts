@@ -25,7 +25,7 @@ describe('FormComponent', () => {
     mockRouter = {
       navigate: jest.fn(),
       get url() {
-        return '/sessions/create';
+        return '';
       }
     } as any;
 
@@ -128,7 +128,7 @@ describe('FormComponent', () => {
         description: 'Test Description'
       };
       component.sessionForm?.setValue(testSession);
-      mockSessionApiService.create.mockReturnValue(throwError('Error'));
+      mockSessionApiService.create.mockReturnValue(throwError(() => new Error()));
 
       component.submit();
 
@@ -179,7 +179,7 @@ describe('FormComponent', () => {
     });
   });
 
-  describe('form validation', () => {
+  describe('Session Form validation', () => {
     beforeEach(() => {
       component.ngOnInit();
       fixture.detectChanges();
@@ -201,7 +201,6 @@ describe('FormComponent', () => {
       expect(errors?.['maxlength']?.requiredLength).toBe(2000);
       expect(errors?.['maxlength']?.actualLength).toBe(2001);
     });
+  });
 
-
-  }); 
 });

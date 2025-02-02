@@ -37,7 +37,6 @@ describe('RegisterComponent', () => {
     expect(component).toBeTruthy();
   });
 
-
   describe('Register action', () => {
     it('should redirect to "/login" after successful submit', () => {
       authServiceMock.register.mockReturnValue(of(undefined));
@@ -65,7 +64,6 @@ describe('RegisterComponent', () => {
       });
 
       component.submit();
-
       fixture.detectChanges();
 
       const errorMessage = fixture.debugElement.query(By.css('.error'));
@@ -75,7 +73,7 @@ describe('RegisterComponent', () => {
     });
   })
 
-  describe('Form validation', () => {
+  describe('Register form validation', () => {
     it('should require all fields', () => {
       expect(component.form.get('email')?.hasError('required')).toBeTruthy();
       expect(component.form.get('firstName')?.hasError('required')).toBeTruthy();

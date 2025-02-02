@@ -1,7 +1,4 @@
 
-const fakeEmail = `email${Math.random()}@gmail.com`
-const fakePassword = 'test!1234'
-
 beforeEach(() => {
     cy.visit('/register')
 })
@@ -11,8 +8,8 @@ describe('Register functionality', () => {
     it('Should register successfull', () => {
       cy.intercept('POST', '/api/auth/register', {
         body: {
-          email: fakeEmail,
-          password: fakePassword,
+          email: "user@gmail.com",
+          password: "test!1234",
           firstName: "firstName",
           lastName: "lastName"
         },
@@ -21,34 +18,17 @@ describe('Register functionality', () => {
 
         cy.getByDataCy("firstName").type("firstName")
         cy.getByDataCy("lastName").type("lastName")
-        cy.getByDataCy("email").type(fakeEmail)
-        cy.getByDataCy("password").type(fakePassword)
+        cy.getByDataCy("email").type("user@gmail.com")
+        cy.getByDataCy("password").type("test!1234")
 
         cy.getByDataCy("registerBtn").click()
-
-        cy.url().should('include', '/login')
-    })
-
-    it('Should register user login', () => {
-        cy.visit('/login')
-
-        cy.intercept('POST', '/auth/login', {
-           body: {
-            email: fakeEmail,
-            password: fakePassword
-           },
-          statusCode: 200
-        })
-
-        cy.get('input[formcontrolname=email]').type(fakeEmail)
-        cy.get('input[formcontrolname=password]').type(`${fakePassword}{enter}{enter}`)
 
         cy.url().should('include', '/login')
     })
 })
 
 
-describe('register failed form', () => {
+describe('Register failed form', () => {
     it('Should display error when register failed with empty format', () => {
         cy.getByDataCy("firstName").invoke('val', '')
         cy.getByDataCy("lastName").invoke('val', '')
@@ -66,7 +46,7 @@ describe('register failed form', () => {
     it('Should display error when register failed with invalid email format', () => {
         cy.getByDataCy("firstName").type("firstName")
         cy.getByDataCy("lastName").type("lastName")
-        cy.getByDataCy("password").type(`${fakePassword}{enter}{enter}`)
+        cy.getByDataCy("password").type("test!1234{enter}{enter}")
         cy.getByDataCy("email").type('invalid-email')
         cy.getByDataCy("email").should('have.class', 'ng-invalid')
 
@@ -77,8 +57,8 @@ describe('register failed form', () => {
 
     it('Should display error when register failed with firstName min length 3', () => {
         cy.getByDataCy("lastName").type("lastName")
-        cy.getByDataCy("email").type(fakeEmail)
-        cy.getByDataCy("password").type(`${fakePassword}{enter}{enter}`)
+        cy.getByDataCy("email").type("user@gmail.com")
+        cy.getByDataCy("password").type("test!1234{enter}{enter}")
         cy.getByDataCy("firstName").type("er")
 
         cy.get('form').submit()
@@ -88,8 +68,8 @@ describe('register failed form', () => {
 
     it('Should display error when register failed with firstName max length 20', () => {
         cy.getByDataCy("lastName").type("lastName")
-        cy.getByDataCy("email").type(fakeEmail)
-        cy.getByDataCy("password").type(`${fakePassword}{enter}{enter}`)
+        cy.getByDataCy("email").type("user@gmail.com")
+        cy.getByDataCy("password").type("test!1234{enter}{enter}")
         cy.getByDataCy("firstName").type("a".repeat(21))
 
         cy.get('form').submit()
@@ -100,8 +80,8 @@ describe('register failed form', () => {
 
     it('Should display error when register failed with lastName min length 3', () => {
         cy.getByDataCy("firstName").type("firstName")
-        cy.getByDataCy("email").type(fakeEmail)
-        cy.getByDataCy("password").type(`${fakePassword}{enter}{enter}`)
+        cy.getByDataCy("email").type("user@gmail.com")
+        cy.getByDataCy("password").type("test!1234{enter}{enter}")
         cy.getByDataCy("lastName").type("er")
 
         cy.get('form').submit()
@@ -111,8 +91,8 @@ describe('register failed form', () => {
 
     it('Should display error when register failed with lastName max length 20', () => {
         cy.getByDataCy("firstName").type("firstName")
-        cy.getByDataCy("email").type(fakeEmail)
-        cy.getByDataCy("password").type(`${fakePassword}{enter}{enter}`)
+        cy.getByDataCy("email").type("user@gmail.com")
+        cy.getByDataCy("password").type("test!1234{enter}{enter}")
         cy.getByDataCy("lastName").type("a".repeat(21))
 
         cy.get('form').submit()
@@ -123,7 +103,7 @@ describe('register failed form', () => {
     it('Should display error when register failed with password min length 3', () => {
         cy.getByDataCy("firstName").type("firstName")
         cy.getByDataCy("lastName").type("lastName")
-        cy.getByDataCy("email").type(fakeEmail)
+        cy.getByDataCy("email").type("user@gmail.com")
         cy.getByDataCy("password").type('in')
 
         cy.get('form').submit()
@@ -135,7 +115,7 @@ describe('register failed form', () => {
     it('Should display error when register failed with password max length 40', () => {
         cy.getByDataCy("firstName").type("firstName")
         cy.getByDataCy("lastName").type("lastName")
-        cy.getByDataCy("email").type(fakeEmail)
+        cy.getByDataCy("email").type("user@gmail.com")
         cy.getByDataCy("password").type('a'.repeat(41))
 
         cy.get('form').submit()

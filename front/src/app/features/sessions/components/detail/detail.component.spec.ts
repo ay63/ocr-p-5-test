@@ -154,9 +154,9 @@ describe('DetailComponent', () => {
       const date = datePipe.transform(mockDataTestSession.date, 'longDate');
       const pipe = new TitleCasePipe();
 
-
       fixture.detectChanges();
- 
+
+      expect( fixture.nativeElement.querySelector('[data-cy="delete-session-1"]')).toBeFalsy();
       expect(fixture.nativeElement.querySelector('h1').textContent).toContain(pipe.transform(mockDataTestSession.name));
       expect(fixture.nativeElement.querySelector('mat-card-subtitle').textContent).toContain(mockDataTestTeacher.firstName + ' ' + mockDataTestTeacher.lastName.toUpperCase());
       expect(fixture.nativeElement.querySelector('.description').textContent).toContain(mockDataTestSession.description);
@@ -180,8 +180,8 @@ describe('DetailComponent', () => {
       const pipe = new TitleCasePipe();
 
       fixture.detectChanges();
- 
-      expect( fixture.nativeElement.querySelector('[data-cy="delete-1"]')).toBeTruthy();
+
+      expect( fixture.nativeElement.querySelector('[data-cy="delete-session-1"]')).toBeTruthy();
       expect( fixture.nativeElement.querySelector('[data-cy="participate-1"]')).toBeFalsy();
       expect( fixture.nativeElement.querySelector('[data-cy="unparticipate-1"]')).toBeFalsy();
 

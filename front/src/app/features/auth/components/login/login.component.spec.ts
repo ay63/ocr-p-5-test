@@ -1,5 +1,5 @@
 import {HttpClientModule} from '@angular/common/http';
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, tick} from '@angular/core/testing';
 import {ReactiveFormsModule} from '@angular/forms';
 import {MatCardModule} from '@angular/material/card';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -88,12 +88,57 @@ describe('LoginComponent', () => {
     component.submit();
 
     fixture.detectChanges();
-    
-    const errorMessage = fixture.debugElement.query(By.css('.error'));
 
+    const errorMessage = fixture.debugElement.query(By.css('.error'));
     expect(errorMessage).toBeTruthy();
     expect(errorMessage.nativeElement.textContent).toContain('An error occurred');
     expect(component.onError).toBe(true);
+  });
+
+
+  it('should set onError to true when credential are invalid and display error message', () => {
+    authServiceMock.login.mockReturnValue(throwError(() => new Error('Invalid credentials')));
+
+    component.form.setValue( {
+      email: 'test@example.com',
+      password: 'invalid',
+    });
+    component.submit();
+
+    fixture.detectChanges();
+
+    const errorMessage = fixture.debugElement.query(By.css('.error'));
+    expect(errorMessage).toBeTruthy();
+    expect(errorMessage.nativeElement.textContent).toContain('An error occurred');
+    expect(component.onError).toBe(true);
+  });
+
+
+  describe('Login form validation', () => {
+    it('should require all fields', () => {
+      expect(component.form.get('email')?.hasError('required')).toBeTruthy();
+      expect(component.form.get('password')?.hasError('required')).toBeTruthy();
+    });
+
+    it('should validate email format', () => {
+      component.form.get('email')?.setValue('invalid-email');
+      expect(component.form.get('email')?.hasError('email')).toBeTruthy();
+
+      component.form.get('email')?.setValue('valid@example.com');
+      expect(component.form.get('email')?.hasError('email')).toBeFalsy();
+    });
+
+    it('should validate password length', () => {
+      const shortPassword = 'a';
+      const validPassword = 'a'.repeat(10);
+
+      component.form.get('password')?.setValue(shortPassword);
+      expect(component.form.get('password')?.hasError('minlength')).toBeTruthy();
+
+      component.form.get('password')?.setValue(validPassword);
+      expect(component.form.get('password')?.hasError('password')).toBeFalsy();
+    });
+
   });
 
 });
