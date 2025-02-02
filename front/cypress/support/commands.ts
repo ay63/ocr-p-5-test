@@ -30,7 +30,6 @@ Cypress.Commands.add("loginUser", (admin: boolean = false) => {
     }
   }).as('getUser')
 
-
   cy.get('input[formcontrolname=email]').type('user@email.com');
   cy.get('input[formcontrolname=password]').type('password{enter}{enter}')
   cy.url().should('include', '/sessions')

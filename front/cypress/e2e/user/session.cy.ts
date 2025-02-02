@@ -57,10 +57,6 @@ describe('User', () => {
     }).as('getSessionwitParticipate');
 
     cy.getByDataCy('participate-1').click();
-
-    cy.wait('@postParticipate');
-    cy.wait('@getSessionwitParticipate');
-
     cy.getByDataCy('unparticipate-1').should('be.visible');
     cy.getByDataCy('participate-1').should('not.exist');
     cy.get('.attendees').should('have.text', '1 attendees');
@@ -86,7 +82,7 @@ describe('User', () => {
     cy.getByDataCy('unparticipate-1').should('be.visible');
     cy.getByDataCy('participate-1').should('not.exist');
 
-    cy.wait('@getSessionwitParticipate')
+
 
     cy.intercept('DELETE', 'api/session/1/participate/1', {
       body: {

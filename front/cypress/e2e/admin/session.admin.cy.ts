@@ -145,6 +145,7 @@ describe('Admin session', () => {
       }).as('getSessions');
 
       cy.getByDataCy("edit-session-1").click();
+      cy.wait('@getSessionById')
       cy.url().should('include', `/update/1`);
 
       cy.getByDataCy("description").clear()
@@ -153,8 +154,11 @@ describe('Admin session', () => {
       cy.getByDataCy("name").type("Update Yoga session");
 
       cy.getByDataCy("saveBtn").click()
-      cy.url().should('eq', Cypress.config('baseUrl') + '/sessions')
 
+      cy.wait('@getSessions');
+      cy.wait('@updateSession');
+
+      cy.url().should('eq', Cypress.config('baseUrl') + '/sessions')
       cy.getByDataCy("session-description").should('contain.text', 'update description');
       cy.getByDataCy("session-name").should('contain.text', 'Update Yoga session');
 
