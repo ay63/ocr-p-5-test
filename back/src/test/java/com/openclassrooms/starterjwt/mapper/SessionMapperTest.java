@@ -105,7 +105,7 @@ class SessionMapperTest {
         });
     }
 
-
+    @Test
     void sessionsListToEntity_ShouldReturnListOfSession() {
         List<SessionDto> dtos = Arrays.asList(sessionDto, sessionMapper.toDto(session2));
         List<Session> result = sessionMapper.toEntity(dtos);

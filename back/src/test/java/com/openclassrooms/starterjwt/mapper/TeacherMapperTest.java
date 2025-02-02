@@ -48,7 +48,6 @@ class TeacherMapperTest {
         });
     }
 
-
     @Test
     void teacherToEntity_ShouldMapAllFields() {
         Teacher teacher = teacherMapper.toEntity(teacherDto);
@@ -60,7 +59,6 @@ class TeacherMapperTest {
             assertThat(teacher.getFirstName()).isEqualTo(teacherDto.getFirstName());
         });
     }
-
 
     @Test
     void teachersToEntity_ShouldReturnListOfTeacher() {
