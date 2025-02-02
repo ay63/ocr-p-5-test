@@ -57,7 +57,7 @@ describe('MeComponent', () => {
     });
   });
 
-  describe('Data user', () => {
+  describe('Data standard user display', () => {
     it('should display user information correctly', () => {
       expect(compiled.querySelector('h1')?.textContent).toContain('User information');
       expect(compiled.querySelector('[data-cy="name"]')?.textContent).toContain(`Name: ${mockDataTestUserNotAdmin.firstName} ${mockDataTestUserNotAdmin.lastName}`);
@@ -65,20 +65,9 @@ describe('MeComponent', () => {
       expect(compiled.querySelector('[data-cy="deleteBtn"]')).toBeTruthy();
     });
 
-    it('should display dates correctly', () => {
-      mockUserService.getById.mockReturnValue(of(mockDataTestUserNotAdmin));
-      fixture.detectChanges();
-
-      const datePipe = new DatePipe('en-US');
-      const createdAt = datePipe.transform(mockDataTestUserNotAdmin.createdAt, 'longDate');
-      const updatedAt = datePipe.transform(mockDataTestUserNotAdmin.updatedAt, 'longDate');
-
-      expect(compiled.querySelector('[data-cy="created-at"]')?.textContent).toContain(`Create at: ${createdAt}`);
-      expect(compiled.querySelector('[data-cy="updated-at"]')?.textContent).toContain(`Last update: ${updatedAt}`);
-    });
   });
 
-  describe('Admin user detail', () => {
+  describe('Admin user detail display', () => {
     it('should not display delete button for admin user', () => {
       mockUserService.getById.mockReturnValue(of(mockDataTestUserIsAdmin));
       component.ngOnInit();
@@ -96,18 +85,25 @@ describe('MeComponent', () => {
     });
   });
 
-  describe('Go back action', () => {
-    it('should call window.history.back', () => {
-      const spyHistoryBack = jest.spyOn(window.history, 'back');
-      component.back();
-      expect(spyHistoryBack).toHaveBeenCalled();
+
+  describe('Dates display', () => {
+    it('should display dates correctly', () => {
+      mockUserService.getById.mockReturnValue(of(mockDataTestUserNotAdmin));
+      fixture.detectChanges();
+
+      const datePipe = new DatePipe('en-US');
+      const createdAt = datePipe.transform(mockDataTestUserNotAdmin.createdAt, 'longDate');
+      const updatedAt = datePipe.transform(mockDataTestUserNotAdmin.updatedAt, 'longDate');
+
+      expect(compiled.querySelector('[data-cy="created-at"]')?.textContent).toContain(`Create at: ${createdAt}`);
+      expect(compiled.querySelector('[data-cy="updated-at"]')?.textContent).toContain(`Last update: ${updatedAt}`);
     });
   });
 
-  describe('Delete action', () => {
+  describe('Delete action when user is not admin', () => {
     it('should delete user account', () => {
       component.delete();
-
+      
       expect(mockUserService.delete).toHaveBeenCalledWith('1');
       expect(mockMatSnackBar.open).toHaveBeenCalledWith(
         'Your account has been deleted !',

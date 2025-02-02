@@ -20,11 +20,6 @@ export const fakeAdminEmail: string = faker.internet.email({
   lastName:fakeAdminLastName.toUpperCase()
 }).toString();
 
-export const fakeAdminFullName=  faker.person.fullName({
-  firstName: fakeAdminFirstName,
-  lastName: fakeAdminLastName,
-});
-
 // Password
 export const fakeValidPassword=  faker.internet.password({length:10});
 

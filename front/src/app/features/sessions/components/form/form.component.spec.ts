@@ -8,6 +8,8 @@ import { TeacherService } from '../../../../services/teacher.service';
 import { SessionApiService } from '../../services/session-api.service';
 import { FormComponent } from './form.component';
 import { expect } from "@jest/globals";
+import { mockTestSessionApiService, mockTestSessionService, mockTestTeacherService } from 'tests/mock';
+import { mockDataTestSession } from 'tests/mockData';
 
 describe('FormComponent', () => {
   let component: FormComponent;
@@ -23,7 +25,7 @@ describe('FormComponent', () => {
     mockRouter = {
       navigate: jest.fn(),
       get url() {
-        return '/sessions/create';
+        return '';
       }
     } as any;
 
@@ -33,28 +35,9 @@ describe('FormComponent', () => {
       }
     } as unknown as jest.Mocked<ActivatedRoute>;
 
-    mockSessionService = {
-      sessionInformation: {
-        admin: false,
-        id: 1
-      }
-    } as unknown as jest.Mocked<SessionService>;
-
-    mockSessionApiService = {
-      detail: jest.fn().mockReturnValue(of({
-        id: '1',
-        name: 'Test Session',
-        date: '2024-01-21',
-        teacher_id: '1',
-        description: 'Test Description'
-      })),
-      create: jest.fn().mockReturnValue(of({})),
-      update: jest.fn().mockReturnValue(of({}))
-    } as unknown as jest.Mocked<SessionApiService>;
-
-    mockTeacherService = {
-      all: jest.fn().mockReturnValue(of([]))
-    } as unknown as jest.Mocked<TeacherService>;
+    mockSessionService = mockTestSessionService
+    mockSessionApiService = mockTestSessionApiService;
+    mockTeacherService = mockTestTeacherService;
 
     mockMatSnackBar = {
       open: jest.fn()
@@ -85,21 +68,10 @@ describe('FormComponent', () => {
 
   describe('ngOnInit', () => {
     it('should redirect if user is not admin', () => {
-      mockSessionService.sessionInformation = {
-        firstName: "",
-        id: 0,
-        lastName: "",
-        token: "",
-        type: "",
-        username: "",
-        admin: false
-      };
-
       component.ngOnInit();
 
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/sessions']);
     });
-
 
     it('should initialize form for create mode', () => {
       jest.spyOn(mockRouter, 'url', 'get').mockReturnValue('/sessions/create');
@@ -120,17 +92,12 @@ describe('FormComponent', () => {
 
       expect(component.onUpdate).toBe(true);
       expect(mockSessionApiService.detail).toHaveBeenCalledWith('1');
-      expect(component.sessionForm?.get('name')?.value).toBe('Test Session');
+      expect(component.sessionForm?.get('name')?.value).toBe(mockDataTestSession.name);
     });
 
   });
 
-  describe('Submit action', () => {
-    beforeEach(() => {
-      component.ngOnInit();
-      fixture.detectChanges();
-    });
-
+  describe('Form Submit action', () => {
     it('should create new session', () => {
       const testSession = {
         name: 'New Session',
@@ -145,6 +112,23 @@ describe('FormComponent', () => {
       expect(mockSessionApiService.create).toHaveBeenCalledWith(testSession);
       expect(mockMatSnackBar.open).toHaveBeenCalledWith('Session created !', 'Close', { duration: 3000 });
       expect(mockRouter.navigate).toHaveBeenCalledWith(['sessions']);
+    });
+
+    it('should handle error during session creation', () => {
+      const testSession = {
+        name: 'New Session',
+        date: '2024-01-21',
+        teacher_id: '1',
+        description: 'Test Description'
+      };
+      component.sessionForm?.setValue(testSession);
+      mockSessionApiService.create.mockReturnValue(throwError(() => new Error()));
+
+      component.submit();
+
+      expect(mockSessionApiService.create).toHaveBeenCalledWith(testSession);
+      expect(mockMatSnackBar.open).not.toHaveBeenCalledWith('Session created !', 'Close', { duration: 3000 });
+      expect(mockRouter.navigate).not.toHaveBeenCalledWith(['sessions']);
     });
 
     it('should update existing session', () => {
@@ -167,23 +151,6 @@ describe('FormComponent', () => {
       expect(mockRouter.navigate).toHaveBeenCalledWith(['sessions']);
     });
 
-    it('should handle error during session creation', () => {
-      const testSession = {
-        name: 'New Session',
-        date: '2024-01-21',
-        teacher_id: '1',
-        description: 'Test Description'
-      };
-      component.sessionForm?.setValue(testSession);
-      mockSessionApiService.create.mockReturnValue(throwError('Error'));
-
-      component.submit();
-
-      expect(mockSessionApiService.create).toHaveBeenCalledWith(testSession);
-      expect(mockMatSnackBar.open).not.toHaveBeenCalledWith('Session created !', 'Close', { duration: 3000 });
-      expect(mockRouter.navigate).not.toHaveBeenCalledWith(['sessions']);
-    });
-
     it('should handle error during session update', () => {
       jest.spyOn(mockRouter, 'url', 'get').mockReturnValue('/sessions/update/1');
       component.ngOnInit();
@@ -196,7 +163,7 @@ describe('FormComponent', () => {
         description: 'Updated Description'
       };
       component.sessionForm?.setValue(testSession);
-      mockSessionApiService.update.mockReturnValue(throwError('Error'));
+      mockSessionApiService.update.mockReturnValue(throwError(() => new Error()));
 
       component.submit();
 
@@ -206,7 +173,7 @@ describe('FormComponent', () => {
     });
   });
 
-  describe('form validation', () => {
+  describe('Session Form validation', () => {
     beforeEach(() => {
       component.ngOnInit();
       fixture.detectChanges();
@@ -229,4 +196,5 @@ describe('FormComponent', () => {
       expect(errors?.['maxlength']?.actualLength).toBe(2001);
     });
   });
+
 });

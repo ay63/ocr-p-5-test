@@ -9,7 +9,7 @@
           <h1>{{ session.name | titlecase }}</h1>
         </div>
         <div>
-          <button [attr.data-cy]="'delete-' + session.id" *ngIf="isAdmin" mat-raised-button color="warn"
+          <button [attr.data-cy]="'delete-session-' + session.id" *ngIf="isAdmin" mat-raised-button color="warn"
                   (click)="delete()">
             <mat-icon>delete</mat-icon>
             <span class="ml1">Delete</span>
@@ -49,13 +49,13 @@
           <mat-icon>
             group
           </mat-icon>
-          <span class="ml1">{{ session.users.length }} attendees</span>
+          <span class="ml1 attendees">{{ session.users.length }} attendees</span>
         </div>
         <div fxLayoutAlign="start center">
           <mat-icon>
             calendar_month
           </mat-icon>
-          <span class="ml1">{{ session.date | date: 'longDate' }}</span>
+          <span class="ml1 date">{{ session.date | date: 'longDate' }}</span>
         </div>
       </div>
       <div class="description">

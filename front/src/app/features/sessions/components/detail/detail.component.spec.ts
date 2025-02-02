@@ -1,14 +1,14 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {ActivatedRoute} from '@angular/router';
-import {Router} from '@angular/router';
-import {FormBuilder} from '@angular/forms';
-import {MatSnackBar} from '@angular/material/snack-bar';
-import {of} from 'rxjs';
-import {DetailComponent} from './detail.component';
-import {expect} from "@jest/globals";
-import {SessionService} from "../../../../services/session.service";
-import {SessionApiService} from "../../services/session-api.service";
-import {TeacherService} from "../../../../services/teacher.service";
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
+import { FormBuilder } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { of } from 'rxjs';
+import { DetailComponent } from './detail.component';
+import { expect } from "@jest/globals";
+import { SessionService } from "../../../../services/session.service";
+import { SessionApiService } from "../../services/session-api.service";
+import { TeacherService } from "../../../../services/teacher.service";
 import {
   mockTestMatSnackBar,
   mockTestRoute, mockTestRouter,
@@ -16,7 +16,9 @@ import {
   mockTestSessionService,
   mockTestTeacherService
 } from "../../../../../../tests/mock";
-import {mockDataTestSession, mockDataTestTeacher} from "../../../../../../tests/mockData";
+import { mockDataTestSession, mockDataTestTeacher } from "../../../../../../tests/mockData";
+import { By } from '@angular/platform-browser';
+import { DatePipe, TitleCasePipe } from '@angular/common';
 
 describe('DetailComponent', () => {
   let component: DetailComponent;
@@ -45,17 +47,18 @@ describe('DetailComponent', () => {
       declarations: [DetailComponent],
       providers: [
         FormBuilder,
-        {provide: ActivatedRoute, useValue: mockRoute},
-        {provide: SessionService, useValue: mockSessionService},
-        {provide: SessionApiService, useValue: mockSessionApiService},
-        {provide: TeacherService, useValue: mockTeacherService},
-        {provide: MatSnackBar, useValue: mockMatSnackBar},
-        {provide: Router, useValue: mockRouter}
+        { provide: ActivatedRoute, useValue: mockRoute },
+        { provide: SessionService, useValue: mockSessionService },
+        { provide: SessionApiService, useValue: mockSessionApiService },
+        { provide: TeacherService, useValue: mockTeacherService },
+        { provide: MatSnackBar, useValue: mockMatSnackBar },
+        { provide: Router, useValue: mockRouter }
       ]
     });
 
     fixture = TestBed.createComponent(DetailComponent);
     component = fixture.componentInstance;
+
   });
 
   it('should create', () => {
@@ -75,6 +78,7 @@ describe('DetailComponent', () => {
     });
   });
 
+
   describe('Go back action', () => {
     it('should call window.history.back', () => {
       const spyHistoryBack = jest.spyOn(window.history, 'back');
@@ -91,7 +95,7 @@ describe('DetailComponent', () => {
       expect(mockMatSnackBar.open).toHaveBeenCalledWith(
         'Session deleted !',
         'Close',
-        {duration: 3000}
+        { duration: 3000 }
       );
       expect(mockRouter.navigate).toHaveBeenCalledWith(['sessions']);
     });
@@ -119,7 +123,7 @@ describe('DetailComponent', () => {
 
   describe('fetchSession', () => {
     it('should update session participation status correctly when user is not participating', () => {
-      const nonParticipatingSession = {...mockDataTestSession, users: [2]};
+      const nonParticipatingSession = { ...mockDataTestSession, users: [2] };
       mockSessionApiService.detail.mockReturnValueOnce(of(nonParticipatingSession));
 
       component.ngOnInit();
@@ -128,7 +132,7 @@ describe('DetailComponent', () => {
     });
 
     it('should handle teacher details fetch correctly', () => {
-      const differentTeacher = {...mockDataTestTeacher, id: 2, name: 'Different Teacher'};
+      const differentTeacher = { ...mockDataTestTeacher, id: 2, name: 'Different Teacher' };
 
       mockTeacherService.detail.mockReturnValueOnce(of(differentTeacher));
       component.ngOnInit();
@@ -136,4 +140,58 @@ describe('DetailComponent', () => {
       expect(component.teacher).toEqual(differentTeacher);
     });
   });
+
+
+  describe('Should display information session when user is not admin', () => {
+    it('should display information session', () => {
+      component.isAdmin = false;
+      component.session = mockDataTestSession;
+      component.teacher = mockDataTestTeacher;
+
+      const datePipe = new DatePipe('en-US');
+      const createdAt = datePipe.transform(mockDataTestSession.date, 'longDate');
+      const updatedAt = datePipe.transform(mockDataTestSession.updatedAt, 'longDate');
+      const date = datePipe.transform(mockDataTestSession.date, 'longDate');
+      const pipe = new TitleCasePipe();
+
+      fixture.detectChanges();
+
+      expect( fixture.nativeElement.querySelector('[data-cy="delete-session-1"]')).toBeFalsy();
+      expect(fixture.nativeElement.querySelector('h1').textContent).toContain(pipe.transform(mockDataTestSession.name));
+      expect(fixture.nativeElement.querySelector('mat-card-subtitle').textContent).toContain(mockDataTestTeacher.firstName + ' ' + mockDataTestTeacher.lastName.toUpperCase());
+      expect(fixture.nativeElement.querySelector('.description').textContent).toContain(mockDataTestSession.description);
+      expect(fixture.nativeElement.querySelector('.created').textContent).toContain(createdAt);
+      expect(fixture.nativeElement.querySelector('.updated').textContent).toContain(updatedAt);
+      expect(fixture.nativeElement.querySelector('.attendees').textContent).toContain(mockDataTestSession.users.length + ' attendees');
+      expect(fixture.nativeElement.querySelector('.date').textContent).toContain(date);
+    });
+  });
+
+  describe('Should display information session when user is admin', () => {
+    it('should display information session', () => {
+      component.isAdmin = true;
+      component.session = mockDataTestSession;
+      component.teacher = mockDataTestTeacher;
+
+      const datePipe = new DatePipe('en-US');
+      const createdAt = datePipe.transform(mockDataTestSession.date, 'longDate');
+      const updatedAt = datePipe.transform(mockDataTestSession.updatedAt, 'longDate');
+      const date = datePipe.transform(mockDataTestSession.date, 'longDate');
+      const pipe = new TitleCasePipe();
+
+      fixture.detectChanges();
+
+      expect( fixture.nativeElement.querySelector('[data-cy="delete-session-1"]')).toBeTruthy();
+      expect( fixture.nativeElement.querySelector('[data-cy="participate-1"]')).toBeFalsy();
+      expect( fixture.nativeElement.querySelector('[data-cy="unparticipate-1"]')).toBeFalsy();
+
+      expect(fixture.nativeElement.querySelector('h1').textContent).toContain(pipe.transform(mockDataTestSession.name));
+      expect(fixture.nativeElement.querySelector('.description').textContent).toContain(mockDataTestSession.description);
+      expect(fixture.nativeElement.querySelector('.created').textContent).toContain(createdAt);
+      expect(fixture.nativeElement.querySelector('.updated').textContent).toContain(updatedAt);
+      expect(fixture.nativeElement.querySelector('.attendees').textContent).toContain(mockDataTestSession.users.length + ' attendees');
+      expect(fixture.nativeElement.querySelector('.date').textContent).toContain(date);
+    });
+  });
 });
+

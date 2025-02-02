@@ -10,11 +10,11 @@ import {TeacherService} from "../src/app/services/teacher.service";
 import {mockDataTestSession, mockDataTestTeacher, mockDataTestUserNotAdmin} from "./mockData";
 
 export const mockTestRouter: jest.Mocked<Router> = {
-    navigate: jest.fn(),
-    get url(): string {
-        return '';
-    }
-} as unknown as jest.Mocked<Router>;
+  navigate: jest.fn(),
+  get url(): string {
+    return '';
+  }
+} as unknown  as jest.Mocked<Router>;
 
 export const mockTestSessionService: jest.Mocked<SessionService> = {
     sessionInformation: {id: 1, admin: false},
