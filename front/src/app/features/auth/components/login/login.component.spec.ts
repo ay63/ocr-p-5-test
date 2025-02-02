@@ -77,7 +77,7 @@ describe('LoginComponent', () => {
   });
 
   it('should set onError to true when credential are invalid and display error message', () => {
-    authServiceMock.login.mockReturnValue(throwError(() => new Error('Invalid credentials')));
+    authServiceMock.login.mockReturnValue(throwError(() => new Error()));
 
     const loginReq: LoginRequest = {
       email: 'test@example.com',
@@ -97,7 +97,7 @@ describe('LoginComponent', () => {
 
 
   it('should set onError to true when credential are invalid and display error message', () => {
-    authServiceMock.login.mockReturnValue(throwError(() => new Error('Invalid credentials')));
+    authServiceMock.login.mockReturnValue(throwError(() => new Error()));
 
     component.form.setValue( {
       email: 'test@example.com',

@@ -73,7 +73,6 @@ describe('FormComponent', () => {
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/sessions']);
     });
 
-
     it('should initialize form for create mode', () => {
       jest.spyOn(mockRouter, 'url', 'get').mockReturnValue('/sessions/create');
 
@@ -98,12 +97,7 @@ describe('FormComponent', () => {
 
   });
 
-  describe('Submit action', () => {
-    beforeEach(() => {
-      component.ngOnInit();
-      fixture.detectChanges();
-    });
-
+  describe('Form Submit action', () => {
     it('should create new session', () => {
       const testSession = {
         name: 'New Session',
@@ -169,7 +163,7 @@ describe('FormComponent', () => {
         description: 'Updated Description'
       };
       component.sessionForm?.setValue(testSession);
-      mockSessionApiService.update.mockReturnValue(throwError('Error'));
+      mockSessionApiService.update.mockReturnValue(throwError(() => new Error()));
 
       component.submit();
 

@@ -89,7 +89,7 @@ describe('RegisterComponent', () => {
       expect(component.form.get('email')?.hasError('email')).toBeFalsy();
     });
 
-    it('should validate firstName and lastName length', () => {
+    it('should validate firstName length', () => {
       const shortName = 'a';
       const longName = 'a'.repeat(21);
 
@@ -98,6 +98,11 @@ describe('RegisterComponent', () => {
 
       component.form.get('firstName')?.setValue(longName);
       expect(component.form.get('firstName')?.hasError('maxlength')).toBeTruthy();
+    });
+
+    it('should validate lastName length', () => {
+      const shortName = 'a';
+      const longName = 'a'.repeat(21);
 
       component.form.get('lastName')?.setValue(shortName);
       expect(component.form.get('lastName')?.hasError('minlength')).toBeTruthy();
@@ -105,6 +110,7 @@ describe('RegisterComponent', () => {
       component.form.get('lastName')?.setValue(longName);
       expect(component.form.get('lastName')?.hasError('maxlength')).toBeTruthy();
     });
+
 
     it('should validate password length', () => {
       const shortPassword = 'a';
