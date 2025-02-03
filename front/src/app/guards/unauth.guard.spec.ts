@@ -32,7 +32,7 @@ describe('UnAuthGuard', () => {
   });
 
 
-  it('should navigate to "" and return false if the user is not logged in', () => {
+  it('should navigate to "/" and return false if the user is not logged in', () => {
     sessionServiceMock.isLogged = true;
     const result = unAuthGuard.canActivate();
     expect(result).toBe(false);
