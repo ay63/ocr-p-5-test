@@ -12,7 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
@@ -23,7 +22,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-@ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureMockMvc
 public class TeacherControllerIntegrationTest {
@@ -47,7 +45,7 @@ public class TeacherControllerIntegrationTest {
     @Test
     @WithMockUser
     public void findById_WhenTeacherExist_ShouldSuccessed() throws Exception {
-        when(teacherService.findById(1L)).thenReturn(teacher1);
+        when(teacherService.findById(teacher1.getId())).thenReturn(teacher1);
 
         mockMvc.perform(get("/api/teacher/1")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -55,6 +53,7 @@ public class TeacherControllerIntegrationTest {
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.firstName").value(teacher1.getFirstName()))
                 .andExpect(jsonPath("$.lastName").value(teacher1.getLastName()));
+
     }
 
     @Test

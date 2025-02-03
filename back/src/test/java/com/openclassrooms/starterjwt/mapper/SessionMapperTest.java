@@ -35,7 +35,7 @@ class SessionMapperTest {
 
     @Autowired
     private MockFactory mockFactory;
-    
+
     private Session session;
     private Session session2;
     private Teacher teacher;
@@ -53,7 +53,7 @@ class SessionMapperTest {
         session2.setDescription("session2");
 
         teacher = mockFactory.createTeacher();
-       
+
         user1 = mockFactory.createUser(false);
 
         user2 = mockFactory.createUser(false);
@@ -64,7 +64,7 @@ class SessionMapperTest {
     }
 
     @Test
-    void sessionToEntity_ShouldMapAllFields() {
+    void sessionToEntity_WhenIsValid_ShouldMapAllFields() {
 
         when(teacherService.findById(1L)).thenReturn(teacher);
         when(userService.findById(1L)).thenReturn(user1);
@@ -72,9 +72,8 @@ class SessionMapperTest {
 
         Session result = sessionMapper.toEntity(sessionDto);
 
-        assertNotNull(result);
-
         assertAll(() -> {
+            assertNotNull(result);
             assertEquals(sessionDto.getId(), result.getId());
             assertEquals(sessionDto.getName(), result.getName());
             assertEquals(sessionDto.getDescription(), result.getDescription());
@@ -83,16 +82,15 @@ class SessionMapperTest {
             assertEquals(2, result.getUsers().size());
             assertTrue(result.getUsers().contains(user1));
             assertTrue(result.getUsers().contains(user2));
-        });
 
-        verify(teacherService).findById(1L);
-        verify(userService).findById(1L);
-        verify(userService).findById(2L);
+            verify(teacherService).findById(1L);
+            verify(userService).findById(1L);
+            verify(userService).findById(2L);
+        });
     }
-    
 
     @Test
-    void sessionToDto_ShouldMapAllFields() {
+    void sessionToDto_WhenIsValid_ShouldMapAllFields() {
         assertAll(() -> {
             assertEquals(session.getId(), sessionDto.getId());
             assertEquals(session.getName(), sessionDto.getName());
@@ -106,10 +104,10 @@ class SessionMapperTest {
     }
 
     @Test
-    void sessionsListToEntity_ShouldReturnListOfSession() {
+    void sessionsListToEntity_WhenIsValid_ShouldReturnListOfSession() {
         List<SessionDto> dtos = Arrays.asList(sessionDto, sessionMapper.toDto(session2));
         List<Session> result = sessionMapper.toEntity(dtos);
-        assertNotNull(result); 
+        assertNotNull(result);
     }
 
 }

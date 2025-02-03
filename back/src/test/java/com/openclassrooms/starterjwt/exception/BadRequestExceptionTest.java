@@ -1,7 +1,6 @@
 package com.openclassrooms.starterjwt.exception;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -11,14 +10,14 @@ class BadRequestExceptionTest {
 
 
     @Test
-    void shouldHaveCorrectAnnotation() {
+    void badRequest_shouldHaveCorrectAnnotation() {
         ResponseStatus annotation = BadRequestException.class.getAnnotation(ResponseStatus.class);
         assertNotNull(annotation);
         assertEquals(HttpStatus.BAD_REQUEST, annotation.value());
     }
 
     @Test
-    void shouldThrowBadRequestException() {
+    void badRequest_WhenThrow_shouldThrowBadRequestException() {
         assertThrows(BadRequestException.class, () -> {
             throw new BadRequestException();
         });

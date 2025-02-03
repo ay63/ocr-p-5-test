@@ -46,7 +46,7 @@ public class TeacherControllerTest {
     }
 
     @Test
-    void findById_ValidId_ReturnsTeacher() {
+    void findById_WhenIdValid_ShouldReturnTeacher() {
         when(teacherService.findById(1L)).thenReturn(teacher);
         when(teacherMapper.toDto(teacher)).thenReturn(teacherDto);
 
@@ -59,7 +59,7 @@ public class TeacherControllerTest {
     }
 
     @Test
-    void findById_InvalidId_ReturnsBadRequest() {
+    void findById_WhenIdInvalid_ShouldFailed() {
         ResponseEntity<?> response = teacherController.findById("invalid");
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -67,7 +67,7 @@ public class TeacherControllerTest {
     }
 
     @Test
-    void findById_NonExistentId_ReturnsNotFound() {
+    void findById_WhenIdNotExist_ShoudlFailed() {
         when(teacherService.findById(999L)).thenReturn(null);
 
         ResponseEntity<?> response = teacherController.findById("999");
@@ -78,10 +78,10 @@ public class TeacherControllerTest {
     }
 
     @Test
-    void findAll_ReturnsAllTeachers() {
+    void findAll_WhenTeachersExist_ShouldReturnTeachers() {
         List<Teacher> teachers = Arrays.asList(teacher);
         List<TeacherDto> teacherDtos = Arrays.asList(teacherDto);
-        
+
         when(teacherService.findAll()).thenReturn(teachers);
         when(teacherMapper.toDto(teachers)).thenReturn(teacherDtos);
 
@@ -92,4 +92,4 @@ public class TeacherControllerTest {
         verify(teacherService).findAll();
         verify(teacherMapper).toDto(teachers);
     }
-} 
+}

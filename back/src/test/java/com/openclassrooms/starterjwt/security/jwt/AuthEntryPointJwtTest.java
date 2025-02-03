@@ -40,7 +40,7 @@ public class AuthEntryPointJwtTest {
     }
 
     @Test
-    void commence_ShouldSetProperResponseAttributes() throws IOException, ServletException {
+    void commence_WhenErrorOccured_ShouldSetProperResponseAttributes() throws IOException, ServletException {
 
         when(authException.getMessage()).thenReturn("Error message");
 

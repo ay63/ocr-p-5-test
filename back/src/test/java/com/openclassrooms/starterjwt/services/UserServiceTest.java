@@ -38,15 +38,16 @@ public class UserServiceTest {
     @Test
     void deleteUser_ShouldCallRepository() {
         userService.delete(user.getId());
+        
         verify(userRepository, times(1)).deleteById(user.getId());
     }
 
     @Test
     void findById_WhenUserExists_ShouldReturnUser() {
-     
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 
         User result = userService.findById(user.getId());
+
         assertNotNull(result);
         assertEquals(user.getId(), result.getId());
         verify(userRepository, times(1)).findById(user.getId());

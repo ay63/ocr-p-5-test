@@ -35,8 +35,7 @@ public class UserMapperTest {
     }
 
     @Test
-    void userToDto_ShouldMapAllFields() {
-
+    void userToDto_WhenIsValid_ShouldMapAllFields() {
         UserDto userDto = userMapper.toDto(user);
 
         assertAll(() -> {
@@ -50,19 +49,18 @@ public class UserMapperTest {
     }
 
     @Test
-    void usersToDto_ShouldReturnListOfUserDto() {
+    void usersToDto_WhenIsValid_ShouldReturnListOfUserDto() {
         User user2 = mockFactory.createUser(false);
         user2.setId(2L);
 
         List<User> users = Arrays.asList(user, user2);
-
         List<UserDto> usersDto = userMapper.toDto(users);
 
         assertThat(usersDto).isNotNull();
     }
 
     @Test
-    void userToEntity_ShouldMapAllFields() {
+    void userToEntity_WhenIsValid_ShouldMapAllFields() {
 
         User user = userMapper.toEntity(userDto);
         assertAll(() -> {
@@ -76,13 +74,12 @@ public class UserMapperTest {
     }
 
       @Test
-    void usersToEntity_ShouldReturnListOfUser() {
+    void usersToEntity_WhenIsValid_ShouldReturnListOfUser() {
 
         UserDto userDto2 = mockFactory.createUserDto(false);
         userDto2.setId(2L);
 
         List<UserDto> usersDto = Arrays.asList(userDto, userDto2);
-
         List<User> users = userMapper.toEntity(usersDto);
 
         assertThat(users).isNotNull();

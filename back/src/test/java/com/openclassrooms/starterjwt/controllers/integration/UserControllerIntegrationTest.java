@@ -25,8 +25,7 @@ class UserControllerIntegrationTest {
 
     @Test
     @WithMockUser
-    void findById_ExistingUser_ShouldReturnUser() throws Exception {
-
+    void findById_WhenExistingUser_ShouldReturnUser() throws Exception {
         mockMvc.perform(get("/api/user/2"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value(MockFactory.EMAIL))
@@ -36,42 +35,42 @@ class UserControllerIntegrationTest {
 
     @Test
     @WithMockUser
-    void findById_NonExistingUser_ShouldReturn404() throws Exception {
+    void findById_WhenUserDoesntExist_ShouldFailed() throws Exception {
         mockMvc.perform(get("/api/user/999"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     @WithMockUser
-    void findById_InvalidId_ShouldReturn400() throws Exception {
+    void findById_WhenInvalidId_ShouldFailed() throws Exception {
         mockMvc.perform(get("/api/user/invalid"))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     @WithMockUser(username = "john.doe@studio.com")
-    void deleteUser_OwnAccount_ShouldSucceed() throws Exception {
+    void deleteUser_WhenOwnAccount_ShouldSucceed() throws Exception {
         mockMvc.perform(delete("/api/user/2"))
                 .andExpect(status().isOk());
     }
 
     @Test
     @WithMockUser(username = "other@test.com")
-    void deleteUser_OtherUserAccount_ShouldReturn401() throws Exception {
-        mockMvc.perform(delete("/api/user/2"))
+    void deleteUser_WhenNotTheSameAccount_ShouldFailed() throws Exception {
+        mockMvc.perform(delete("/api/user/1"))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     @WithMockUser
-    void deleteUser_NonExistingUser_ShouldReturn404() throws Exception {
+    void deleteUser_WhenUserNotExist_ShouldFailed() throws Exception {
         mockMvc.perform(delete("/api/user/999"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     @WithMockUser
-    void deleteUser_InvalidId_ShouldReturn400() throws Exception {
+    void deleteUser_WhenInvalidId_ShouldFailed() throws Exception {
         mockMvc.perform(delete("/api/user/invalid"))
                 .andExpect(status().isBadRequest());
     }

@@ -48,7 +48,7 @@ class SessionControllerTest {
     }
 
     @Test
-    void findById_Success() {
+    void findById_WhenSessionExist_ShouldReturnSession() {
         when(sessionService.getById(1L)).thenReturn(session);
         when(sessionMapper.toDto(session)).thenReturn(sessionDto);
 
@@ -59,7 +59,7 @@ class SessionControllerTest {
     }
 
     @Test
-    void findById_NotFound() {
+    void findById_WhenSessionNotExist_ShouldFailed() {
         when(sessionService.getById(1L)).thenReturn(null);
 
         ResponseEntity<?> response = sessionController.findById("1");
@@ -68,17 +68,17 @@ class SessionControllerTest {
     }
 
     @Test
-    void findById_BadRequest() {
+    void findById_WhenSessionIdIsInvalid_ShouldFailed() {
         ResponseEntity<?> response = sessionController.findById("invalid");
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test
-    void findAll_Success() {
+    void findAll_WhenSessionsIsExist_ShoudlReturnSessions() {
         List<Session> sessions = Arrays.asList(session);
         List<SessionDto> sessionDtos = Arrays.asList(sessionDto);
-        
+
         when(sessionService.findAll()).thenReturn(sessions);
         when(sessionMapper.toDto(sessions)).thenReturn(sessionDtos);
 
@@ -89,7 +89,7 @@ class SessionControllerTest {
     }
 
     @Test
-    void create_Success() {
+    void create_WhenCreateSession_ShouldReturnSession() {
         when(sessionMapper.toEntity(any(SessionDto.class))).thenReturn(session);
         when(sessionService.create(any(Session.class))).thenReturn(session);
         when(sessionMapper.toDto(session)).thenReturn(sessionDto);
@@ -101,7 +101,7 @@ class SessionControllerTest {
     }
 
     @Test
-    void update_Success() {
+    void update_WhenUpdateSession_ShouldReturnSession() {
         when(sessionMapper.toEntity(any(SessionDto.class))).thenReturn(session);
         when(sessionService.update(anyLong(), any(Session.class))).thenReturn(session);
         when(sessionMapper.toDto(session)).thenReturn(sessionDto);
@@ -113,14 +113,14 @@ class SessionControllerTest {
     }
 
     @Test
-    void update_BadRequest() {
+    void update_WhenSessionIdIsInvalid_ShouldFailed() {
         ResponseEntity<?> response = sessionController.update("invalid", sessionDto);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test
-    void delete_Success() {
+    void delete_WhenSessionExist_ShouldSucceed() {
         when(sessionService.getById(1L)).thenReturn(session);
         doNothing().when(sessionService).delete(1L);
 
@@ -131,7 +131,7 @@ class SessionControllerTest {
     }
 
     @Test
-    void delete_NotFound() {
+    void delete_WhenSessionNotExist_ShouldFailed() {
         when(sessionService.getById(1L)).thenReturn(null);
 
         ResponseEntity<?> response = sessionController.save("1");
@@ -141,7 +141,7 @@ class SessionControllerTest {
     }
 
     @Test
-    void delete_BadRequest() {
+    void delete_WhenSessionIdIsInvalid_ShouldFailed() {
         ResponseEntity<?> response = sessionController.save("invalid");
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -149,7 +149,7 @@ class SessionControllerTest {
     }
 
     @Test
-    void participate_Success() {
+    void participate_WhenAddParticipate_ShouldSucceed() {
         doNothing().when(sessionService).participate(1L, 1L);
 
         ResponseEntity<?> response = sessionController.participate("1", "1");
@@ -159,7 +159,7 @@ class SessionControllerTest {
     }
 
     @Test
-    void participate_BadRequest() {
+    void participate_WhenIdIsInvalid_ShouldFailed() {
         ResponseEntity<?> response = sessionController.participate("invalid", "1");
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -167,7 +167,7 @@ class SessionControllerTest {
     }
 
     @Test
-    void noLongerParticipate_Success() {
+    void noLongerParticipate_WhenUserUnsubscribe_ShouldSucceed() {
         doNothing().when(sessionService).noLongerParticipate(1L, 1L);
 
         ResponseEntity<?> response = sessionController.noLongerParticipate("1", "1");
@@ -177,10 +177,10 @@ class SessionControllerTest {
     }
 
     @Test
-    void noLongerParticipate_BadRequest() {
+    void noLongerParticipate_WhenIdIsInvalid_ShouldFailed() {
         ResponseEntity<?> response = sessionController.noLongerParticipate("invalid", "1");
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         verify(sessionService, never()).noLongerParticipate(anyLong(), anyLong());
     }
-} 
+}

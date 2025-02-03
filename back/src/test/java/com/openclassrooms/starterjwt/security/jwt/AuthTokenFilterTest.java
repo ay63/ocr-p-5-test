@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.test.context.ActiveProfiles;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -19,7 +18,6 @@ import static org.mockito.Mockito.*;
 import com.openclassrooms.starterjwt.MockFactory;
 import com.openclassrooms.starterjwt.security.services.UserDetailsServiceImpl;
 
-@ActiveProfiles("test")
 @SpringBootTest
 public class AuthTokenFilterTest {
 
@@ -53,14 +51,12 @@ public class AuthTokenFilterTest {
     }
 
     @Test
-    void doFilterInternal_WithValidToken_ShouldAuthenticate() throws ServletException, IOException {
+    void doFilterInternal_WhenValidToken_ShouldAuthenticateAndCallFilterChain() throws ServletException, IOException {
 
         when(request.getHeader("Authorization")).thenReturn(MockFactory.TEST_TOKEN);
         when(jwtUtils.validateJwtToken("validToken")).thenReturn(true);
         when(jwtUtils.getUserNameFromJwtToken("validToken")).thenReturn(userDetails.getUsername());
         
-     
-
         when(userDetailsService.loadUserByUsername(userDetails.getUsername()))
                 .thenReturn(userDetails);
 
@@ -73,7 +69,7 @@ public class AuthTokenFilterTest {
     }
 
     @Test
-    void doFilterInternal_WithInvalidToken_ShouldContinueChain() throws ServletException, IOException {
+    void doFilterInternal_WhenInvalidToken_ShouldCallFilterChainWithoutAuthentication() throws ServletException, IOException {
         when(request.getHeader("Authorization")).thenReturn(MockFactory.TEST_TOKEN);
         when(jwtUtils.validateJwtToken("validToken")).thenReturn(false);
 
@@ -84,7 +80,7 @@ public class AuthTokenFilterTest {
     }
 
     @Test
-    void doFilterInternal_WithNoToken_ShouldContinueChain() throws ServletException, IOException {
+    void doFilterInternal_WhenNoToken_ShouldCallFilterChainWithoutValidation() throws ServletException, IOException {
         when(request.getHeader("Authorization")).thenReturn(null);
 
         authTokenFilter.doFilterInternal(request, response, filterChain);
@@ -95,7 +91,7 @@ public class AuthTokenFilterTest {
     }
 
     @Test
-    void doFilterInternal_WithInvalidTokenFormat_ShouldContinueChain() throws ServletException, IOException {
+    void doFilterInternal_WhenInvalidTokenFormat_ShouldCallFilterChainWithoutValidation() throws ServletException, IOException {
         when(request.getHeader("Authorization")).thenReturn("InvalidTokenFormat");
 
         authTokenFilter.doFilterInternal(request, response, filterChain);
@@ -106,7 +102,7 @@ public class AuthTokenFilterTest {
     }
 
     @Test
-    void doFilterInternal_WithException_ShouldContinueChain() throws ServletException, IOException {
+    void doFilterInternal_WhenException_ShouldCallFilterChainWithoutAuthentication() throws ServletException, IOException {
         when(request.getHeader("Authorization")).thenReturn(MockFactory.TEST_TOKEN);
         when(jwtUtils.validateJwtToken("validToken")).thenThrow(new RuntimeException("Test exception"));
 

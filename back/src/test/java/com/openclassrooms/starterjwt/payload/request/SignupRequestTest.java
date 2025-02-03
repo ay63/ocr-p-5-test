@@ -31,13 +31,13 @@ class SignupRequestTest {
     }
 
     @Test
-    void shouldReturnEmpty_WhenSignupRequestIsValid() {
+    void validate_WhenSignupRequestIsValid_shouldReturnEmptyViolations() {
         Set<ConstraintViolation<SignupRequest>> violations = validator.validate(request);
         assertTrue(violations.isEmpty());
     }
 
     @Test
-    void shouldReturnViolation_WhenSignupRequestEmailIsInvalid() {
+    void validate_WhenSignupRequestEmailIsInvalid_ShouldReturnViolation() {
         SignupRequest request = this.mockFactory.createSignupRequest();
         request.setEmail("invalid-email");
 
@@ -47,10 +47,9 @@ class SignupRequestTest {
     }
 
     @Test
-    void shouldReturnViolation_WhenSignupRequestFirstNameIsTooShort() {
+    void validate_WhenSignupRequestFirstNameIsTooShort_ShouldReturnViolation() {
         SignupRequest request = this.mockFactory.createSignupRequest();
         request.setFirstName("Jo");
-
 
         Set<ConstraintViolation<SignupRequest>> violations = validator.validate(request);
         assertFalse(violations.isEmpty());
@@ -58,7 +57,7 @@ class SignupRequestTest {
     }
 
     @Test
-    void shouldReturnViolation_WhenSignupRequestLastNameIsTooShort() {
+    void validate_WhenSignupRequestLastNameIsTooShort_ShouldReturnViolation() {
         SignupRequest request = this.mockFactory.createSignupRequest();
         request.setLastName("Do");
 
@@ -69,7 +68,7 @@ class SignupRequestTest {
     }
 
     @Test
-    void shouldReturnViolation_WhenSignupRequestPasswordIsTooShort() {
+    void validate_WhenSignupRequestPasswordIsTooShort_ShouldReturnViolation() {
         SignupRequest request = this.mockFactory.createSignupRequest();
         request.setPassword("1234");
 

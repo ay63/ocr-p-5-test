@@ -47,7 +47,7 @@ class AuthControllerTest {
 
     @Autowired
     private MockFactory mockFactory;
-    
+
     private LoginRequest loginRequest;
     private SignupRequest signupRequest;
     private User user;
@@ -62,7 +62,7 @@ class AuthControllerTest {
     }
 
     @Test
-    void authenticateUser_Success() {
+    void authenticateUser_WhenUserValid_ShouldSucceed() {
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(userDetails);
@@ -81,7 +81,7 @@ class AuthControllerTest {
     }
 
     @Test
-    void registerUser_Success() {
+    void registerUser_WhenUserValid_ShouldSucceed() {
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
 
@@ -94,7 +94,7 @@ class AuthControllerTest {
     }
 
     @Test
-    void registerUser_EmailAlreadyTaken() {
+    void registerUser_WhenEmailAlreadyTaken_ShouldFailed() {
         when(userRepository.existsByEmail(anyString())).thenReturn(true);
 
         ResponseEntity<?> response = authController.registerUser(signupRequest);

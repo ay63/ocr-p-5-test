@@ -2,7 +2,6 @@ package com.openclassrooms.starterjwt.controllers.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openclassrooms.starterjwt.MockFactory;
-import com.openclassrooms.starterjwt.models.User;
 import com.openclassrooms.starterjwt.payload.request.LoginRequest;
 import com.openclassrooms.starterjwt.payload.request.SignupRequest;
 import com.openclassrooms.starterjwt.repository.UserRepository;
@@ -13,11 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -37,10 +36,9 @@ public class AuthControllerIntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
     private SignupRequest signupRequest;
+
+    private LoginRequest loginRequest;
 
     @Autowired
     private MockFactory mockFactory;
@@ -48,31 +46,39 @@ public class AuthControllerIntegrationTest {
     @BeforeEach
     void setUp() {
         signupRequest = mockFactory.createSignupRequest();
+        loginRequest = mockFactory.createLoginRequest();
     }
 
     @Test
     void registerUser_WhenSignupRequestIsValid_ShouldSuccessed() throws Exception {
+
+        signupRequest.setEmail("newuser@email.com");
+        signupRequest.setFirstName("New");
+        signupRequest.setLastName("User");
+        signupRequest.setPassword("newpassword");
+
         mockMvc.perform(post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(signupRequest)))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string("{\"message\":\"User registered successfully!\"}"));
+
+        assertNotNull(userRepository.findByEmail("newuser@email.com").get());
     }
 
     @Test
-    void registerUser_ShouldFailed_WhenDuplicateEmail() throws Exception {
+    void registerUser_WhenDuplicateEmail_ShouldFailed() throws Exception {
         mockMvc.perform(post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(signupRequest)))
                 .andExpect(status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.content().string("{\"message\":\"Error: Email is already taken!\"}"));
 
-                userRepository.deleteAll();
     }
 
     @Test
     void loginAdminUser_WhenCredentialsAreValid_ShouldSuccessed() throws Exception {
-        LoginRequest loginRequest = new LoginRequest();
+
         loginRequest.setEmail(MockFactory.ADMIN_EMAIL);
         loginRequest.setPassword(MockFactory.ADMIN_PASSWORD);
 
@@ -89,14 +95,8 @@ public class AuthControllerIntegrationTest {
     }
 
     @Test
-    void loginUser_WhenWrongPassword_ShouldReturn401() throws Exception {
+    void loginUser_WhenWrongPassword_ShouldFailed() throws Exception {
 
-        User user = new User(MockFactory.EMAIL, MockFactory.LAST_NAME, MockFactory.FIRST_NAME,
-                passwordEncoder.encode(MockFactory.PASSWORD), false);
-        
-        userRepository.save(user);
-
-        LoginRequest loginRequest = new LoginRequest();
         loginRequest.setEmail(MockFactory.EMAIL);
         loginRequest.setPassword("wrongpassword");
 
@@ -107,8 +107,18 @@ public class AuthControllerIntegrationTest {
     }
 
     @Test
-    void loginUser_WhenEmailDoesntExist_ShouldReturn401() throws Exception {
-        LoginRequest loginRequest = new LoginRequest();
+    void loginUser_WhenWrongEmail_ShouldFailed() throws Exception {
+        loginRequest.setEmail("wrong@email.fr");
+        loginRequest.setPassword(MockFactory.PASSWORD);
+
+        mockMvc.perform(post("/api/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(loginRequest)))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void loginUser_WhenEmailDoesntExist_ShouldFailed() throws Exception {
         loginRequest.setEmail("nonexistent@test.com");
         loginRequest.setPassword(MockFactory.PASSWORD);
 

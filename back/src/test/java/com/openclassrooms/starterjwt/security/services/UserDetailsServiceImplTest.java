@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.test.context.ActiveProfiles;
 
 import com.openclassrooms.starterjwt.MockFactory;
 import com.openclassrooms.starterjwt.models.User;
@@ -20,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-@ActiveProfiles("test")
+
 @SpringBootTest
 class UserDetailsServiceImplTest {
 
@@ -41,7 +40,7 @@ class UserDetailsServiceImplTest {
     }
 
     @Test
-    void loadUserByUsername_WithExistingUser_ShouldReturnUserDetails() {
+    void loadUserByUsername_WhenExistingUser_ShouldReturnUserDetails() {
 
         when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
 
@@ -53,7 +52,7 @@ class UserDetailsServiceImplTest {
     }
 
     @Test
-    void loadUserByUsername_WithNonExistingUser_ShouldThrowException() {
+    void loadUserByUsername_WhenNonExistingUser_ShouldThrowException() {
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(UsernameNotFoundException.class, () -> {
@@ -64,7 +63,7 @@ class UserDetailsServiceImplTest {
     }
 
     @Test
-    void loadUserByUsername_WithNullEmail_ShouldThrowException() {
+    void loadUserByUsername_WhenNullEmail_ShouldThrowException() {
         Exception exception = assertThrows(UsernameNotFoundException.class, () -> {
             userDetailsService.loadUserByUsername(null);
         });
@@ -74,44 +73,32 @@ class UserDetailsServiceImplTest {
 
     @Test
     void testEquals_ShouldCompareUsersCorrectly() {
-        User user1 = new User();
-        user1.setId(1L);
-        user1.setEmail("test@test.com");
-        user1.setPassword("password");
-        user1.setAdmin(false);
-        user1.setFirstName("firstName");
-        user1.setLastName("lastName");
         UserDetailsImpl userDetails1 = UserDetailsImpl.builder()
-                .id(user1.getId())
-                .username(user1.getEmail())
-                .password(user1.getPassword())
-                .admin(user1.isAdmin())
-                .firstName(user1.getFirstName())
-                .lastName(user1.getLastName())
+                .id(1L)
+                .username("test@test.com")
+                .password("password")
+                .admin(false)
+                .firstName("test")
+                .lastName("test")
                 .build();
 
-        
-        User user2 = new User();
-        user2.setId(1L);
-        user2.setEmail("different@test.com"); 
-        user2.setPassword("different");
         UserDetailsImpl userDetails2 = UserDetailsImpl.builder()
-                .id(user2.getId())
-                .username(user2.getEmail())
-                .password(user2.getPassword())
+                .id(1L)
+                .username("different@test.com")
+                .password("different")
+                .admin(false)
+                .firstName("different")
+                .lastName("different")
                 .build();
 
-     
-        User user3 = new User();
-        user3.setId(2L);
-        user3.setEmail("test@test.com");
-        user3.setPassword("password");
         UserDetailsImpl userDetails3 = UserDetailsImpl.builder()
-                .id(user3.getId())
-                .username(user3.getEmail())
-                .password(user3.getPassword())
+                .id(2L)
+                .username("test3@test.com")
+                .password("password3")
+                .admin(true)
+                .firstName("test3")
+                .lastName("test3")  
                 .build();
-
 
         assertTrue(userDetails1.equals(userDetails1)); 
         assertTrue(userDetails1.equals(userDetails2));

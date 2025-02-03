@@ -51,11 +51,10 @@ public class UserControllerTest {
     void setUp() {
         SecurityContextHolder.setContext(securityContext);
         user = mockFactory.createUser(false);
-       
     }
 
     @Test
-    void findById_ShouldReturnUser_WhenUserExists() {
+    void findById_WhenUserExists_ShouldReturnUser() {
 
         when(userService.findById(1L)).thenReturn(user);
         when(userMapper.toDto(user)).thenReturn(new com.openclassrooms.starterjwt.dto.UserDto());
@@ -68,51 +67,51 @@ public class UserControllerTest {
     }
 
     @Test
-    void findById_ShouldReturnNotFound_WhenUserDoesNotExist() {
+    void findById_WhenUserDoesNotExist_ShouldFailed() {
         when(userService.findById(1L)).thenReturn(null);
 
         ResponseEntity<?> response = userController.findById("1");
-        
+
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test
-    void findById_ShouldReturnBadRequest_WhenIdIsNotNumeric() {
+    void findById_WhenIdIsNotNumeric_ShouldFailed() {
         ResponseEntity<?> response = userController.findById("invalid");
-        
+
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     @Test
-    void delete_ShouldReturnOk_WhenUserExistsAndIsAuthorized() {
-        
+    void delete_WhenUserExistsAndIsAuthorized_ShouldSucceed() {
+
         when(userService.findById(1L)).thenReturn(user);
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getUsername()).thenReturn(user.getEmail());
 
         ResponseEntity<?> response = userController.save("1");
-        
+
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         verify(userService).delete(1L);
     }
 
     @Test
-    void delete_ShouldReturnUnauthorized_WhenUserIsNotAuthorized() {
-    
+    void delete_WhenUserIsNotAuthorized_ShouldFailed() {
+
         when(userService.findById(1L)).thenReturn(user);
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getUsername()).thenReturn("different@test.com");
 
         ResponseEntity<?> response = userController.save("1");
-        
+
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         verify(userService, never()).delete(anyLong());
     }
 
     @Test
-    void delete_ShouldReturnNotFound_WhenUserDoesNotExist() {
+    void delete_WhenUserDoesNotExist_ShouldFailed() {
         when(userService.findById(1L)).thenReturn(null);
 
         ResponseEntity<?> response = userController.save("1");
@@ -122,10 +121,10 @@ public class UserControllerTest {
     }
 
     @Test
-    void delete_ShouldReturnBadRequest_WhenIdIsNotNumeric() {
+    void delete_WhenIdIsNotNumeric_ShouldFailed() {
         ResponseEntity<?> response = userController.save("invalid");
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         verify(userService, never()).delete(anyLong());
     }
-} 
+}

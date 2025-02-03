@@ -17,11 +17,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -29,7 +29,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("test")
 public class SessionControllerIntegrationTest {
 
         @Autowired
@@ -65,12 +64,18 @@ public class SessionControllerIntegrationTest {
                                 .contentType(MediaType.APPLICATION_JSON))
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("$.id").value(session.getId()))
-                                .andExpect(jsonPath("$.name").value(session.getName()));
+                                .andExpect(jsonPath("$.name").value(session.getName()))
+                                .andExpect(jsonPath("$.description").value(session.getDescription()))
+                                .andExpect(jsonPath("$.date").isNotEmpty())
+                                .andExpect(jsonPath("$.teacher_id").value(session.getTeacher().getId()))
+                                .andExpect(jsonPath("$.users").isArray());
+      
+                assertNotNull(sessionService.getById(session.getId()));
         }
 
         @Test
         @WithMockUser
-        void findById_WhenSessionDoesNotExist_ShouldReturn401() throws Exception {
+        void findById_WhenSessionDoesNotExist_ShouldFailed() throws Exception {
                 when(sessionService.getById(1L)).thenReturn(null);
 
                 mockMvc.perform(get("/api/session/1")
@@ -114,12 +119,17 @@ public class SessionControllerIntegrationTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(sessionDto)))
                                 .andExpect(status().isOk())
-                                .andExpect(jsonPath("$.name").value(session.getName()));
+                                .andExpect(jsonPath("$.id").value(session.getId()))
+                                .andExpect(jsonPath("$.name").value(session.getName()))
+                                .andExpect(jsonPath("$.description").value(session.getDescription()))
+                                .andExpect(jsonPath("$.date").isNotEmpty())
+                                .andExpect(jsonPath("$.teacher_id").value(session.getTeacher().getId()))
+                                .andExpect(jsonPath("$.users").isArray());
         }
 
         @Test
         @WithMockUser
-        void create_ShouldReturn400_WhenSessionHaveMissingAttrbiute() throws Exception {
+        void create_WhenSessionHaveMissingAttrbiutes_ShouldFailed() throws Exception {
                 Session sessionEmpty = new Session();
                 SessionDto sessionDto = sessionMapper.toDto(sessionEmpty);
 
@@ -130,7 +140,7 @@ public class SessionControllerIntegrationTest {
         }
 
         @Test
-        void create_ShouldReturn401_WhenUseIsNotLogin() throws Exception {
+        void create_WhenUseIsNotLogin_ShouldFailed() throws Exception {
                 mockMvc.perform(put("/api/session/1")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(sessionDto)))
@@ -156,7 +166,7 @@ public class SessionControllerIntegrationTest {
 
         @Test
         @WithMockUser
-        void update_WhenSessionHaveMissingAttrbiute_ShouldReturn400() throws Exception {
+        void update_WhenSessionHaveMissingAttrbiute_ShouldFailed() throws Exception {
                 Session sessionEmpty = new Session();
                 SessionDto sessionDto = sessionMapper.toDto(sessionEmpty);
 
@@ -167,7 +177,7 @@ public class SessionControllerIntegrationTest {
         }
 
         @Test
-        void update_WhenUseIsNotLogin_ShouldReturn401() throws Exception {
+        void update_WhenUseIsNotLogin_ShouldFailed() throws Exception {
                 mockMvc.perform(put("/api/session/1")
                                 .contentType(MediaType.APPLICATION_JSON))
                                 .andExpect(status().isUnauthorized());
@@ -188,7 +198,7 @@ public class SessionControllerIntegrationTest {
 
         @Test
         @WithMockUser
-        void delete_WhenSessionExists_ShouldReturn200() throws Exception {
+        void delete_WhenSessionExists_ShouldSucceed() throws Exception {
                 when(sessionService.getById(1L)).thenReturn(session);
                 doNothing().when(sessionService).delete(1L);
 
@@ -198,7 +208,7 @@ public class SessionControllerIntegrationTest {
         }
 
         @Test
-        void delete_WhenUseIsNotLogin_ShouldReturn401() throws Exception {
+        void delete_WhenUseIsNotLogin_ShouldFailed() throws Exception {
                 mockMvc.perform(put("/api/session/1")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(sessionDto)))
@@ -207,7 +217,7 @@ public class SessionControllerIntegrationTest {
 
         @Test
         @WithMockUser
-        void delete_WhenSessionDoesNotExist_ShouldReturn404() throws Exception {
+        void delete_WhenSessionDoesNotExist_ShouldFailed() throws Exception {
                 when(sessionService.getById(1L)).thenReturn(null);
                 mockMvc.perform(delete("/api/session/1")
                                 .contentType(MediaType.APPLICATION_JSON))
@@ -227,7 +237,7 @@ public class SessionControllerIntegrationTest {
 
         @Test
         @WithMockUser
-        void participate_WhenSuccessfull_ShouldReturn200() throws Exception {
+        void participate_WhenAdded_ShouldSucceed() throws Exception {
                 doNothing().when(sessionService).participate(1L, 1L);
                 mockMvc.perform(post("/api/session/1/participate/1")
                                 .contentType(MediaType.APPLICATION_JSON))
@@ -236,7 +246,7 @@ public class SessionControllerIntegrationTest {
 
         @Test
         @WithMockUser
-        void participate_WhenSessionNotFound_ShouldReturn404() throws Exception {
+        void participate_WhenSessionNotFound_ShouldFailed() throws Exception {
                 doThrow(new NotFoundException())
                                 .when(sessionService).participate(999L, 1L);
 
@@ -247,7 +257,7 @@ public class SessionControllerIntegrationTest {
 
         @Test
         @WithMockUser
-        void participate_WhenParticipantNotFound_ShouldReturn404() throws Exception {
+        void participate_WhenParticipantNotFound_ShouldFailed() throws Exception {
                 doThrow(new NotFoundException())
                                 .when(sessionService).participate(1L, 999L);
 
@@ -258,7 +268,7 @@ public class SessionControllerIntegrationTest {
 
         @Test
         @WithMockUser
-        void participate_WhenIdIsNotANumber_ShouldThrowNumberFormatException() throws Exception {
+        void participate_WhenIdIsNotAnNumber_ShouldThrowNumberFormatException() throws Exception {
                 doThrow(new NumberFormatException())
                                 .when(sessionService).participate(1L, 1L);
 
@@ -269,7 +279,7 @@ public class SessionControllerIntegrationTest {
 
         @Test
         @WithMockUser
-        void participate_WhenNotFound_ShouldReturn400() throws Exception {
+        void participate_WhenNotFound_ShouldFailed() throws Exception {
                 doThrow(new BadRequestException())
                                 .when(sessionService).participate(999L, 999L);
 
@@ -280,7 +290,7 @@ public class SessionControllerIntegrationTest {
 
         @Test
         @WithMockUser
-        void noLongerParticipate_ShouldReturn200_WhenSuccessful() throws Exception {
+        void noLongerParticipate_WhenSuccessful_ShouldSucceed() throws Exception {
                 doNothing().when(sessionService).noLongerParticipate(1L, 1L);
 
                 mockMvc.perform(delete("/api/session/1/participate/1")
@@ -290,7 +300,7 @@ public class SessionControllerIntegrationTest {
 
         @Test
         @WithMockUser
-        void noLongerParticipate_ShouldReturn404_WhenSessionNotFound() throws Exception {
+        void noLongerParticipate_WhenSessionNotFound_ShouldFailed() throws Exception {
                 doThrow(new NotFoundException())
                                 .when(sessionService).noLongerParticipate(999L, 1L);
 
@@ -301,7 +311,7 @@ public class SessionControllerIntegrationTest {
 
         @Test
         @WithMockUser
-        void noLongerParticipate_ShouldReturn404_WhenParticipantNotFound() throws Exception {
+        void noLongerParticipate_WhenParticipantNotFound_ShouldFailed() throws Exception {
                 doThrow(new NotFoundException())
                                 .when(sessionService).noLongerParticipate(1L, 999L);
 

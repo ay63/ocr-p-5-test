@@ -29,7 +29,7 @@ public class TeacherServiceTest {
     private MockFactory mockFactory;
 
     @Test
-    void findAll_ShouldReturnListOfTeachers() {
+    void findAll_WhenTeachersExist_ShouldReturnListOfTeachers() {
         Teacher teacher1 = mockFactory.createTeacher();
         Teacher teacher2 = mockFactory.createTeacher();
         teacher2.setId(2L);
@@ -47,7 +47,7 @@ public class TeacherServiceTest {
     }
 
     @Test
-    void findById_ShouldReturnTeacher_WhenTeacherExists() {
+    void findById_WhenTeacherExists_ShouldReturnTeacher() {
         Teacher expectedTeacher = mockFactory.createTeacher();
 
         when(teacherRepository.findById(1L)).thenReturn(Optional.of(expectedTeacher));
@@ -61,11 +61,11 @@ public class TeacherServiceTest {
     }
 
     @Test
-    void findById_ShouldReturnNull_WhenTeacherDoesNotExist() {
+    void findById_WhenTeacherDoesNotExist_ShouldReturnNull() {
         when(teacherRepository.findById(1L)).thenReturn(Optional.empty());
 
         Teacher actualTeacher = teacherService.findById(1L);
 
         assertThat(actualTeacher).isNull();
     }
-} 
+}

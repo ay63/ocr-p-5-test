@@ -48,7 +48,7 @@ public class SessionServiceTest {
     }
 
     @Test
-    void create_ShouldReturnCreatedSession() {
+    void create_WhenSessionIsCreate_ShouldReturnSaveSession() {
         when(sessionRepository.save(any(Session.class))).thenReturn(session);
 
         Session result = sessionService.create(session);
@@ -59,14 +59,14 @@ public class SessionServiceTest {
     }
 
     @Test
-    void delete_ShouldCallRepositoryDelete() {
+    void delete_WhenSessionIsDeleted_ShouldCallRepositoryDelete() {
         sessionService.delete(1L);
 
         verify(sessionRepository).deleteById(1L);
     }
 
     @Test
-    void findAll_ShouldReturnAllSessions() {
+    void findAll_WhenSessionsExist_ShouldReturnAllSessions() {
         List<Session> sessions = Arrays.asList(session);
         when(sessionRepository.findAll()).thenReturn(sessions);
 
@@ -78,7 +78,7 @@ public class SessionServiceTest {
     }
 
     @Test
-    void getById_WhenSessionExists_ShouldReturnSession() {
+    void getById_WhenSessionExists_ShouldSaveSession() {
         when(sessionRepository.findById(1L)).thenReturn(Optional.of(session));
 
         Session result = sessionService.getById(1L);
@@ -97,7 +97,7 @@ public class SessionServiceTest {
     }
 
     @Test
-    void update_ShouldReturnUpdatedSession() {
+    void update_WhenSessionIsUpdated_ShouldSaveUpdatedSession() {
         when(sessionRepository.save(any(Session.class))).thenReturn(session);
 
         Session result = sessionService.update(1L, session);

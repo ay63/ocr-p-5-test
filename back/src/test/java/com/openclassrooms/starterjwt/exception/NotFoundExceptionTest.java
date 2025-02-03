@@ -9,16 +9,16 @@ import static org.junit.jupiter.api.Assertions.*;
 class NotFoundExceptionTest {
 
     @Test
-    void shouldHaveCorrectAnnotation() {
+    void notFound_shouldHaveCorrectAnnotation() {
         ResponseStatus annotation = NotFoundException.class.getAnnotation(ResponseStatus.class);
         assertNotNull(annotation);
         assertEquals(HttpStatus.NOT_FOUND, annotation.value());
     }
 
     @Test
-    void shouldThrowNotFoundException() {
+    void notFound_WhenThrow_shouldThrowNotFoundException() {
         assertThrows(NotFoundException.class, () -> {
             throw new NotFoundException();
         });
     }
-} 
+}
