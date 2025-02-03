@@ -11,8 +11,6 @@ This project consists of two main codebases:
   - Angular CLI `14.2.0`
 - **Backend**:
   - Java `11`
- - **Mysql**
-	 - file in resource/sql/script.sql
 
 ## Installation
 Clone the repository: `git clone https://github.com/ay63/ocr-p-5-test.git`.
