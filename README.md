@@ -72,10 +72,15 @@ for following change:
 
 ### Installation Backend
 
-Start the application with 
-> `mvn spring-boot:run` 
+Navigate to the `back` folder
+>  `cd back`
 
 ### Testing Backend
 Run unit tests with 
 > `mvn clean test` 
+
+### Start Backend
+Start the application with 
+> `mvn spring-boot:run` 
+
 
