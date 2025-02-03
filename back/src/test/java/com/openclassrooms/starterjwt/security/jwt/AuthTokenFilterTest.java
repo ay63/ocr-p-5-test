@@ -62,7 +62,6 @@ public class AuthTokenFilterTest {
 
         authTokenFilter.doFilterInternal(request, response, filterChain);
 
-
         verify(filterChain).doFilter(request, response);
         verify(jwtUtils).validateJwtToken("validToken");
         verify(userDetailsService).loadUserByUsername(userDetails.getUsername());

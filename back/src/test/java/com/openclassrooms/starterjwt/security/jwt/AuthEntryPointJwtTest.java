@@ -8,7 +8,6 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -24,26 +23,16 @@ public class AuthEntryPointJwtTest {
     private AuthEntryPointJwt authEntryPointJwt;
 
     @Mock
-    private MockHttpServletRequest request;
-    @Mock
-    private MockHttpServletResponse response;
-
-    @Mock
     private AuthenticationException authException;
-
-    @BeforeEach
-    void setUp() {
-        request = new MockHttpServletRequest();
-        response = new MockHttpServletResponse();
-        request.setServletPath("/api/test");
-        when(authException.getMessage()).thenReturn("Error message");
-    }
 
     @Test
     void commence_WhenErrorOccured_ShouldSetProperResponseAttributes() throws IOException, ServletException {
 
-        when(authException.getMessage()).thenReturn("Error message");
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
 
+        request.setServletPath("/api/test");
+        when(authException.getMessage()).thenReturn("Error message");
         authEntryPointJwt.commence(request, response, authException);
 
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
@@ -52,4 +41,4 @@ public class AuthEntryPointJwtTest {
         assertTrue(response.getContentAsString().contains("/api/test"));
         assertTrue(response.getContentAsString().contains("Unauthorized"));
     }
-} 
+}
