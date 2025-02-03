@@ -46,6 +46,7 @@ The app will be available at `http://localhost:4200`.
 
 ### Testing Frontend
 #### E2E
+
 Launching e2e test:
 > npm run e2e
 
@@ -53,9 +54,10 @@ Generate coverage report (you should launch e2e test before):
 > npm run e2e:coverage
 
 Report code coverage:
-> front/coverage/jest/lcov-report/index.html
+> front/coverage/lcov-report/index.html
 
 #### Unitary test
+
 Launching test:
 > npm run test
 
@@ -63,7 +65,7 @@ Launching test with coverage:
 > npm run test:coverage
 
 Report code coverage:
-> front/coverage/lcov-report/index.html
+> front/coverage/jest/lcov-report/index.html
 
 for following change:
 > npm run test:watch
