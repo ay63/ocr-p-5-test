@@ -68,6 +68,7 @@ for following change:
 - **Java 11**
 - **JUnit**: Unit testing framework for Java.
 - **Mockito**: Mocking framework for unit tests.
+- **H2**: use H2 database for testing
 
 ### Installation Backend
 
