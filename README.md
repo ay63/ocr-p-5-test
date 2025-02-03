@@ -116,4 +116,13 @@ The app will be available at `http://localhost:8080`.
 1. Open MySQL Workbench.  
 2. Connect to the MySQL server.  
 3. Go to the **"File"** menu and select **"Run SQL Script"**.  
-4. Select the SQL file to import, located in the project root: `resources > sql`.  
+4. Select the SQL file to import, located in the project root: 
+  > `resources > sql > script.sql`
+
+## Postman
+
+### Import Postman Routes
+
+Select "Import" in the sidebar. 
+The JSON file will be located at the root of the project in the folder: 
+> resources > postman > yoga.postman_collection.json
