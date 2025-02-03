@@ -15,7 +15,7 @@ This project consists of two main codebases:
 	 - file in resource/sql/script.sql
 
 ## Installation
-Clone the repository: `https://github.com/ay63/ocr-p-5-test.git`.
+Clone the repository: `git clone https://github.com/ay63/ocr-p-5-test.git`.
 
 ### Frontend
 Navigate to the `front` folder
