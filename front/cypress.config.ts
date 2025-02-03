@@ -1,4 +1,4 @@
-import { defineConfig } from 'cypress'
+import {defineConfig} from 'cypress'
 
 export default defineConfig({
   videosFolder: 'cypress/videos',
@@ -12,5 +12,5 @@ export default defineConfig({
       return require('./cypress/plugins/index.ts').default(on, config)
     },
     baseUrl: 'http://localhost:4200',
-  },
+  }
 })

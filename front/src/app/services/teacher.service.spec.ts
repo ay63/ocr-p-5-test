@@ -5,21 +5,12 @@ import {expect} from '@jest/globals';
 import {TeacherService} from './teacher.service';
 import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
 import {Teacher} from "../interfaces/teacher.interface";
+import {mockDataTestListTeachers} from "../../../tests/mockData";
 
 describe('TeacherService', () => {
   let service: TeacherService;
   let httpMock: HttpTestingController;
   let id = "1"
-  let teachers: Teacher[] = [
-    {
-      id: 1,
-      lastName: "lastName",
-      firstName: "firstName",
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }
-  ]
-
   const API_PATH = 'api/teacher'
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -40,16 +31,15 @@ describe('TeacherService', () => {
   });
 
   it('should get teacher', () => {
-    let result: Teacher[] = teachers
+    let result: Teacher[] = mockDataTestListTeachers
     service.all().subscribe(response => {
       result = response;
     });
     const req = httpMock.expectOne(`${API_PATH}`)
 
     expect(req.request.method).toBe('GET');
-    expect(result).toEqual(teachers)
+    expect(result).toEqual(mockDataTestListTeachers)
   })
-
 
   it('should handle error on get teacher', () => {
     let error: any;
@@ -62,17 +52,16 @@ describe('TeacherService', () => {
     expect(error.status).toBe(400);
   })
 
-
   it('should get detail teacher by id', () => {
-    let result: Teacher = teachers[0]
+    let result: Teacher = mockDataTestListTeachers[1]
 
-    service.detail(id).subscribe(response => {
+    service.detail("2").subscribe(response => {
       result = response;
     });
-    const req = httpMock.expectOne(`${API_PATH}/${id}`)
+    const req = httpMock.expectOne(`${API_PATH}/2`)
 
     expect(req.request.method).toBe('GET');
-    expect(result).toEqual(teachers[0])
+    expect(result).toEqual(mockDataTestListTeachers[1])
   })
 
   it('should handle error on get detail teacher by id', () => {
@@ -85,6 +74,4 @@ describe('TeacherService', () => {
     req.flush(null, {status: 400, statusText: 'Bad Request'});
     expect(error.status).toBe(400);
   })
-
-
 });

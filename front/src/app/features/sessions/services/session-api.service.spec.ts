@@ -49,7 +49,7 @@ describe('SessionsService', () => {
   });
 
   describe('delete session', () => {
-    it('should session be delete', () => {
+    it('should session be deleted', () => {
       service.delete(id).subscribe();
       const req = httpMock.expectOne(`${API_PATH}/${id}`)
       expect(req.request.method).toBe('DELETE');
@@ -63,26 +63,21 @@ describe('SessionsService', () => {
       });
 
       const req = httpMock.expectOne(`${API_PATH}/${id}`)
-      req.flush(null, {status: 404, statusText: 'Bad Request'});
+      req.flush(null, {status: 404, statusText:'Not Found'});
       expect(error.status).toBe(404);
     })
-
   })
 
-  describe('session created', () => {
+  describe('create session', () => {
     it('should session be created', () => {
-      let result: Session | undefined;
       service.create(session).subscribe(response => {
-        result = response;
+        expect(response).toEqual(session)
       });
 
       const req = httpMock.expectOne(`${API_PATH}`)
       expect(req.request.method).toBe('POST');
       expect(req.request.body).toEqual(session)
-
       req.flush(session);
-      expect(result).toEqual(session)
-
     })
 
     it('should handle error on session created', () => {
@@ -101,7 +96,7 @@ describe('SessionsService', () => {
     it('should session be updated', () => {
       let result: Session | undefined;
       service.update(id, sessionUpdate).subscribe(response => {
-        result = response;
+        expect(response).toEqual(sessionUpdate);
       });
 
       const req = httpMock.expectOne(`${API_PATH}/${id}`)
@@ -109,7 +104,6 @@ describe('SessionsService', () => {
       expect(req.request.body).toEqual(sessionUpdate)
 
       req.flush(sessionUpdate);
-      expect(result).toEqual(sessionUpdate);
     })
 
     it('should handle error on session update', () => {
@@ -125,7 +119,7 @@ describe('SessionsService', () => {
 
   })
 
-  describe('participate', () => {
+  describe('participate session', () => {
     it('should participate added to session', () => {
       service.participate(id, id).subscribe();
       const req = httpMock.expectOne(`${API_PATH}/${id}/participate/${id}`);
@@ -147,7 +141,7 @@ describe('SessionsService', () => {
 
   })
 
-  describe('Unparticipate', () => {
+  describe('unparticipate session', () => {
     it('should Unparticipate from the session', () => {
       service.unParticipate(id, id).subscribe();
       const req = httpMock.expectOne(`${API_PATH}/${id}/participate/${id}`);
@@ -168,18 +162,17 @@ describe('SessionsService', () => {
     })
   })
 
-  describe('detail', () => {
+  describe('detail session', () => {
     it('should get detail session', () => {
-      let result: Session | undefined;
       service.detail(id).subscribe(response => {
-        result = response;
+        expect(response).toEqual(session);
       });
       const req = httpMock.expectOne(`${API_PATH}/${id}`);
+      req.flush(session);
+
       expect(req.request.body).toEqual(null)
       expect(req.request.method).toBe('GET');
 
-      req.flush(session);
-      expect(result).toEqual(session);
     })
 
     it('should handle error on detail', () => {
