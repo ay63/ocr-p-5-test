@@ -52,12 +52,18 @@ Launching e2e test:
 Generate coverage report (you should launch e2e test before):
 > npm run e2e:coverage
 
-Report is available here:
-> front/coverage/lcov-report/index.html
+Report code coverage:
+> front/coverage/jest/lcov-report/index.html
 
 #### Unitary test
 Launching test:
 > npm run test
+
+Launching test with coverage:
+> npm run test:coverage
+
+Report code coverage:
+> front/coverage/lcov-report/index.html
 
 for following change:
 > npm run test:watch
@@ -77,7 +83,10 @@ Navigate to the `back` folder
 
 ### Testing Backend
 Run unit tests with 
-> `mvn clean test` 
+> `mvn clean test`
+
+Report code coverage:
+> back/target/site/jacoco/index.html
 
 ### Start Backend
 Start the application with 
