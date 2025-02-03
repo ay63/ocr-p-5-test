@@ -53,7 +53,7 @@ Launching e2e test:
 Launching e2e test:
 > npm run cypress:run
 
-Generate coverage report (you should launch e2e test before):
+Generate coverage report:
 > npm run e2e:coverage
 
 Report code coverage:
