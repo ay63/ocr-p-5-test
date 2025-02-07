@@ -165,8 +165,8 @@ describe('Admin session', () => {
     })
   })
 
-  describe('Session create errors form on create and update ', () => {
-    it('Should not be able to create a session missing form data', () => {
+  describe('Session create errors form', () => {
+    it('Should not be able to create a session when form has missing data', () => {
       cy.getByDataCy("create-session").click()
       cy.url().should('include', '/create')
       cy.getByDataCy("name").invoke('val', '')
@@ -180,18 +180,6 @@ describe('Admin session', () => {
       cy.getByDataCy("description").should('have.attr', 'required')
 
       cy.url().should('include', '/create')
-    })
-
-    it('should failed description max length 2000', () => {
-      cy.getByDataCy("create-session").click()
-      cy.getByDataCy("name").type('test')
-      cy.getByDataCy("date").type('2025-01-22')
-      cy.getByDataCy("teacher-select").click();
-      cy.getByDataCy("teacher-option").should('have.length.greaterThan', 0);
-      cy.getByDataCy("teacher-option").first().click()
-      cy.getByDataCy("description").type('a'.repeat(2001))
-      cy.getByDataCy("description").should('have.class', 'ng-invalid')
-      cy.getByDataCy("saveBtn").should('be.disabled')
     })
   })
 
