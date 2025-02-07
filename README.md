@@ -47,15 +47,9 @@ The app will be available at `http://localhost:4200`.
 ### Testing Frontend
 #### E2E
 
-`You must execute the commands in the order below to avoid the "Unknown" error in the Cypress report`
-
 Launching e2e test:
 > `npm run e2e`
-
-Launching e2e test:
-> n`pm run cypress:run`
-
-Generate coverage report:
+Generate coverage report (you should launch e2e test before):
 > `npm run e2e:coverage`
 
 Report code coverage:

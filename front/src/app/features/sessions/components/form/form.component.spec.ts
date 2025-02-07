@@ -156,18 +156,18 @@ describe('FormComponent', () => {
       component.ngOnInit();
       fixture.detectChanges();
 
-      const testSession = {
+      const testUpdateSession = {
         name: 'Updated Session',
         date: '2024-01-21',
         teacher_id: '1',
         description: 'Updated Description'
       };
-      component.sessionForm?.setValue(testSession);
+      component.sessionForm?.setValue(testUpdateSession);
       mockSessionApiService.update.mockReturnValue(throwError(() => new Error()));
 
       component.submit();
 
-      expect(mockSessionApiService.update).toHaveBeenCalledWith('1', testSession);
+      expect(mockSessionApiService.update).toHaveBeenCalledWith('1', testUpdateSession);
       expect(mockMatSnackBar.open).not.toHaveBeenCalledWith('Session updated !', 'Close', { duration: 3000 });
       expect(mockRouter.navigate).not.toHaveBeenCalledWith(['sessions']);
     });

@@ -46,7 +46,7 @@ describe('Admin session', () => {
       cy.getByDataCy("description").type('a'.repeat(20))
       cy.getByDataCy("saveBtn").click()
 
-      cy.url().should('eq', Cypress.config('baseUrl') + '/sessions')
+      cy.url().should('eq', Cypress.config('baseUrl') +'/sessions')
       cy.getByDataCy("detail-session-1").click();
     })
   })
