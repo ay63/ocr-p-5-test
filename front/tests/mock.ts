@@ -1,23 +1,23 @@
-import {of} from 'rxjs';
-import {jest} from '@jest/globals';
-import {ActivatedRoute, Router} from '@angular/router';
-import {MatSnackBar} from '@angular/material/snack-bar';
-import {SessionService} from "../src/app/services/session.service";
-import {UserService} from "../src/app/services/user.service";
-import {AuthService} from "../src/app/features/auth/services/auth.service";
-import {SessionApiService} from "../src/app/features/sessions/services/session-api.service";
-import {TeacherService} from "../src/app/services/teacher.service";
-import {mockDataTestSession, mockDataTestTeacher, mockDataTestUserNotAdmin} from "./mockData";
+import { of } from 'rxjs';
+import { jest } from '@jest/globals';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { SessionService } from "../src/app/services/session.service";
+import { UserService } from "../src/app/services/user.service";
+import { AuthService } from "../src/app/features/auth/services/auth.service";
+import { SessionApiService } from "../src/app/features/sessions/services/session-api.service";
+import { TeacherService } from "../src/app/services/teacher.service";
+import { mockDataTestSession, mockDataTestSessions, mockDataTestTeacher, mockDataTestUserNotAdmin } from "./mockData";
 
 export const mockTestRouter: jest.Mocked<Router> = {
-  navigate: jest.fn(),
-  get url(): string {
-    return '';
-  }
-} as unknown  as jest.Mocked<Router>;
+    navigate: jest.fn(),
+    get url(): string {
+        return '';
+    }
+} as unknown as jest.Mocked<Router>;
 
 export const mockTestSessionService: jest.Mocked<SessionService> = {
-    sessionInformation: {id: 1, admin: false},
+    sessionInformation: { id: 1, admin: false },
     logOut: jest.fn(),
 } as unknown as jest.Mocked<SessionService>;
 
@@ -47,7 +47,7 @@ export const mockTestSessionApiService = {
     participate: jest.fn().mockReturnValue(of({})),
     unParticipate: jest.fn().mockReturnValue(of({})),
     update: jest.fn().mockReturnValue(of({})),
-    all: jest.fn(),
+    all: jest.fn().mockReturnValue(of(mockDataTestSessions)),
     create: jest.fn().mockReturnValue(of({})),
 } as unknown as jest.Mocked<SessionApiService>;
 

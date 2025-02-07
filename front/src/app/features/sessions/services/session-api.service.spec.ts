@@ -1,26 +1,28 @@
-import {TestBed} from '@angular/core/testing';
-import {expect} from '@jest/globals';
+import { TestBed } from '@angular/core/testing';
+import { expect } from '@jest/globals';
 
-import {SessionApiService} from './session-api.service';
-import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
-import {Session} from "../interfaces/session.interface";
+import { SessionApiService } from './session-api.service';
+import { HttpClientTestingModule, HttpTestingController } from "@angular/common/http/testing";
+import { Session } from "../interfaces/session.interface";
+import { mockDataTestSessions } from 'tests/mockData';
 
 describe('SessionsService', () => {
   let service: SessionApiService;
   let httpMock: HttpTestingController;
+
   const API_PATH = 'api/session';
   const id: string = "1";
   const session: Session =
-    {
-      "id": 2,
-      "name": "one sessions",
-      "date": new Date(),
-      "teacher_id": 1,
-      "description": "session description",
-      "users": [1, 2],
-      "createdAt": new Date(),
-      "updatedAt": new Date()
-    }
+  {
+    "id": 2,
+    "name": "one sessions",
+    "date": new Date(),
+    "teacher_id": 1,
+    "description": "session description",
+    "users": [1, 2],
+    "createdAt": new Date(),
+    "updatedAt": new Date()
+  }
 
   const sessionUpdate: Session = {
     name: "session 1",
@@ -34,7 +36,7 @@ describe('SessionsService', () => {
     TestBed.configureTestingModule({
       imports: [
         HttpClientTestingModule
-      ]
+      ],
     });
     service = TestBed.inject(SessionApiService);
     httpMock = TestBed.inject(HttpTestingController);
@@ -47,6 +49,31 @@ describe('SessionsService', () => {
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
+
+
+  describe('All session', () => {
+    it('should get all session', () => {
+      service.all().subscribe((sessions) => {
+        expect(sessions.length).toBe(2);
+        expect(sessions).toEqual(mockDataTestSessions);
+      });
+
+      const req = httpMock.expectOne(`${API_PATH}`)
+      expect(req.request.method).toBe('GET');
+      req.flush(mockDataTestSessions);
+    })
+
+    it('should handle error on session get all', () => {
+      let error: any;
+      service.all().subscribe({
+        error: (e) => error = e
+      });
+
+      const req = httpMock.expectOne(`${API_PATH}`)
+      req.flush(null, { status: 404, statusText: 'Not Found' });
+      expect(error.status).toBe(404);
+    })
+  })
 
   describe('delete session', () => {
     it('should session be deleted', () => {
@@ -63,7 +90,7 @@ describe('SessionsService', () => {
       });
 
       const req = httpMock.expectOne(`${API_PATH}/${id}`)
-      req.flush(null, {status: 404, statusText:'Not Found'});
+      req.flush(null, { status: 404, statusText: 'Not Found' });
       expect(error.status).toBe(404);
     })
   })
@@ -87,7 +114,7 @@ describe('SessionsService', () => {
       });
 
       const req = httpMock.expectOne(`${API_PATH}`)
-      req.flush(null, {status: 400, statusText: 'Bad Request'});
+      req.flush(null, { status: 400, statusText: 'Bad Request' });
       expect(error.status).toBe(400);
     })
   })
@@ -113,7 +140,7 @@ describe('SessionsService', () => {
       });
 
       const req = httpMock.expectOne(`${API_PATH}/${id}`)
-      req.flush(null, {status: 400, statusText: 'Bad Request'});
+      req.flush(null, { status: 400, statusText: 'Bad Request' });
       expect(error.status).toBe(400);
     })
 
@@ -135,7 +162,7 @@ describe('SessionsService', () => {
       });
 
       const req = httpMock.expectOne(`${API_PATH}/${id}/participate/${id}`);
-      req.flush(null, {status: 404, statusText: 'Bad Request'});
+      req.flush(null, { status: 404, statusText: 'Bad Request' });
       expect(error.status).toBe(404);
     })
 
@@ -157,7 +184,7 @@ describe('SessionsService', () => {
       });
 
       const req = httpMock.expectOne(`${API_PATH}/${id}/participate/${id}`);
-      req.flush(null, {status: 404, statusText: 'Bad Request'});
+      req.flush(null, { status: 404, statusText: 'Bad Request' });
       expect(error.status).toBe(404);
     })
   })
@@ -182,7 +209,7 @@ describe('SessionsService', () => {
       });
 
       const req = httpMock.expectOne(`${API_PATH}/${id}`);
-      req.flush(null, {status: 404, statusText: 'Bad Request'});
+      req.flush(null, { status: 404, statusText: 'Bad Request' });
       expect(error.status).toBe(404);
     })
   })
