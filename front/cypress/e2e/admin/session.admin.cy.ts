@@ -46,7 +46,7 @@ describe('Admin session', () => {
       cy.getByDataCy("description").type('a'.repeat(20))
       cy.getByDataCy("saveBtn").click()
 
-      cy.url().should('eq', Cypress.config('baseUrl') + 'sessions')
+      cy.url().should('eq', Cypress.config('baseUrl') +'/sessions')
       cy.getByDataCy("detail-session-1").click();
     })
   })
@@ -93,7 +93,7 @@ describe('Admin session', () => {
       cy.wait('@getSessionsAfterDelete');
       cy.wait('@deleteSession');
 
-      cy.url().should('eq', Cypress.config('baseUrl') + 'sessions');
+      cy.url().should('eq', Cypress.config('baseUrl') + '/sessions');
       cy.getByDataCy("detail-session-1").should('not.exist');
       cy.getByDataCy("detail-session-2").should('exist');
     });
@@ -158,7 +158,7 @@ describe('Admin session', () => {
       cy.wait('@getSessions');
       cy.wait('@updateSession');
 
-      cy.url().should('eq', Cypress.config('baseUrl') + 'sessions')
+      cy.url().should('eq', Cypress.config('baseUrl') + '/sessions')
       cy.getByDataCy("session-description").should('contain.text', 'update description');
       cy.getByDataCy("session-name").should('contain.text', 'Update Yoga session');
 
