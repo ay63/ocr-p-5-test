@@ -21,6 +21,6 @@ describe('Account user', () => {
     })
 
     cy.getByDataCy("deleteBtn").click()
-    cy.url().should('eq', Cypress.config('baseUrl') + '/');
+    cy.url().should('eq', Cypress.config('baseUrl'));
   })
 })
