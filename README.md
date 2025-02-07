@@ -11,6 +11,8 @@ This project consists of two main codebases:
   - Angular CLI `14.2.0`
 - **Backend**:
   - Java `11`
+  - H2 `database for testing env` 
+  - Mysql 
 
 ## Installation
 
@@ -45,33 +47,33 @@ The app will be available at `http://localhost:4200`.
 ### Testing Frontend
 #### E2E
 
-You must execute the commands in the order below to avoid the "Unknown" error in the Cypress report :
+`You must execute the commands in the order below to avoid the "Unknown" error in the Cypress report`
 
 Launching e2e test:
-> npm run e2e
+> `npm run e2e`
 
 Launching e2e test:
-> npm run cypress:run
+> n`pm run cypress:run`
 
 Generate coverage report:
-> npm run e2e:coverage
+> `npm run e2e:coverage`
 
 Report code coverage:
-> front/coverage/lcov-report/index.html
+> `front/coverage/lcov-report/index.html`
 
 #### Unitary test
 
 Launching test:
-> npm run test
+> `npm run test`
 
 Launching test with coverage:
-> npm run test:coverage
+> `npm run test:coverage`
 
 Report code coverage:
-> front/coverage/jest/lcov-report/index.html
+> `front/coverage/jest/lcov-report/index.html`
 
 for following change:
-> npm run test:watch
+> `npm run test:watch`
 
 ## Backend
 
@@ -87,11 +89,14 @@ Navigate to the `back` folder
 >  `cd back`
 
 ### Testing Backend
+
+`This project uses an H2 in-memory database for backend testing in Spring Boot, with an SQL script automatically imported during test execution.`
+
 Run unit tests with 
 > `mvn clean test`
 
 Report code coverage:
-> back/target/site/jacoco/index.html
+> `back/target/site/jacoco/index.html`
 
 ### Start Backend
 Start the application with 
@@ -103,10 +108,10 @@ The app will be available at `http://localhost:8080`.
 
 ### Using Command Line  
 #### Create the database:  
-> `CREATE DATABASE chatop;`  
+> `CREATE DATABASE test;`  
 
 #### Select the database:  
-> `USE chatop;`  
+> `USE test;`  
 
 #### Import the script:  
 > `source path/to/sql/script.sql`  
@@ -125,4 +130,4 @@ The app will be available at `http://localhost:8080`.
 
 Select "Import" in the sidebar. 
 The JSON file will be located at the root of the project in the folder: 
-> resources > postman > yoga.postman_collection.json
+> `resources > postman > yoga.postman_collection.json`
