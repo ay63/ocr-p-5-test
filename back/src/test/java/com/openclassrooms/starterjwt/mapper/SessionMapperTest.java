@@ -55,7 +55,6 @@ class SessionMapperTest {
         teacher = mockFactory.createTeacher();
 
         user1 = mockFactory.createUser(false);
-
         user2 = mockFactory.createUser(false);
         user2.setId(2L);
 
@@ -65,7 +64,6 @@ class SessionMapperTest {
 
     @Test
     void sessionToEntity_WhenIsValid_ShouldMapAllFields() {
-
         when(teacherService.findById(1L)).thenReturn(teacher);
         when(userService.findById(1L)).thenReturn(user1);
         when(userService.findById(2L)).thenReturn(user2);

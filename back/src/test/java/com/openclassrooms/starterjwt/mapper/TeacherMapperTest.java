@@ -37,7 +37,6 @@ class TeacherMapperTest {
 
     @Test
     void teacherToDto_ShouldMapAllFields() {
-
         TeacherDto teacherDto = teacherMapper.toDto(teacher);
 
         assertAll(() -> {
@@ -62,7 +61,6 @@ class TeacherMapperTest {
 
     @Test
     void teachersToEntity_ShouldReturnListOfTeacher() {
-
         TeacherDto teacherDto2 = mockFactory.createTeacherDto();
         teacherDto2.setId(2L);
 

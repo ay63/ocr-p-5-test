@@ -21,7 +21,6 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
 @SpringBootTest
 @AutoConfigureMockMvc
 public class TeacherControllerIntegrationTest {
@@ -38,7 +37,7 @@ public class TeacherControllerIntegrationTest {
     private Teacher teacher1;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         teacher1 = mockFactory.createTeacher();
     }
 
@@ -77,13 +76,12 @@ public class TeacherControllerIntegrationTest {
     @Test
     @WithMockUser
     public void findAll_WhenTearchersExist_ShouldSuccess() throws Exception {
-    
         Teacher teacher2 = mockFactory.createTeacher();
         teacher2.setId(2L);
         teacher2.setFirstName("Jane");
         teacher2.setLastName("Smith");
         List<Teacher> teachers = Arrays.asList(teacher1, teacher2);
-        
+
         when(teacherService.findAll()).thenReturn(teachers);
 
         mockMvc.perform(get("/api/teacher")
@@ -92,8 +90,13 @@ public class TeacherControllerIntegrationTest {
                 .andExpect(jsonPath("$[0].id").value(teacher1.getId()))
                 .andExpect(jsonPath("$[0].firstName").value(teacher1.getFirstName()))
                 .andExpect(jsonPath("$[0].lastName").value(teacher1.getLastName()))
+                .andExpect(jsonPath("$[0].createdAt").isNotEmpty())
+                .andExpect(jsonPath("$[0].updatedAt").isNotEmpty())
+
                 .andExpect(jsonPath("$[1].id").value(teacher2.getId()))
                 .andExpect(jsonPath("$[1].firstName").value(teacher2.getFirstName()))
-                .andExpect(jsonPath("$[1].lastName").value(teacher2.getLastName()));
+                .andExpect(jsonPath("$[1].lastName").value(teacher2.getLastName()))
+                .andExpect(jsonPath("$[1].createdAt").isNotEmpty())
+                .andExpect(jsonPath("$[1].updatedAt").isNotEmpty());
     }
-} 
+}

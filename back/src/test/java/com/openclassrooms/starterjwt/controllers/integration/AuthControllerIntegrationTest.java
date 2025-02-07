@@ -51,12 +51,6 @@ public class AuthControllerIntegrationTest {
 
     @Test
     void registerUser_WhenSignupRequestIsValid_ShouldSuccessed() throws Exception {
-
-        signupRequest.setEmail("newuser@email.com");
-        signupRequest.setFirstName("New");
-        signupRequest.setLastName("User");
-        signupRequest.setPassword("newpassword");
-
         mockMvc.perform(post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(signupRequest)))
@@ -68,6 +62,8 @@ public class AuthControllerIntegrationTest {
 
     @Test
     void registerUser_WhenDuplicateEmail_ShouldFailed() throws Exception {
+        signupRequest.setEmail(MockFactory.EMAIL);
+
         mockMvc.perform(post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(signupRequest)))

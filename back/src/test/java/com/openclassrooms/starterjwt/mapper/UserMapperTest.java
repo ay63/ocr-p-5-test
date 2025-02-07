@@ -61,8 +61,8 @@ public class UserMapperTest {
 
     @Test
     void userToEntity_WhenIsValid_ShouldMapAllFields() {
-
         User user = userMapper.toEntity(userDto);
+
         assertAll(() -> {
             assertThat(user).isNotNull();
             assertThat(user.getId()).isEqualTo(userDto.getId());
@@ -73,9 +73,8 @@ public class UserMapperTest {
         });
     }
 
-      @Test
+    @Test
     void usersToEntity_WhenIsValid_ShouldReturnListOfUser() {
-
         UserDto userDto2 = mockFactory.createUserDto(false);
         userDto2.setId(2L);
 

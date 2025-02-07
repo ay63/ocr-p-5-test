@@ -30,7 +30,10 @@ class UserControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value(MockFactory.EMAIL))
                 .andExpect(jsonPath("$.firstName").value(MockFactory.FIRST_NAME))
-                .andExpect(jsonPath("$.lastName").value(MockFactory.LAST_NAME));
+                .andExpect(jsonPath("$.lastName").value(MockFactory.LAST_NAME))
+                .andExpect(jsonPath("$.admin").value(false))
+                .andExpect(jsonPath("$.createdAt").isNotEmpty())
+                .andExpect(jsonPath("$.updatedAt").isNotEmpty());
     }
 
     @Test

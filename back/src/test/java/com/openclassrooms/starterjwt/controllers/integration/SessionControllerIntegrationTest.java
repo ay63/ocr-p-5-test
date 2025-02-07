@@ -69,7 +69,7 @@ public class SessionControllerIntegrationTest {
                                 .andExpect(jsonPath("$.date").isNotEmpty())
                                 .andExpect(jsonPath("$.teacher_id").value(session.getTeacher().getId()))
                                 .andExpect(jsonPath("$.users").isArray());
-      
+
                 assertNotNull(sessionService.getById(session.getId()));
         }
 
@@ -150,11 +150,10 @@ public class SessionControllerIntegrationTest {
         @Test
         @WithMockUser
         void update_WhenSessionUpdated_ShouldReturnUpdatedSession() throws Exception {
-
                 String update = "updated";
                 session.setDescription(update);
                 session.setName(update);
-                when(sessionService.update(1L,session)).thenReturn(session);
+                when(sessionService.update(1L, session)).thenReturn(session);
 
                 mockMvc.perform(put("/api/session/1")
                                 .contentType(MediaType.APPLICATION_JSON)

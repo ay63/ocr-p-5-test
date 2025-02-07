@@ -125,10 +125,10 @@ public class MockFactory {
 
     public SignupRequest createSignupRequest() {
         SignupRequest signupRequest = new SignupRequest();
-        signupRequest.setEmail(EMAIL);
-        signupRequest.setFirstName(FIRST_NAME);
-        signupRequest.setLastName(LAST_NAME);
-        signupRequest.setPassword(PASSWORD);
+        signupRequest.setEmail("newuser@email.com");
+        signupRequest.setFirstName("New");
+        signupRequest.setLastName("User");
+        signupRequest.setPassword("newpassword");
         return signupRequest;
     }
 

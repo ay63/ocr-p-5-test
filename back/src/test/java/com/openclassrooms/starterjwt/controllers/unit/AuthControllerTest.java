@@ -26,6 +26,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
@@ -71,13 +72,15 @@ class AuthControllerTest {
 
         ResponseEntity<?> response = authController.authenticateUser(loginRequest);
 
-        assertTrue(response.getBody() instanceof JwtResponse);
         JwtResponse jwtResponse = (JwtResponse) response.getBody();
-        assertEquals("fake-jwt-token", jwtResponse.getToken());
-        assertEquals(userDetails.getUsername(), jwtResponse.getUsername());
-        assertEquals(userDetails.getFirstName(), jwtResponse.getFirstName());
-        assertEquals(userDetails.getLastName(), jwtResponse.getLastName());
-        assertFalse(jwtResponse.getAdmin());
+
+        assertAll(() -> {
+            assertEquals("fake-jwt-token", jwtResponse.getToken());
+            assertEquals(userDetails.getUsername(), jwtResponse.getUsername());
+            assertEquals(userDetails.getFirstName(), jwtResponse.getFirstName());
+            assertEquals(userDetails.getLastName(), jwtResponse.getLastName());
+            assertFalse(jwtResponse.getAdmin());
+        });
     }
 
     @Test

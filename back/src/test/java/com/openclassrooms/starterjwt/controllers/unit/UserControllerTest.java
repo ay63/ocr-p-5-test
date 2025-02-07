@@ -98,7 +98,6 @@ public class UserControllerTest {
 
     @Test
     void delete_WhenUserIsNotAuthorized_ShouldFailed() {
-
         when(userService.findById(1L)).thenReturn(user);
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(userDetails);

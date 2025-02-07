@@ -61,7 +61,6 @@ class SignupRequestTest {
         SignupRequest request = this.mockFactory.createSignupRequest();
         request.setLastName("Do");
 
-
         Set<ConstraintViolation<SignupRequest>> violations = validator.validate(request);
         assertFalse(violations.isEmpty());
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("lastName")));
