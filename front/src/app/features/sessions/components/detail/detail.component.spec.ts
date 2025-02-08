@@ -141,7 +141,6 @@ describe('DetailComponent', () => {
     });
   });
 
-
   describe('Should display information session when user is not admin', () => {
     it('should display information session', () => {
       component.isAdmin = false;
@@ -156,7 +155,7 @@ describe('DetailComponent', () => {
 
       fixture.detectChanges();
 
-      expect( fixture.nativeElement.querySelector('[data-cy="delete-session-1"]')).toBeFalsy();
+      expect(fixture.nativeElement.querySelector('[data-cy="delete-session-1"]')).toBeFalsy();
       expect(fixture.nativeElement.querySelector('h1').textContent).toContain(pipe.transform(mockDataTestSession.name));
       expect(fixture.nativeElement.querySelector('mat-card-subtitle').textContent).toContain(mockDataTestTeacher.firstName + ' ' + mockDataTestTeacher.lastName.toUpperCase());
       expect(fixture.nativeElement.querySelector('.description').textContent).toContain(mockDataTestSession.description);

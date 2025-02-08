@@ -6,7 +6,7 @@ beforeEach(() => {
 })
 
 describe('User', () => {
-  it('Should be able to see session and add subscript to the session', () => {
+  it('Should be able to see session and add subscribe to one session', () => {
     cy.intercept('GET', '/api/session/1', {
       body: {
         id: 1,
@@ -63,7 +63,7 @@ describe('User', () => {
 
   });
 
-  it('Should be able unparticipate to one session', () => {
+  it('Should be able to unparticipate to one session', () => {
     cy.intercept('GET', '/api/session/1', {
       body: {
         id: 1,
@@ -81,8 +81,6 @@ describe('User', () => {
     cy.getByDataCy('detail-session-1').click();
     cy.getByDataCy('unparticipate-1').should('be.visible');
     cy.getByDataCy('participate-1').should('not.exist');
-
-
 
     cy.intercept('DELETE', 'api/session/1/participate/1', {
       body: {

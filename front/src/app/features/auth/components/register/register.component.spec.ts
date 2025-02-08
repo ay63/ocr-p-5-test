@@ -38,7 +38,7 @@ describe('RegisterComponent', () => {
   });
 
   describe('Register action', () => {
-    it('should redirect to "/login" after successful submit', () => {
+    it('should register and redirect to "/login" after successful submit', () => {
       authServiceMock.register.mockReturnValue(of(undefined));
       const formValue: RegisterRequest = {
         email: 'test@example.com',
@@ -110,7 +110,6 @@ describe('RegisterComponent', () => {
       component.form.get('lastName')?.setValue(longName);
       expect(component.form.get('lastName')?.hasError('maxlength')).toBeTruthy();
     });
-
 
     it('should validate password length', () => {
       const shortPassword = 'a';
