@@ -60,7 +60,7 @@ describe('LoginComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should redirect to "/sessions" after successful submit', () => {
+  it('should login and redirect to "/sessions" after submit', () => {
     authServiceMock.login.mockReturnValue(of(mockDataTestSessionInformationNotAdmin));
 
     const loginReq: LoginRequest = {
@@ -94,25 +94,6 @@ describe('LoginComponent', () => {
     expect(errorMessage.nativeElement.textContent).toContain('An error occurred');
     expect(component.onError).toBe(true);
   });
-
-
-  it('should set onError to true when credential are invalid and display error message', () => {
-    authServiceMock.login.mockReturnValue(throwError(() => new Error()));
-
-    component.form.setValue( {
-      email: 'test@example.com',
-      password: 'invalid',
-    });
-    component.submit();
-
-    fixture.detectChanges();
-
-    const errorMessage = fixture.debugElement.query(By.css('.error'));
-    expect(errorMessage).toBeTruthy();
-    expect(errorMessage.nativeElement.textContent).toContain('An error occurred');
-    expect(component.onError).toBe(true);
-  });
-
 
   describe('Login form validation', () => {
     it('should require all fields', () => {
