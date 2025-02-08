@@ -49,6 +49,7 @@ The app will be available at `http://localhost:4200`.
 
 Launching e2e test:
 > `npm run e2e`
+
 Generate coverage report (you should launch e2e test before):
 > `npm run e2e:coverage`
 
