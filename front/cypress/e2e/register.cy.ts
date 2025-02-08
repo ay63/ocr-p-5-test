@@ -4,7 +4,6 @@ beforeEach(() => {
 })
 
 describe('Register functionality', () => {
-
     it('Should register successfull', () => {
       cy.intercept('POST', '/api/auth/register', {
         body: {
