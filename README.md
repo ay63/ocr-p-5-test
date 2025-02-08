@@ -18,17 +18,6 @@ This project consists of two main codebases:
 
 ## Frontend
 
-Navigate to the `front` folder
->  `cd front`
-
-Install dependencies
-> `npm install`
-
-Start the development server
-> `npm run start`
-
-Open your browser at `http://localhost:4200`.
-
 ### Technologies Frontend
 - **Angular**: Framework for building the web application.
 - **Jest**: Unit testing framework.
@@ -36,8 +25,8 @@ Open your browser at `http://localhost:4200`.
 
 ### Installation Frontend
 
-Run
->  `npm install` to install dependencies. 
+Run to install dependencies
+>  `npm install` 
 
 Start the application with
 >  `npm run start`. 
@@ -50,7 +39,10 @@ The app will be available at `http://localhost:4200`.
 Launching e2e test:
 > `npm run e2e`
 
-Generate coverage report (you should launch e2e test before):
+Run cypress test:
+> `npm run cypress:run`
+
+Generate coverage report (you should launch e2e and cypress:run test before):
 > `npm run e2e:coverage`
 
 Report code coverage:
