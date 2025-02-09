@@ -133,7 +133,6 @@ public class SessionControllerIntegrationTest {
         @Test
         @WithMockUser
         void create_WhenCreateSession_ShouldReturnCreatedSession() throws Exception {
-
                 sessionDto = sessionMapper.toDto(session);
                 mockMvc.perform(post("/api/session")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -151,7 +150,7 @@ public class SessionControllerIntegrationTest {
         @WithMockUser
         void create_WhenSessionHaveMissingAttrbiutes_ShouldFailed() throws Exception {
                 Session sessionEmpty = new Session();
-                SessionDto sessionDto = sessionMapper.toDto(sessionEmpty);
+                sessionDto = sessionMapper.toDto(sessionEmpty);
 
                 mockMvc.perform(put("/api/session/1")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -190,7 +189,7 @@ public class SessionControllerIntegrationTest {
         @WithMockUser
         void update_WhenSessionHaveMissingAttrbiute_ShouldFailed() throws Exception {
                 Session sessionEmpty = new Session();
-                SessionDto sessionDto = sessionMapper.toDto(sessionEmpty);
+                sessionDto = sessionMapper.toDto(sessionEmpty);
 
                 mockMvc.perform(put("/api/session/1")
                                 .contentType(MediaType.APPLICATION_JSON)
