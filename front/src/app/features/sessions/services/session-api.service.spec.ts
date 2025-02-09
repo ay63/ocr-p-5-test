@@ -50,7 +50,6 @@ describe('SessionsService', () => {
     expect(service).toBeTruthy();
   });
 
-
   describe('All session', () => {
     it('should get all session', () => {
       service.all().subscribe((sessions) => {
@@ -64,14 +63,13 @@ describe('SessionsService', () => {
     })
 
     it('should handle error on session get all', () => {
-      let error: any;
       service.all().subscribe({
-        error: (e) => error = e
+        error: (err) => expect(err.status).toBe(404)
       });
 
       const req = httpMock.expectOne(`${API_PATH}`)
       req.flush(null, { status: 404, statusText: 'Not Found' });
-      expect(error.status).toBe(404);
+      ;
     })
   })
 
@@ -84,14 +82,12 @@ describe('SessionsService', () => {
     })
 
     it('should handle error on session delete', () => {
-      let error: any;
       service.delete(id).subscribe({
-        error: (e) => error = e
+        error: (err) => expect(err.status).toBe(404)
       });
 
       const req = httpMock.expectOne(`${API_PATH}/${id}`)
       req.flush(null, { status: 404, statusText: 'Not Found' });
-      expect(error.status).toBe(404);
     })
   })
 
@@ -108,14 +104,13 @@ describe('SessionsService', () => {
     })
 
     it('should handle error on session created', () => {
-      let error: any;
       service.create(session).subscribe({
-        error: (e) => error = e
+        error: (err) =>expect(err.status).toBe(400)
       });
 
       const req = httpMock.expectOne(`${API_PATH}`)
       req.flush(null, { status: 400, statusText: 'Bad Request' });
-      expect(error.status).toBe(400);
+
     })
   })
 
@@ -133,14 +128,13 @@ describe('SessionsService', () => {
     })
 
     it('should handle error on session update', () => {
-      let error: any;
       service.update(id, sessionUpdate).subscribe({
-        error: (e) => error = e
+        error: (err) => expect(err.status).toBe(400)
       });
 
       const req = httpMock.expectOne(`${API_PATH}/${id}`)
       req.flush(null, { status: 400, statusText: 'Bad Request' });
-      expect(error.status).toBe(400);
+      
     })
 
   })
@@ -149,20 +143,19 @@ describe('SessionsService', () => {
     it('should participate added to session', () => {
       service.participate(id, id).subscribe();
       const req = httpMock.expectOne(`${API_PATH}/${id}/participate/${id}`);
-      
+
       expect(req.request.method).toBe('POST');
       expect(req.request.body).toEqual(null)
     })
 
     it('should handle error on added participate', () => {
-      let error: any;
       service.participate(id, id).subscribe({
-        error: (e) => error = e
+        error: (err) => expect(err.status).toBe(404)
       });
 
       const req = httpMock.expectOne(`${API_PATH}/${id}/participate/${id}`);
       req.flush(null, { status: 404, statusText: 'Bad Request' });
-      expect(error.status).toBe(404);
+  
     })
 
   })
@@ -177,14 +170,13 @@ describe('SessionsService', () => {
     })
 
     it('should handle error on Unparticipate', () => {
-      let error: any;
       service.unParticipate(id, id).subscribe({
-        error: (e) => error = e
+        error: (err) => expect(err.status).toBe(404)
       });
 
       const req = httpMock.expectOne(`${API_PATH}/${id}/participate/${id}`);
       req.flush(null, { status: 404, statusText: 'Bad Request' });
-      expect(error.status).toBe(404);
+      ;
     })
   })
 
@@ -202,14 +194,12 @@ describe('SessionsService', () => {
     })
 
     it('should handle error on detail', () => {
-      let error: any;
       service.detail(id).subscribe({
-        error: (e) => error = e
+        error: (err) => expect(err.status).toBe(404)
       });
 
       const req = httpMock.expectOne(`${API_PATH}/${id}`);
       req.flush(null, { status: 404, statusText: 'Bad Request' });
-      expect(error.status).toBe(404);
     })
   })
 

@@ -41,14 +41,13 @@ describe('TeacherService', () => {
   })
 
   it('should handle error on get teacher', () => {
-    let error: any;
     service.all().subscribe({
-      error: (e) => error = e
+      error: (err) => expect(err.status).toBe(400)
     });
 
     const req = httpMock.expectOne(`${API_PATH}`)
     req.flush(null, { status: 400, statusText: 'Bad Request' });
-    expect(error.status).toBe(400);
+
   })
 
   it('should get detail teacher by id', () => {
@@ -64,13 +63,12 @@ describe('TeacherService', () => {
   })
 
   it('should handle error on get detail teacher by id', () => {
-    let error: any;
     service.detail(id).subscribe({
-      error: (e) => error = e
+      error: (err) =>  expect(err.status).toBe(400)
     });
 
     const req = httpMock.expectOne(`${API_PATH}/${id}`)
     req.flush(null, { status: 400, statusText: 'Bad Request' });
-    expect(error.status).toBe(400);
+   
   })
 });

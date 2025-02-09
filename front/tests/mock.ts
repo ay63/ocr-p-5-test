@@ -17,7 +17,9 @@ export const mockTestRouter: jest.Mocked<Router> = {
 } as unknown as jest.Mocked<Router>;
 
 export const mockTestSessionService: jest.Mocked<SessionService> = {
-    sessionInformation: { id: 1, admin: false },
+    sessionInformation: { id: 1, admin: false, Token: "test-token" },
+    isLogged: false,
+    $isLogged : jest.fn(),
     logOut: jest.fn(),
 } as unknown as jest.Mocked<SessionService>;
 
@@ -30,7 +32,7 @@ export const mockTestUserService: jest.Mocked<UserService> = {
     delete: jest.fn().mockReturnValue(of(undefined)),
 } as unknown as jest.Mocked<UserService>;
 
-export const authTestServiceMock = {
+export const mockAuthTestService = {
     login: jest.fn(),
     register: jest.fn(),
 } as unknown as jest.Mocked<AuthService>;

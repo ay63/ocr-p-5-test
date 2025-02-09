@@ -4,6 +4,7 @@ import {of} from 'rxjs';
 import {JwtInterceptor} from "./jwt.interceptor";
 import {SessionService} from "../services/session.service";
 import {expect} from "@jest/globals";
+import { mockTestSessionService } from 'tests/mock';
 
 describe('JwtInterceptor', () => {
   let interceptor: JwtInterceptor;
@@ -22,13 +23,7 @@ describe('JwtInterceptor', () => {
   };
 
   beforeEach(() => {
-    sessionService = {
-      isLogged: false,
-      sessionInformation: {
-        token: mockToken
-      }
-    } as unknown as jest.Mocked<SessionService>;
-
+    sessionService = mockTestSessionService;
 
     httpHandler = {
       handle: jest.fn()

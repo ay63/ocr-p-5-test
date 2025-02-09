@@ -1,8 +1,9 @@
-import {TestBed} from '@angular/core/testing';
-import {Router} from '@angular/router';
-import {SessionService} from "../services/session.service";
-import {AuthGuard} from "./auth.guard";
-import {expect} from "@jest/globals";
+import { TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
+import { SessionService } from "../services/session.service";
+import { AuthGuard } from "./auth.guard";
+import { expect } from "@jest/globals";
+import { mockTestRouter, mockTestSessionService } from 'tests/mock';
 
 describe('AuthGuard', () => {
   let authGuard: AuthGuard;
@@ -10,19 +11,14 @@ describe('AuthGuard', () => {
   let sessionServiceMock: SessionService;
 
   beforeEach(() => {
-    routerMock = {
-      navigate: jest.fn()
-    } as unknown as jest.Mocked<Router>;
-
-    sessionServiceMock = {
-      isLogged: false
-    } as jest.Mocked<SessionService>;
+    routerMock = mockTestRouter;
+    sessionServiceMock = mockTestSessionService;
 
     TestBed.configureTestingModule({
       providers: [
         AuthGuard,
-        {provide: Router, useValue: routerMock},
-        {provide: SessionService, useValue: sessionServiceMock}
+        { provide: Router, useValue: routerMock },
+        { provide: SessionService, useValue: sessionServiceMock }
       ]
     });
 
@@ -41,7 +37,6 @@ describe('AuthGuard', () => {
 
   it('should navigate to "login" and return false if the user is not logged in', () => {
     sessionServiceMock.isLogged = false;
-
     const result = authGuard.canActivate();
 
     expect(result).toBe(false);
