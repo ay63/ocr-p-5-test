@@ -1,26 +1,23 @@
 package com.openclassrooms.starterjwt.controllers.integration;
 
-import com.openclassrooms.starterjwt.MockFactory;
-import com.openclassrooms.starterjwt.models.Teacher;
-import com.openclassrooms.starterjwt.services.TeacherService;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Arrays;
-import java.util.List;
+import com.openclassrooms.starterjwt.models.Teacher;
+import com.openclassrooms.starterjwt.repository.TeacherRepository;
 
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
+@ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureMockMvc
 public class TeacherControllerIntegrationTest {
@@ -28,38 +25,36 @@ public class TeacherControllerIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    private TeacherService teacherService;
-
     @Autowired
-    private MockFactory mockFactory;
+    private TeacherRepository teacherRepository;
 
     private Teacher teacher1;
 
+    private Teacher teacher2;
+
     @BeforeEach
-    void setUp() {
-        teacher1 = mockFactory.createTeacher();
+    void setUp() throws Exception {
+        teacher1 = Teacher.builder().id(1L).firstName("Margot").lastName("DELAHAYE").build();
+        teacher2 = Teacher.builder().id(2L).firstName("Hélène").lastName("THIERCELIN").build();
+
+        teacherRepository.save(teacher2);
+        teacherRepository.save(teacher1);
     }
 
     @Test
     @WithMockUser
-    public void findById_WhenTeacherExist_ShouldSuccessed() throws Exception {
-        when(teacherService.findById(teacher1.getId())).thenReturn(teacher1);
-
+    public void findById_WhenTeacherExist_ShouldSucceed() throws Exception {
         mockMvc.perform(get("/api/teacher/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.firstName").value(teacher1.getFirstName()))
-                .andExpect(jsonPath("$.lastName").value(teacher1.getLastName()));
-
+                .andExpect(jsonPath("$.id").value(teacher1.getId()))
+                .andExpect(jsonPath("$.lastName").value(teacher1.getLastName()))
+                .andExpect(jsonPath("$.firstName").value(teacher1.getFirstName()));
     }
 
     @Test
     @WithMockUser
     public void findById_WhenTeacherNotExist_ShouldFailed404() throws Exception {
-        when(teacherService.findById(999L)).thenReturn(null);
-
         mockMvc.perform(get("/api/teacher/999")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
@@ -75,14 +70,7 @@ public class TeacherControllerIntegrationTest {
 
     @Test
     @WithMockUser
-    public void findAll_WhenTearchersExist_ShouldSuccess() throws Exception {
-        Teacher teacher2 = mockFactory.createTeacher();
-        teacher2.setId(2L);
-        teacher2.setFirstName("Jane");
-        teacher2.setLastName("Smith");
-        List<Teacher> teachers = Arrays.asList(teacher1, teacher2);
-
-        when(teacherService.findAll()).thenReturn(teachers);
+    public void findAll_WhenTeachersExist_ShouldSucceed() throws Exception {
 
         mockMvc.perform(get("/api/teacher")
                 .contentType(MediaType.APPLICATION_JSON))
