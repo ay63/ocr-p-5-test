@@ -39,9 +39,6 @@ describe('JwtInterceptor', () => {
     interceptor = TestBed.inject(JwtInterceptor);
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
 
 
   it('should be created', () => {
