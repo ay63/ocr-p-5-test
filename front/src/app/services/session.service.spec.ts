@@ -15,7 +15,6 @@ describe('SessionService', () => {
     expect(service).toBeTruthy();
   });
 
-
   it('should sessionInformation must be defined and user login', () => {
     service.logIn(mockDataTestSessionInformationNotAdmin)
 
