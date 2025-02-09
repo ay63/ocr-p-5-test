@@ -22,9 +22,13 @@ describe('AuthGuard', () => {
       ]
     });
 
-    sessionServiceMock = TestBed.inject(SessionService);
     authGuard = TestBed.inject(AuthGuard);
   });
+
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+
 
   it('should return true if the user is logged in', () => {
     sessionServiceMock.isLogged = true;
