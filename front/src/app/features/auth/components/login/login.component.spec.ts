@@ -15,7 +15,7 @@ import {LoginRequest} from "../../interfaces/loginRequest.interface";
 import {AuthService} from "../../services/auth.service";
 import {Router} from "@angular/router";
 import {
-  authTestServiceMock,
+  mockAuthTestService,
   mockTestRouter
 } from "../../../../../../tests/mock";
 import {mockDataTestSessionInformationNotAdmin} from "../../../../../../tests/mockData";
@@ -29,7 +29,7 @@ describe('LoginComponent', () => {
 
   beforeEach(async () => {
 
-    authServiceMock = authTestServiceMock
+    authServiceMock = mockAuthTestService
     routerMock = mockTestRouter
 
     await TestBed.configureTestingModule({

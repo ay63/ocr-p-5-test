@@ -1,11 +1,11 @@
-import {HttpClientModule} from '@angular/common/http';
-import {TestBed} from '@angular/core/testing';
-import {expect} from '@jest/globals';
+import { HttpClientModule } from '@angular/common/http';
+import { TestBed } from '@angular/core/testing';
+import { expect } from '@jest/globals';
 
-import {TeacherService} from './teacher.service';
-import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
-import {Teacher} from "../interfaces/teacher.interface";
-import {mockDataTestListTeachers} from "../../../tests/mockData";
+import { TeacherService } from './teacher.service';
+import { HttpClientTestingModule, HttpTestingController } from "@angular/common/http/testing";
+import { Teacher } from "../interfaces/teacher.interface";
+import { mockDataTestListTeachers } from "../../../tests/mockData";
 
 describe('TeacherService', () => {
   let service: TeacherService;
@@ -31,47 +31,44 @@ describe('TeacherService', () => {
   });
 
   it('should get teacher', () => {
-    let result: Teacher[] = mockDataTestListTeachers
     service.all().subscribe(response => {
-      result = response;
+      expect(response).toEqual(mockDataTestListTeachers)
     });
-    const req = httpMock.expectOne(`${API_PATH}`)
 
+    const req = httpMock.expectOne(`${API_PATH}`)
     expect(req.request.method).toBe('GET');
-    expect(result).toEqual(mockDataTestListTeachers)
+    req.flush(mockDataTestListTeachers)
   })
 
   it('should handle error on get teacher', () => {
-    let error: any;
     service.all().subscribe({
-      error: (e) => error = e
+      error: (err) => expect(err.status).toBe(400)
     });
 
     const req = httpMock.expectOne(`${API_PATH}`)
-    req.flush(null, {status: 400, statusText: 'Bad Request'});
-    expect(error.status).toBe(400);
+    req.flush(null, { status: 400, statusText: 'Bad Request' });
+
   })
 
   it('should get detail teacher by id', () => {
-    let result: Teacher = mockDataTestListTeachers[1]
 
     service.detail("2").subscribe(response => {
-      result = response;
+      expect(response).toEqual(mockDataTestListTeachers[1])
     });
     const req = httpMock.expectOne(`${API_PATH}/2`)
 
     expect(req.request.method).toBe('GET');
-    expect(result).toEqual(mockDataTestListTeachers[1])
+    req.flush(mockDataTestListTeachers[1])
+
   })
 
   it('should handle error on get detail teacher by id', () => {
-    let error: any;
     service.detail(id).subscribe({
-      error: (e) => error = e
+      error: (err) =>  expect(err.status).toBe(400)
     });
 
     const req = httpMock.expectOne(`${API_PATH}/${id}`)
-    req.flush(null, {status: 400, statusText: 'Bad Request'});
-    expect(error.status).toBe(400);
+    req.flush(null, { status: 400, statusText: 'Bad Request' });
+   
   })
 });

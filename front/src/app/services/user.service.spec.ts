@@ -1,11 +1,11 @@
-import {HttpClientModule} from '@angular/common/http';
-import {TestBed} from '@angular/core/testing';
-import {expect} from '@jest/globals';
+import { HttpClientModule } from '@angular/common/http';
+import { TestBed } from '@angular/core/testing';
+import { expect } from '@jest/globals';
 
-import {UserService} from './user.service';
-import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
-import {User} from "../interfaces/user.interface";
-import {mockDataTestUserNotAdmin} from "../../../tests/mockData";
+import { UserService } from './user.service';
+import { HttpClientTestingModule, HttpTestingController } from "@angular/common/http/testing";
+import { User } from "../interfaces/user.interface";
+import { mockDataTestUserNotAdmin } from "../../../tests/mockData";
 
 describe('UserService', () => {
   let service: UserService;
@@ -32,45 +32,41 @@ describe('UserService', () => {
   });
 
   it('should get user by id', () => {
-    let result: User = mockDataTestUserNotAdmin
     service.getById(id).subscribe(response => {
-      result = response;
+      expect(response).toEqual(mockDataTestUserNotAdmin)
     });
     const req = httpMock.expectOne(`${API_PATH}/${id}`)
     expect(req.request.method).toBe('GET');
-    expect(result).toEqual(mockDataTestUserNotAdmin)
+
+    req.flush(mockDataTestUserNotAdmin)
   })
 
   it('should handle error on get user by id', () => {
-    let error: any;
     service.getById(id).subscribe({
-      error: (e) => error = e
+      error: (err) => expect(err.status).toBe(400)
     });
 
     const req = httpMock.expectOne(`${API_PATH}/${id}`)
-    req.flush(null, {status: 400, statusText: 'Bad Request'});
-    expect(error.status).toBe(400);
+    req.flush(null, { status: 400, statusText: 'Bad Request' });
   })
 
   it('should delete user by id', () => {
-    let result: User = mockDataTestUserNotAdmin
     service.delete(id).subscribe(response => {
-      result = response;
+      expect(response).toEqual(mockDataTestUserNotAdmin)
     });
     const req = httpMock.expectOne(`${API_PATH}/${id}`)
     expect(req.request.method).toBe('DELETE');
-    expect(result).toEqual(mockDataTestUserNotAdmin)
+
+    req.flush(mockDataTestUserNotAdmin)
   })
 
   it('should handle error on delete user by id', () => {
-    let error: any;
     service.delete(id).subscribe({
-      error: (e) => error = e
+      error: (err) => expect(err.status).toBe(400)
     });
 
     const req = httpMock.expectOne(`${API_PATH}/${id}`)
-    req.flush(null, {status: 400, statusText: 'Bad Request'});
-    expect(error.status).toBe(400);
+    req.flush(null, { status: 400, statusText: 'Bad Request' });
   })
 
 });

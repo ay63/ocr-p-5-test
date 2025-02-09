@@ -53,37 +53,31 @@ describe('AuthService', () => {
       };
       const errorMessage = 'Registration failed';
 
-      let error: any;
       service.register(registerRequest).subscribe({
-        error: (e) => error = e
+        error: (err) => expect(err.status).toBe(400)
       });
 
       const req = httpMock.expectOne(`${API_PATH}/register`);
       req.flush(errorMessage, {status: 400, statusText: 'Bad Request'});
 
-      expect(error.status).toBe(400);
     });
   });
 
   describe('AuthService login', () => {
     it('should send POST request to login endpoint and return session information', () => {
-
       const loginRequest: LoginRequest = {
         email: 'testUser',
         password: 'testPassword'
       };
 
-      let result: SessionInformation | undefined;
       service.login(loginRequest).subscribe(response => {
-        result = mockDataTestSessionInformationNotAdmin;
+        expect(response).toEqual(mockDataTestSessionInformationNotAdmin);
       });
 
       const req = httpMock.expectOne(`${API_PATH}/login`);
       expect(req.request.method).toBe('POST');
       expect(req.request.body).toEqual(loginRequest);
-
       req.flush(mockDataTestSessionInformationNotAdmin);
-      expect(result).toEqual(mockDataTestSessionInformationNotAdmin);
     });
 
     it('should handle login error', () => {
@@ -93,15 +87,13 @@ describe('AuthService', () => {
       };
       const errorMessage = 'Invalid credentials';
 
-      let error: any;
+ 
       service.login(loginRequest).subscribe({
-        error: (e) => error = e
+        error: (err) => expect(err.status).toBe(401)
       });
 
       const req = httpMock.expectOne(`${API_PATH}/login`);
       req.flush(errorMessage, {status: 401, statusText: 'Unauthorized'});
-
-      expect(error.status).toBe(401);
     });
   });
 });

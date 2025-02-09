@@ -1,16 +1,17 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {ListComponent} from './list.component';
-import {SessionService} from '../../../../services/session.service';
-import {SessionApiService} from '../../services/session-api.service';
-import {RouterTestingModule} from '@angular/router/testing';
-import {MatCardModule} from '@angular/material/card';
-import {MatButtonModule} from '@angular/material/button';
-import {MatIconModule} from '@angular/material/icon';
-import {FlexLayoutModule} from '@angular/flex-layout';
-import {of} from 'rxjs';
-import {By} from '@angular/platform-browser';
-import {expect} from "@jest/globals";
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ListComponent } from './list.component';
+import { SessionService } from '../../../../services/session.service';
+import { SessionApiService } from '../../services/session-api.service';
+import { RouterTestingModule } from '@angular/router/testing';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { of } from 'rxjs';
+import { By } from '@angular/platform-browser';
+import { expect } from "@jest/globals";
 import {
+  mockTestSessionApiService,
   mockTestSessionService,
 } from "../../../../../../tests/mock";
 import {
@@ -18,7 +19,7 @@ import {
   mockDataTestSessionInformationNotAdmin,
   mockDataTestSessions
 } from "../../../../../../tests/mockData";
-import {fakeSessionDescription} from "../../../../../../tests/fakerData";
+import { fakeSessionDescription } from "../../../../../../tests/fakerData";
 
 describe('ListComponent', () => {
   let component: ListComponent;
@@ -29,9 +30,9 @@ describe('ListComponent', () => {
 
   beforeEach(async () => {
     mockSessionService = mockTestSessionService
-    mockSessionApiService = {
-      all: jest.fn().mockReturnValue(of(mockDataTestSessions))
-    } as unknown as jest.Mocked<SessionApiService>;
+    mockSessionApiService = mockTestSessionApiService
+
+    mockSessionApiService.all = jest.fn().mockReturnValue(of(mockDataTestSessions));
 
     await TestBed.configureTestingModule({
       imports: [
@@ -43,8 +44,8 @@ describe('ListComponent', () => {
       ],
       declarations: [ListComponent],
       providers: [
-        {provide: SessionService, useValue: mockSessionService},
-        {provide: SessionApiService, useValue: mockSessionApiService}
+        { provide: SessionService, useValue: mockSessionService },
+        { provide: SessionApiService, useValue: mockSessionApiService }
       ],
     }).compileComponents();
 

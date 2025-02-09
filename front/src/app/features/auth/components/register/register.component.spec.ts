@@ -6,7 +6,7 @@ import { RegisterComponent } from './register.component';
 import { AuthService } from '../../services/auth.service';
 import { expect } from '@jest/globals';
 import { RegisterRequest } from "../../interfaces/registerRequest.interface";
-import { authTestServiceMock, mockTestRouter } from "../../../../../../tests/mock";
+import { mockAuthTestService, mockTestRouter } from "../../../../../../tests/mock";
 import { By } from '@angular/platform-browser';
 
 describe('RegisterComponent', () => {
@@ -16,7 +16,7 @@ describe('RegisterComponent', () => {
   let routerMock: jest.Mocked<Router>;
 
   beforeEach(async () => {
-    authServiceMock = authTestServiceMock
+    authServiceMock = mockAuthTestService
     routerMock = mockTestRouter
 
     await TestBed.configureTestingModule({

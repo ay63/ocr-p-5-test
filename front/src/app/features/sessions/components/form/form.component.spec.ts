@@ -8,7 +8,7 @@ import { TeacherService } from '../../../../services/teacher.service';
 import { SessionApiService } from '../../services/session-api.service';
 import { FormComponent } from './form.component';
 import { expect } from "@jest/globals";
-import { mockTestSessionApiService, mockTestSessionService, mockTestTeacherService } from 'tests/mock';
+import { mockTestMatSnackBar, mockTestSessionApiService, mockTestSessionService, mockTestTeacherService } from 'tests/mock';
 import { mockDataTestSession } from 'tests/mockData';
 
 describe('FormComponent', () => {
@@ -38,10 +38,7 @@ describe('FormComponent', () => {
     mockSessionService = mockTestSessionService
     mockSessionApiService = mockTestSessionApiService;
     mockTeacherService = mockTestTeacherService;
-
-    mockMatSnackBar = {
-      open: jest.fn()
-    } as unknown as jest.Mocked<MatSnackBar>;
+    mockMatSnackBar = mockTestMatSnackBar;
 
     await TestBed.configureTestingModule({
       declarations: [FormComponent],
@@ -61,6 +58,10 @@ describe('FormComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  })
 
   it('should create', () => {
     expect(component).toBeTruthy();
