@@ -67,15 +67,13 @@ describe('AuthService', () => {
 
   describe('AuthService login', () => {
     it('should send POST request to login endpoint and return session information', () => {
-
       const loginRequest: LoginRequest = {
         email: 'testUser',
         password: 'testPassword'
       };
 
-      let result: SessionInformation | undefined;
       service.login(loginRequest).subscribe(response => {
-        result = mockDataTestSessionInformationNotAdmin;
+        expect(response).toEqual(mockDataTestSessionInformationNotAdmin);
       });
 
       const req = httpMock.expectOne(`${API_PATH}/login`);
@@ -83,7 +81,7 @@ describe('AuthService', () => {
       expect(req.request.body).toEqual(loginRequest);
 
       req.flush(mockDataTestSessionInformationNotAdmin);
-      expect(result).toEqual(mockDataTestSessionInformationNotAdmin);
+    
     });
 
     it('should handle login error', () => {

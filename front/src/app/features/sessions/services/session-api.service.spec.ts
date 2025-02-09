@@ -121,7 +121,6 @@ describe('SessionsService', () => {
 
   describe('update session', () => {
     it('should session be updated', () => {
-      let result: Session | undefined;
       service.update(id, sessionUpdate).subscribe(response => {
         expect(response).toEqual(sessionUpdate);
       });
@@ -150,7 +149,7 @@ describe('SessionsService', () => {
     it('should participate added to session', () => {
       service.participate(id, id).subscribe();
       const req = httpMock.expectOne(`${API_PATH}/${id}/participate/${id}`);
-
+      
       expect(req.request.method).toBe('POST');
       expect(req.request.body).toEqual(null)
     })
